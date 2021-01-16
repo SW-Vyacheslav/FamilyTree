@@ -1,0 +1,12 @@
+﻿using FamilyTree.Domain.Entities.Content;
+using FamilyTree.Domain.Entities.Privacy.Common;
+
+namespace FamilyTree.Domain.Entities.Privacy
+{
+    public class VideoPrivacy : PrivacyEntity
+    {
+        public int Id { get; set; }
+
+        public Video Video { get; set; }
+    }
+}
