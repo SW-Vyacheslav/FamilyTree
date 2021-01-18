@@ -54,7 +54,7 @@ namespace FamilyTree.WebUI
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
+                    pattern: "{controller=FamilyTree}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

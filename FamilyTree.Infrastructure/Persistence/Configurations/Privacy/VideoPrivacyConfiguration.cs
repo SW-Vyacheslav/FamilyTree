@@ -11,9 +11,6 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Privacy
         {
             builder.HasKey(vp => vp.Id);
 
-            builder.Property(vp => vp.Video)
-                .IsRequired();
-
             builder.Property(vp => vp.PrivacyLevel)
                 .HasDefaultValue(PrivacyLevel.Confidential);
 
@@ -24,7 +21,8 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Privacy
                 .HasColumnType("datetime2");
 
             builder.Property(vp => vp.IsAlways)
-                .HasDefaultValue(true);
+                .HasColumnType("bit")
+                .HasDefaultValueSql("1");
         }
     }
 }

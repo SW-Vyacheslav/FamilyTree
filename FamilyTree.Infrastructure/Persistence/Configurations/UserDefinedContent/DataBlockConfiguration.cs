@@ -13,9 +13,6 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.UserDefinedConten
             builder.Property(db => db.Title)
                 .HasColumnType("nvarchar(50)")
                 .IsRequired();
-
-            builder.Property(db => db.Category)
-                .IsRequired();
         }
     }
 }

@@ -15,10 +15,8 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.UserDefinedConten
                 .IsRequired();
 
             builder.Property(c => c.IsDeletable)
-                .HasDefaultValue(true);
-
-            builder.Property(c => c.Person)
-                .IsRequired();
+                .HasColumnType("bit")
+                .HasDefaultValueSql("1");
         }
     }
 }

@@ -13,7 +13,7 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Tree
             builder.Property(t => t.Name)
                 .HasColumnType("nvarchar(50)")
                 .IsRequired();
-
+            
             builder.ToTable("FamilyTrees");
         }
     }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace FamilyTree.Application.FamilyTrees.Queries
 {
-    public class GetFamilyTreesQuery : IRequest<List<FamilyTreeEntityVm>>
+    public class GetAllFamilyTreesQuery : IRequest<List<FamilyTreeEntityVm>>
     {
         public string UserId { get; set; }
     }

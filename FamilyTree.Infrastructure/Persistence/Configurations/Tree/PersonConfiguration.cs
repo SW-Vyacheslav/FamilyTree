@@ -9,9 +9,6 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Tree
         public void Configure(EntityTypeBuilder<Person> builder)
         {
             builder.HasKey(p => p.Id);
-
-            builder.Property(p => p.FamilyTree)
-                .IsRequired();
         }
     }
 }

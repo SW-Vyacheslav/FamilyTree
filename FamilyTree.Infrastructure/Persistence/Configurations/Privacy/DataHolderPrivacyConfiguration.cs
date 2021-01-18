@@ -11,9 +11,6 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Privacy
         {
             builder.HasKey(dhp => dhp.Id);
 
-            builder.Property(dhp => dhp.DataHolder)
-                .IsRequired();
-
             builder.Property(dhp => dhp.PrivacyLevel)
                 .HasDefaultValue(PrivacyLevel.Confidential);
 
@@ -24,7 +21,8 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Privacy
                 .HasColumnType("datetime2");
 
             builder.Property(dhp => dhp.IsAlways)
-                .HasDefaultValue(true);
+                .HasColumnType("bit")
+                .HasDefaultValueSql("1");
         }
     }
 }

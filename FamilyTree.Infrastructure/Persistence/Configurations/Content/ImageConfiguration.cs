@@ -11,7 +11,7 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Content
             builder.HasKey(i => i.Id);
 
             builder.Property(i => i.ImageData)
-                .HasColumnType("varbinary(10000000)");
+                .HasColumnType("image");
 
             builder.Property(i => i.Title)
                 .HasColumnType("nvarchar(50)")

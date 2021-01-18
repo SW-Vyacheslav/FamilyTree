@@ -9,12 +9,6 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.UserDefinedConten
         public void Configure(EntityTypeBuilder<CommonDataBlock> builder)
         {
             builder.HasKey(cdb => cdb.Id);
-
-            builder.Property(cdb => cdb.Category)
-                .IsRequired();
-
-            builder.Property(cdb => cdb.DataBlock)
-                .IsRequired();
         }
     }
 }

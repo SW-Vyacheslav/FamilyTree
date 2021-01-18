@@ -18,10 +18,8 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.UserDefinedConten
                 .HasColumnType("nvarchar(max)");
 
             builder.Property(dh => dh.IsDeletable)
-                .HasDefaultValue(true);
-
-            builder.Property(dh => dh.DataBlock)
-                .IsRequired();
+                .HasColumnType("bit")
+                .HasDefaultValueSql("1");
         }
     }
 }

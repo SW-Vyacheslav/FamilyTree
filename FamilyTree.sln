@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyTree.Application", "F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyTree.Infrastructure", "FamilyTree.Infrastructure\FamilyTree.Infrastructure.csproj", "{CB6DF6BB-5275-496F-8499-AF6DBAA44BC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyTree.WebUI", "FamilyTree.WebUI\FamilyTree.WebUI.csproj", "{18CAE39D-C3FD-404D-954B-AD3E510E016E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyTree.WebUI", "FamilyTree.WebUI\FamilyTree.WebUI.csproj", "{18CAE39D-C3FD-404D-954B-AD3E510E016E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

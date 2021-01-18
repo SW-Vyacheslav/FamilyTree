@@ -20,6 +20,8 @@
   <ItemGroup>
     <Folder Include="Common\Models\" />
     <Folder Include="Common\Mappings\" />
+    <Folder Include="FamilyTies\Handlers\" />
+    <Folder Include="People\Handlers\" />
   </ItemGroup>
 
 </Project>

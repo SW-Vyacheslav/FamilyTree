@@ -19,6 +19,16 @@ namespace FamilyTree.WebUI.Controllers
             _currentUserService = currentUserService;
         }
 
+        public IActionResult Index()
+        {
+            return View("StartTree");
+        }
+
+        public IActionResult StartTree()
+        {
+            return View();
+        }
+
         [HttpPost]
         public async Task<ActionResult<int>> Create(CreateFamilyTreeCommand createFamilyTreeCommand)
         {
@@ -26,9 +36,34 @@ namespace FamilyTree.WebUI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<FamilyTreeEntityVm>>> Get()
+        public async Task<ActionResult<List<FamilyTreeEntityVm>>> GetAll()
         {
-            return await Mediator.Send(new GetFamilyTreesQuery() { UserId = _currentUserService.UserId });
+            return await Mediator.Send(new GetAllFamilyTreesQuery() { UserId = _currentUserService.UserId });
         }
+
+        [HttpGet]
+        public async Task<ActionResult<FamilyTreeVm>> GetFamilyTreeById(int id, int personId, int wifeId = 0)
+        {
+            return await Mediator.Send(new GetFamilyTreeByIdQuery()
+            {
+                UserId = _currentUserService.UserId,
+                FamilyTreeId = id,
+                PersonId = personId,
+                WifeId = wifeId
+            });
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<BloodTreeVm>> GetBloodTreeById(int id, int bloodMainId, int currentMainId, int wifeId = 0)
+        {
+            return await Mediator.Send(new GetBloodTreeByIdQuery() 
+            {
+                UserId = _currentUserService.UserId,
+                FamilyTreeId = id,
+                BloodMainId = bloodMainId,
+                CurrentMainId = currentMainId,
+                WifeId = wifeId
+            });
+        }        
     }
 }

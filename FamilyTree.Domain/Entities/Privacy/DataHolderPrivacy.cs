@@ -7,6 +7,8 @@ namespace FamilyTree.Domain.Entities.Privacy
     {
         public int Id { get; set; }
 
+        public int DataHolderId { get; set; }
+
         public DataHolder DataHolder { get; set; }
     }
 }

@@ -7,7 +7,11 @@ namespace FamilyTree.Domain.Entities.Tree
     {
         public int Id { get; set; }
 
+        public int FamilyTreeId { get; set; }
+
         public FamilyTreeEntity FamilyTree { get; set; }
+
+        public int? AvatarImageId { get; set; }
 
         public Image AvatarImage { get; set; }
     }

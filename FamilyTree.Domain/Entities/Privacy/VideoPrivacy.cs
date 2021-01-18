@@ -7,6 +7,8 @@ namespace FamilyTree.Domain.Entities.Privacy
     {
         public int Id { get; set; }
 
+        public int VideoId { get; set; }
+
         public Video Video { get; set; }
     }
 }
