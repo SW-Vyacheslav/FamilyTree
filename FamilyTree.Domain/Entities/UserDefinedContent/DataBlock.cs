@@ -11,9 +11,9 @@ namespace FamilyTree.Domain.Entities.UserDefinedContent
 
         public int OrderNumber { get; set; }
 
-        public int CategoryId { get; set; }
+        public int DataCategoryId { get; set; }
 
-        public Category Category { get; set; }
+        public DataCategory DataCategory { get; set; }
 
         public List<DataHolder> DataHolders { get; set; }
     }

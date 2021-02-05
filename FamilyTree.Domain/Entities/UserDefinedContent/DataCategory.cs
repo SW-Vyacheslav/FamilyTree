@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace FamilyTree.Domain.Entities.UserDefinedContent
 {    
-    public class Category : AuditableEntity
+    public class DataCategory : AuditableEntity
     {
         public int Id { get; set; }
                

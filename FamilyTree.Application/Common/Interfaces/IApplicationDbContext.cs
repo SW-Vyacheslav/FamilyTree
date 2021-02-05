@@ -16,7 +16,9 @@ namespace FamilyTree.Application.Common.Interfaces
 
         DbSet<FamilyTreeEntity> FamilyTrees { get; set; }
 
-        DbSet<Category> Categories { get; set; }
+        DbSet<FamilyTreeMainPerson> FamilyTreesMainPeople { get; set; }
+
+        DbSet<DataCategory> DataCategories { get; set; }
 
         DbSet<DataBlock> DataBlocks { get; set; }
 

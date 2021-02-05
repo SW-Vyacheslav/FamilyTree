@@ -1,0 +1,542 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Active = "GenDrevo";
+    ViewBag.Title = "Генеалогичекое древо";
+}
+
+@section Styles
+{
+    <link href="~/css/GenDrevoStyle.css" type="text/css" rel="stylesheet" />
+    <link href="~/css/PersonInfo.css" type="text/css" rel="stylesheet"/>
+    <link href="~/css/PersonDataStyle.css" type="text/css" rel="stylesheet" />
+}
+
+@section Scripts
+{
+    <script src="~/js/SliderGenDrevo.js"></script>
+    <script src="~/js/LoadTree.js"></script>
+}
+
+@section HeaderText
+{
+    <div id="headerText">Ваше генеалогическое древо</div>
+}
+
+<div id="startBlock" style="display:none;">
+    <img src="~/images/addBlack.png" id="imgAdd" />
+</div>
+
+<div id="createPersonBlock" style="display:none; background-color: #AAA;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 nullPadding">
+                <div class="infoPanel white borderStyleUp">Персональные параметры</div>
+            </div>
+            <div class="form-horizontal white col-md-9">
+                <div class="row">
+                    <div class="col-md-9">
+                        <div id="blockInformation">
+                            <div class="form-group has-feedback">
+                                <div class=" marginText">
+                                    Фамилия:
+                                </div>
+                                <input id="Person_Surname" type="text" class="inputGroup" data-name="FIO" name="Surname" />
+                            </div>
+                            <div class="form-group has-feedback">
+                                <div class=" marginText">
+                                    Имя:
+                                </div>
+                                <input id="Person_Name" type="text" class="inputGroup" data-name="FIO" name="Name" />
+                            </div>
+                            <div class="form-group has-feedback">
+                                <div class=" marginText">
+                                    Отчество:
+                                </div>
+                                <input id="Person_Middlename" type="text" class="inputGroup" data-name="FIO" name="Middlename" />
+                            </div>
+                            <div class="form-group has-feedback">
+                                <div class=" marginText">
+                                    Дата рождения:
+                                </div>
+                                <input id="Person_Birthday" type="date" class="inputGroup" data-name="Birthday" name="Birthday" placeholder="ГГГГ-ММ-ДД" />
+                            </div>
+                            <div class="form-group has-feedback">
+                                <div class=" marginText">
+                                    Пол:
+                                </div>
+                                <div class="btn-group" id="btns" data-toggle="buttons">
+                                    <label class="btn btn-default">
+                                        <input type="radio" name="Gender" value="м" />Мужской
+                                    </label>
+                                    <label class="btn btn-default">
+                                        <input type="radio" name="Gender" value="ж" />Женский
+                                    </label>
+                                    <label class="btn btn-default active">
+                                        <input type="radio" name="Gender" value="" checked />Неизвестно
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="buttons">
+                                <div id="createPersonBlockCloseButton" class="btn btn-my-dark" >Отмена</div>
+                                <input id="Send" type="submit" value="Сохранить" class="btn btn-my-primary" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="mainBlock" style="display:none;">
+    <div id="Buttons">
+        <div id="BloodTree" class="btn btn-my-outline-danger">
+            Кровное родство
+        </div>
+        <div id="ScaleTree" class="btn btn-my-outline-primary">
+            Увеличить масштаб
+        </div>
+    </div>
+
+    <div id="BlockFullTree">
+        <canvas width="1150" height="50" id="canvas0"></canvas>
+        <div>
+            <div id="blood-grandOne" class="person grand" data-value="">
+                <div class="imgBlock">
+                    <img src="~/images/person.png" class="imgPerson" />
+                </div>
+                <div>
+                    <div class="surname"></div>
+                    <div class="name"></div>
+                    <div class="middlename"></div>
+                </div>
+            </div>
+            <div id="blood-grandTwo" class="person grand" data-value="">
+                <div class="imgBlock">
+                    <img src="~/images/person.png" class="imgPerson" />
+                </div>
+                <div>
+                    <div class="surname"></div>
+                    <div class="name"></div>
+                    <div class="middlename"></div>
+                </div>
+            </div>
+            <div id="blood-grandThree" class="person grand" data-value="">
+                <div class="imgBlock">
+                    <img src="~/images/person.png" class="imgPerson" />
+                </div>
+                <div>
+                    <div class="surname"></div>
+                    <div class="name"></div>
+                    <div class="middlename"></div>
+                </div>
+            </div>
+            <div id="blood-grandFour" class="person grand" data-value="">
+                <div class="imgBlock">
+                    <img src="~/images/person.png" class="imgPerson" />
+                </div>
+                <div>
+                    <div class="surname"></div>
+                    <div class="name"></div>
+                    <div class="middlename"></div>
+                </div>
+            </div>
+            <div id="grandOne" class="person grand" data-value="">
+                <div class="imgBlock">
+                    <img src="~/images/person.png" class="imgPerson" />
+                </div>
+                <div>
+                    <div class="surname"></div>
+                    <div class="name"></div>
+                    <div class="middlename"></div>
+                </div>
+            </div>
+            <div id="grandTwo" class="person grand" data-value="">
+                <div class="imgBlock">
+                    <img src="~/images/person.png" class="imgPerson" />
+                </div>
+                <div>
+                    <div class="surname"></div>
+                    <div class="name"></div>
+                    <div class="middlename"></div>
+                </div>
+            </div>
+            <div id="grandThree" class="person grand" data-value="">
+                <div class="imgBlock">
+                    <img src="~/images/person.png" class="imgPerson" />
+                </div>
+                <div>
+                    <div class="surname"></div>
+                    <div class="name"></div>
+                    <div class="middlename"></div>
+                </div>
+            </div>
+            <div id="grandFour" class="person" data-value="">
+                <div class="imgBlock">
+                    <img src="~/images/person.png" class="imgPerson" />
+                </div>
+                <div>
+                    <div class="surname"></div>
+                    <div class="name"></div>
+                    <div class="middlename"></div>
+                </div>
+            </div>
+        </div>
+        <canvas width="1150" height="100" id="canvas1"></canvas>
+        <div>
+            <div id="blood-parentOne" class="person" data-value="">
+                <div class="imgBlock">
+                    <img src="~/images/person.png" class="imgPerson" />
+                </div>
+                <div>
+                    <div class="surname"></div>
+                    <div class="name"></div>
+                    <div class="middlename"></div>
+                </div>
+            </div>
+            <div id="blood-parentTwo" class="person" data-value="">
+                <div class="imgBlock">
+                    <img src="~/images/person.png" class="imgPerson" />
+                </div>
+                <div>
+                    <div class="surname"></div>
+                    <div class="name"></div>
+                    <div class="middlename"></div>
+                </div>
+            </div>
+            <div id="parentOne" class="person" data-value="">
+                <div class="imgBlock">
+                    <img src="~/images/person.png" class="imgPerson" />
+                </div>
+                <div>
+                    <div class="surname"></div>
+                    <div class="name"></div>
+                    <div class="middlename"></div>
+                </div>
+            </div>
+            <div id="parentTwo" class="person" data-value="">
+                <div class="imgBlock">
+                    <img src="~/images/person.png" class="imgPerson" />
+                </div>
+                <div>
+                    <div class="surname"></div>
+                    <div class="name"></div>
+                    <div class="middlename"></div>
+                </div>
+            </div>
+        </div>
+        <canvas width="1150" height="100" id="canvas2"></canvas>
+        <div>
+            <div id="brothers">
+                <div class="PrevNext PrevItem">
+                    <div>
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                    </div>
+                </div>
+                <div class="SliderContainer">
+                    <input class="itemSize" type="text" style="display: none;" value="100" />
+                    <input class="itemMargin" type="text" style="display: none;" value="10" />
+                    <input class="itemVisibleCount" type="text" style="display: none;" value="3" />
+                    <ul class="ListSlider" style="transform: translateX(0px)">
+                        <li class="itemSlider itemAfter" style="left:220px;">
+                            <div id="mainPerson" class="person idPopover" data-value="">
+                                <div class="imgBlock">
+                                    <img src="~/images/person.png" class="imgPerson" />
+                                </div>
+                                <div>
+                                    <div class="surname"></div>
+                                    <div class="name"></div>
+                                    <div class="middlename"></div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="PrevNext NextItem">
+                    <div>
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </div>
+                </div>
+                <div id="blood-newBrother" class="AddPerson-Tree">
+                    <img src="~/images/addBlack.png" class="imgAdd-Tree" />
+                </div>
+            </div>
+            <div id="wifes">
+                <div id="blood-newWife" class="AddPerson-Tree">
+                    <img src="~/images/addBlack.png" class="imgAdd-Tree" />
+                </div>
+                <div class="PrevNext PrevItem">
+                    <div>
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                    </div>
+                </div>
+                <div class="SliderContainer">
+                    <input class="itemSize" type="text" style="display: none;" value="100" />
+                    <input class="itemMargin" type="text" style="display: none;" value="126" />
+                    <input class="itemVisibleCount" type="text" style="display: none;" value="2" />
+                    <ul class="ListSlider" style="transform: translateX(0px)">
+                        <li class="itemSlider itemCurrent" style="left:0px;" data-value="5">
+                            <div id="wifeOne" class="person" data-value="5">
+                                <div class="imgBlock">
+                                    <img src="~/images/person.png" class="imgPerson" />
+                                </div>
+                                <div>
+                                    <div class="surname"></div>
+                                    <div class="name"></div>
+                                    <div class="middlename"></div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="PrevNext NextItem">
+                    <div>
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <canvas width="1150" height="120" id="canvas3"></canvas>
+        <div>
+            <div id="sons">
+                <div class="PrevNext PrevItem">
+                    <div>
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                    </div>
+                </div>
+                <div class="SliderContainer">
+                    <input class="itemSize" type="text" style="display: none;" value="100" />
+                    <input class="itemMargin" type="text" style="display: none;" value="10" />
+                    <input class="itemVisibleCount" type="text" style="display: none;" value="3" />
+                    <ul class="ListSlider" style="transform: translateX(0px)">
+                        <li class="itemSlider itemCurrent" style="left:0px;">
+                            <div id="sonOne" class="person" data-toggle="modal" data-target="#myModal" data-value="">
+                                <div class="imgBlock">
+                                    <img src="~/images/person.png" class="imgPerson" />
+                                </div>
+                                <div>
+                                    <div class="surname"></div>
+                                    <div class="name"></div>
+                                    <div class="middlename"></div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="PrevNext NextItem">
+                    <div>
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </div>
+                </div>
+                <div id="blood-newSon" class="AddPerson-Tree">
+                    <img src="~/images/addBlack.png" class="imgAdd-Tree" />
+                </div>
+            </div>
+            <div id="sonAnotherWife" class="person" data-toggle="modal" data-target="#myModal" data-value="">
+                <div class="imgBlock">
+                    <img src="~/images/person.png" class="imgPerson" />
+                </div>
+                <div>
+                    <div class="surname"></div>
+                    <div class="name"></div>
+                    <div class="middlename"></div>
+                </div>
+            </div>
+        </div>
+        <canvas width="1150" height="50" id="canvas4"></canvas>
+    </div>
+    <div id="BlockPartTree">
+        <canvas width="1025" height="100" id="canvas5"></canvas>
+        <div>
+            <div id="blood-parentOne-LittleTree" class="LittleTreePerson" data-toggle="modal" data-target="#myModal" data-value="5">
+                <div class="imgBlock">
+                    <img src="~/images/person.png" class="imgPerson" />
+                </div>
+                <div>
+                    <div class="surname"></div>
+                    <div class="name"></div>
+                    <div class="middlename"></div>
+                </div>
+            </div>
+            <div id="blood-parentTwo-LittleTree" class="LittleTreePerson" data-toggle="modal" data-target="#myModal" data-value="5">
+                <div class="imgBlock">
+                    <img src="~/images/person.png" class="imgPerson" />
+                </div>
+                <div>
+                    <div class="surname"></div>
+                    <div class="name"></div>
+                    <div class="middlename"></div>
+                </div>
+            </div>
+        </div>
+        <canvas width="1025" height="200" id="canvas6"></canvas>
+        <div>
+            <div id="brothers-LittleTree">
+                <div id="addBrother-LittleTree" class="AddPerson-LittleTree">
+                    <img src="~/images/addBlack.png" class="imgAdd-LittleTree" />
+                </div>
+                <div id="prevBrothers" class="PrevNext PrevItem">
+                    <div>
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                    </div>
+                </div>
+                <div class="SliderContainer-LittleTree">
+                    <input class="itemSize" type="text" style="display: none;" value="200" />
+                    <input class="itemMargin" type="text" style="display: none;" value="30" />
+                    <input class="itemVisibleCount" type="text" style="display: none;" value="2" />
+                    <ul class="ListSlider" style="transform: translateX(0px)">
+                        <li class="itemSlider itemAfter" style="left:230px;">
+                            <div id="mainPerson-LittleTree" class="LittleTreePerson" data-toggle="modal" data-target="#myModal" data-value="5">
+                                <div class="imgBlock">
+                                    <img src="~/images/person.png" class="imgPerson" />
+                                </div>
+                                <div>
+                                    <div class="surname"></div>
+                                    <div class="name"></div>
+                                    <div class="middlename"></div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div id="nextBrothers" class="PrevNext NextItem">
+                    <div>
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </div>
+                </div>
+            </div>
+            <div id="wifes-LittleTree">
+                <div id="prevWife" class="PrevNext PrevItem">
+                    <div>
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                    </div>
+                </div>
+                <div id="SliderWifes" class="SliderContainer-LittleTree">
+                    <input class="itemSize" type="text" style="display: none;" value="200" />
+                    <input class="itemMargin" type="text" style="display: none;" value="30" />
+                    <input class="itemVisibleCount" type="text" style="display: none;" value="1" />
+                    <ul class="ListSlider" style="transform: translateX(0px)">
+                        <li class="itemSlider itemCurrent" style="left:0px;">
+                            <div id="wifeOne-LittleTree" class="LittleTreePerson">
+                                <div class="imgBlock">
+                                    <img src="~/images/person.png" class="imgPerson" />
+                                </div>
+                                <div>
+                                    <div class="surname"></div>
+                                    <div class="name"></div>
+                                    <div class="middlename"></div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div id="nextWife" class="PrevNext NextItem">
+                    <div>
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </div>
+                </div>
+                <div id="addWife-LittleTree" class="AddPerson-LittleTree">
+                    <img src="~/images/addBlack.png" class="imgAdd-LittleTree" />
+                </div>
+            </div>
+        </div>
+        <canvas width="1025" height="200" id="canvas7"></canvas>
+        <div>
+            <div id="sons-LittleTree">
+                <div id="prevSon" class="PrevNext PrevItem">
+                    <div>
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                    </div>
+                </div>
+                <div class="SliderContainer-LittleTree">
+                    <input class="itemSize" type="text" style="display: none;" value="200" />
+                    <input class="itemMargin" type="text" style="display: none;" value="30" />
+                    <input class="itemVisibleCount" type="text" style="display: none;" value="2" />
+                    <ul class="ListSlider" style="transform: translateX(0px)">
+                        <li class="itemSlider itemCurrent" style="left:0px;">
+                            <div id="sonOne-LittleTree" class="LittleTreePerson" data-toggle="modal" data-target="#myModal" data-value="5">
+                                <div class="imgBlock">
+                                    <img src="~/images/person.png" class="imgPerson" />
+                                </div>
+                                <div>
+                                    <div class="surname"></div>
+                                    <div class="name"></div>
+                                    <div class="middlename"></div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div id="nextSon" class="PrevNext NextItem">
+                    <div>
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </div>
+                </div>
+                <div id="AddSon-LittleTree" class="AddPerson-LittleTree">
+                    <img src="~/images/addBlack.png" class="imgAdd-LittleTree" />
+                </div>
+            </div>
+        </div>
+        <canvas width="1025" height="100" id="canvas8"></canvas>
+    </div>
+</div>
+
+<div class="person-data">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 data-categories">
+                <div class="data-categories__item_active" data-id="">
+                    Category 1
+                </div>
+                <div class="data-categories__item" data-id="">
+                    Category 2
+                </div>
+                <div class="data-categories__item" data-id="">
+                    Category 3
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="data-blocks">
+                    <div class="data-blocks__item data-block" data-id="">
+                        <div class="data-block__header"></div>
+                        <div class="data-block__content">
+                            <div class="data-block__item">
+                                <div class="data-block__title">Заголовок:</div>
+                                <div class="data-block__value">Data Block 1</div>
+                            </div>
+                        </div>
+                        <div class="data-block__footer"></div>
+                    </div>
+                    <div class="data-blocks__item data-block" data-id="">
+                        <div class="data-block__header"></div>
+                        <div class="data-block__content">
+                            <div class="data-block__item">
+                                <div class="data-block__title">Заголовок:</div>
+                                <div class="data-block__value">Data Block 2</div>
+                            </div>
+                        </div>
+                        <div class="data-block__footer"></div>
+                    </div>
+                </div>
+                <div class="data-holders">
+                    <div class="data-holders__item" data-id="">Data Holder 1</div>
+                    <div class="data-holders__item" data-id="">Data Holder 2</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section ModalPersonInfo
+{
+    <div id="modalBlockPerson">
+        <div id="visibleZone">
+            <div id="headerModal"></div>
+            <div id="bodyModal">
+                <div id="textModal"></div>
+            </div>
+            <div id="editPersonModal" data-id="">Подробнее...</div>
+        </div>
+        <div id="unvisibleZone"></div>
+    </div>
+}

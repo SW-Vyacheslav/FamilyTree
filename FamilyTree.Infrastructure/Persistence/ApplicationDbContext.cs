@@ -33,7 +33,9 @@ namespace FamilyTree.Infrastructure.Persistence
 
         public DbSet<FamilyTreeEntity> FamilyTrees { get; set; }
 
-        public DbSet<Category> Categories { get; set; }
+        public DbSet<FamilyTreeMainPerson> FamilyTreesMainPeople { get; set; }
+
+        public DbSet<DataCategory> DataCategories { get; set; }
 
         public DbSet<DataBlock> DataBlocks { get; set; }
 

@@ -7,8 +7,8 @@ namespace FamilyTree.WebUI.Controllers
 {
     public abstract class ApiControllerBase : Controller
     {
-        private IMediator _mediator;
+        private ISender _mediator;
 
-        protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
+        protected ISender Mediator => _mediator ??= HttpContext.RequestServices.GetService<ISender>();
     }
 }

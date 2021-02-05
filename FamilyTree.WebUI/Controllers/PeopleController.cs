@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using FamilyTree.Application.Common.Interfaces;
+using FamilyTree.Application.People.Commands;
 using FamilyTree.Application.People.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,13 +17,23 @@ namespace FamilyTree.WebUI.Controllers
             _currentUserService = currentUserService;
         }
 
-        public async Task<ActionResult<string>> GetRelationsByPeopleIds(int targetPersonId, int personId)
+        [HttpPost]
+        public async Task<ActionResult<int>> Create(CreatePersonCommand command)
+        {
+            command.UserId = _currentUserService.UserId;
+
+            return await Mediator.Send(command);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<string>> GetRelationsByPeopleIds(int treeId, int targetPersonId, int personId)
         {
             return await Mediator.Send(new GetRelationsByPeopleIdsQuery()
             {
                 UserId = _currentUserService.UserId,
                 TargetPersonId = targetPersonId,
-                PersonId = personId
+                PersonId = personId,
+                FamilyTreeId = treeId
             });
         }
     }

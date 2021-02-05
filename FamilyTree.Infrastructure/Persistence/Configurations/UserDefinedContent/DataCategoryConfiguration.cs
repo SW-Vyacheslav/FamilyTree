@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FamilyTree.Infrastructure.Persistence.Configurations.UserDefinedContent
 {
-    public class CategoryConfiguration : IEntityTypeConfiguration<Category>
+    public class DataCategoryConfiguration : IEntityTypeConfiguration<DataCategory>
     {
-        public void Configure(EntityTypeBuilder<Category> builder)
+        public void Configure(EntityTypeBuilder<DataCategory> builder)
         {
             builder.HasKey(c => c.Id);
 

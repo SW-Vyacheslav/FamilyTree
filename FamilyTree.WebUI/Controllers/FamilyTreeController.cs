@@ -21,24 +21,19 @@ namespace FamilyTree.WebUI.Controllers
 
         public IActionResult Index()
         {
-            return View("StartTree");
-        }
-
-        public IActionResult StartTree()
-        {
             return View();
         }
 
         [HttpPost]
-        public async Task<ActionResult<int>> Create(CreateFamilyTreeCommand createFamilyTreeCommand)
+        public async Task<ActionResult<int>> Create(CreateFamilyTreeCommand command)
         {
-            return await Mediator.Send(createFamilyTreeCommand);
+            return await Mediator.Send(command);
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<FamilyTreeEntityVm>>> GetAll()
+        public async Task<ActionResult<List<FamilyTreeEntityDto>>> GetFamilyTrees()
         {
-            return await Mediator.Send(new GetAllFamilyTreesQuery() { UserId = _currentUserService.UserId });
+            return await Mediator.Send(new GetFamilyTreesQuery() { UserId = _currentUserService.UserId });
         }
 
         [HttpGet]
@@ -65,5 +60,32 @@ namespace FamilyTree.WebUI.Controllers
                 WifeId = wifeId
             });
         }        
+
+        [HttpPut]
+        public async Task<ActionResult> Update(int id, UpdateFamilyTreeCommand command)
+        {
+            if (id != command.Id)
+                return BadRequest();
+
+            await Mediator.Send(new UpdateFamilyTreeCommand()
+            {
+                Id = id,
+                UserId = _currentUserService.UserId
+            });
+
+            return NoContent();
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> Delete(int id)
+        {
+            await Mediator.Send(new DeleteFamilyTreeCommand() 
+            { 
+                Id = id,
+                UserId = _currentUserService.UserId 
+            });
+
+            return NoContent();
+        }
     }
 }

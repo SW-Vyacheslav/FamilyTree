@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyTree.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210118000813_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20210128200352_AddedImageFormat")]
+    partial class AddedImageFormat
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -38,7 +38,12 @@ namespace FamilyTree.Infrastructure.Migrations
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<byte[]>("ImageData")
+                        .IsRequired()
                         .HasColumnType("image");
+
+                    b.Property<string>("ImageFormat")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -320,7 +325,7 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasIndex("MainPersonId");
 
-                    b.ToTable("FamilyTreeMainPerson");
+                    b.ToTable("FamilyTreesMainPeople");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.Tree.Person", b =>
@@ -357,7 +362,77 @@ namespace FamilyTree.Infrastructure.Migrations
                     b.ToTable("People");
                 });
 
-            modelBuilder.Entity("FamilyTree.Domain.Entities.UserDefinedContent.Category", b =>
+            modelBuilder.Entity("FamilyTree.Domain.Entities.UserDefinedContent.CommonDataBlock", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DataBlockId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DataCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DataBlockId");
+
+                    b.HasIndex("DataCategoryId");
+
+                    b.ToTable("CommonDataBlocks");
+                });
+
+            modelBuilder.Entity("FamilyTree.Domain.Entities.UserDefinedContent.DataBlock", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DataCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrderNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DataCategoryId");
+
+                    b.ToTable("DataBlocks");
+                });
+
+            modelBuilder.Entity("FamilyTree.Domain.Entities.UserDefinedContent.DataCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -398,77 +473,7 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.ToTable("Categories");
-                });
-
-            modelBuilder.Entity("FamilyTree.Domain.Entities.UserDefinedContent.CommonDataBlock", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DataBlockId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("DataBlockId");
-
-                    b.ToTable("CommonDataBlocks");
-                });
-
-            modelBuilder.Entity("FamilyTree.Domain.Entities.UserDefinedContent.DataBlock", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("OrderNumber")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("DataBlocks");
+                    b.ToTable("DataCategories");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.UserDefinedContent.DataHolder", b =>
@@ -796,33 +801,33 @@ namespace FamilyTree.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FamilyTree.Domain.Entities.UserDefinedContent.Category", b =>
-                {
-                    b.HasOne("FamilyTree.Domain.Entities.Tree.Person", "Person")
-                        .WithMany()
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("FamilyTree.Domain.Entities.UserDefinedContent.CommonDataBlock", b =>
                 {
-                    b.HasOne("FamilyTree.Domain.Entities.UserDefinedContent.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId");
-
                     b.HasOne("FamilyTree.Domain.Entities.UserDefinedContent.DataBlock", "DataBlock")
                         .WithMany()
                         .HasForeignKey("DataBlockId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("FamilyTree.Domain.Entities.UserDefinedContent.DataCategory", "DataCategory")
+                        .WithMany()
+                        .HasForeignKey("DataCategoryId");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.UserDefinedContent.DataBlock", b =>
                 {
-                    b.HasOne("FamilyTree.Domain.Entities.UserDefinedContent.Category", "Category")
+                    b.HasOne("FamilyTree.Domain.Entities.UserDefinedContent.DataCategory", "DataCategory")
                         .WithMany("DataBlocks")
-                        .HasForeignKey("CategoryId")
+                        .HasForeignKey("DataCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FamilyTree.Domain.Entities.UserDefinedContent.DataCategory", b =>
+                {
+                    b.HasOne("FamilyTree.Domain.Entities.Tree.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

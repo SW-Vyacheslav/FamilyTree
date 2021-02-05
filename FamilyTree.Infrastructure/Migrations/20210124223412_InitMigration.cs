@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace FamilyTree.Infrastructure.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class InitMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -292,7 +292,7 @@ namespace FamilyTree.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Categories",
+                name: "DataCategories",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -309,9 +309,9 @@ namespace FamilyTree.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.PrimaryKey("PK_DataCategories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Categories_People_PersonId",
+                        name: "FK_DataCategories_People_PersonId",
                         column: x => x.PersonId,
                         principalTable: "People",
                         principalColumn: "Id",
@@ -370,7 +370,7 @@ namespace FamilyTree.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FamilyTreeMainPerson",
+                name: "FamilyTreesMainPeople",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -380,15 +380,15 @@ namespace FamilyTree.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FamilyTreeMainPerson", x => x.Id);
+                    table.PrimaryKey("PK_FamilyTreesMainPeople", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FamilyTreeMainPerson_FamilyTrees_FamilyTreeId",
+                        name: "FK_FamilyTreesMainPeople_FamilyTrees_FamilyTreeId",
                         column: x => x.FamilyTreeId,
                         principalTable: "FamilyTrees",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_FamilyTreeMainPerson_People_MainPersonId",
+                        name: "FK_FamilyTreesMainPeople_People_MainPersonId",
                         column: x => x.MainPersonId,
                         principalTable: "People",
                         principalColumn: "Id",
@@ -407,15 +407,15 @@ namespace FamilyTree.Infrastructure.Migrations
                     LastModifiedBy = table.Column<string>(nullable: true),
                     Title = table.Column<string>(type: "nvarchar(50)", nullable: false),
                     OrderNumber = table.Column<int>(nullable: false),
-                    CategoryId = table.Column<int>(nullable: false)
+                    DataCategoryId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DataBlocks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DataBlocks_Categories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Categories",
+                        name: "FK_DataBlocks_DataCategories_DataCategoryId",
+                        column: x => x.DataCategoryId,
+                        principalTable: "DataCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -431,23 +431,23 @@ namespace FamilyTree.Infrastructure.Migrations
                     LastModified = table.Column<DateTime>(nullable: true),
                     LastModifiedBy = table.Column<string>(nullable: true),
                     DataBlockId = table.Column<int>(nullable: false),
-                    CategoryId = table.Column<int>(nullable: true)
+                    DataCategoryId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CommonDataBlocks", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CommonDataBlocks_Categories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_CommonDataBlocks_DataBlocks_DataBlockId",
                         column: x => x.DataBlockId,
                         principalTable: "DataBlocks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CommonDataBlocks_DataCategories_DataCategoryId",
+                        column: x => x.DataCategoryId,
+                        principalTable: "DataCategories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -545,24 +545,24 @@ namespace FamilyTree.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Categories_PersonId",
-                table: "Categories",
-                column: "PersonId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CommonDataBlocks_CategoryId",
-                table: "CommonDataBlocks",
-                column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_CommonDataBlocks_DataBlockId",
                 table: "CommonDataBlocks",
                 column: "DataBlockId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DataBlocks_CategoryId",
+                name: "IX_CommonDataBlocks_DataCategoryId",
+                table: "CommonDataBlocks",
+                column: "DataCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DataBlocks_DataCategoryId",
                 table: "DataBlocks",
-                column: "CategoryId");
+                column: "DataCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DataCategories_PersonId",
+                table: "DataCategories",
+                column: "PersonId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DataHolderPrivacies_DataHolderId",
@@ -600,13 +600,13 @@ namespace FamilyTree.Infrastructure.Migrations
                 column: "PersonId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FamilyTreeMainPerson_FamilyTreeId",
-                table: "FamilyTreeMainPerson",
+                name: "IX_FamilyTreesMainPeople_FamilyTreeId",
+                table: "FamilyTreesMainPeople",
                 column: "FamilyTreeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FamilyTreeMainPerson_MainPersonId",
-                table: "FamilyTreeMainPerson",
+                name: "IX_FamilyTreesMainPeople_MainPersonId",
+                table: "FamilyTreesMainPeople",
                 column: "MainPersonId");
 
             migrationBuilder.CreateIndex(
@@ -657,7 +657,7 @@ namespace FamilyTree.Infrastructure.Migrations
                 name: "FamilyTies");
 
             migrationBuilder.DropTable(
-                name: "FamilyTreeMainPerson");
+                name: "FamilyTreesMainPeople");
 
             migrationBuilder.DropTable(
                 name: "ImagePrivacies");
@@ -681,7 +681,7 @@ namespace FamilyTree.Infrastructure.Migrations
                 name: "DataBlocks");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "DataCategories");
 
             migrationBuilder.DropTable(
                 name: "People");

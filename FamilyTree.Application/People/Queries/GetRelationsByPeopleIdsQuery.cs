@@ -6,6 +6,8 @@ namespace FamilyTree.Application.People.Queries
     {
         public string UserId { get; set; }
 
+        public int FamilyTreeId { get; set; }
+
         public int TargetPersonId { get; set; }
 
         public int PersonId { get; set; }

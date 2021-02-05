@@ -10,8 +10,8 @@ namespace FamilyTree.Domain.Entities.UserDefinedContent
 
         public DataBlock DataBlock { get; set; }
 
-        public int? CategoryId { get; set; }
+        public int? DataCategoryId { get; set; }
 
-        public Category Category { get; set; }
+        public DataCategory DataCategory { get; set; }
     }
 }

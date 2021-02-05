@@ -31,6 +31,7 @@ namespace FamilyTree.Infrastructure
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddTransient<IDateTimeService, DateTimeService>();
+            services.AddTransient<IFamilyTreeService, FamilyTreeService>();
 
             return services;
         }

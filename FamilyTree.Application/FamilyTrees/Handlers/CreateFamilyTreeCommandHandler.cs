@@ -9,19 +9,19 @@ namespace FamilyTree.Application.FamilyTrees.Handlers
 {
     public class CreateFamilyTreeCommandHandler : IRequestHandler<CreateFamilyTreeCommand, int>
     {
-        private readonly IApplicationDbContext _dataContext;
+        private readonly IApplicationDbContext _context;
 
-        public CreateFamilyTreeCommandHandler(IApplicationDbContext applicationDbContext)
+        public CreateFamilyTreeCommandHandler(IApplicationDbContext context)
         {
-            _dataContext = applicationDbContext;
+            _context = context;
         }
         public async Task<int> Handle(CreateFamilyTreeCommand request, CancellationToken cancellationToken)
         {
             FamilyTreeEntity entity = new FamilyTreeEntity();
             entity.Name = request.Name;
 
-            _dataContext.FamilyTrees.Add(entity);
-            await _dataContext.SaveChangesAsync(cancellationToken);
+            _context.FamilyTrees.Add(entity);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return entity.Id;
         }

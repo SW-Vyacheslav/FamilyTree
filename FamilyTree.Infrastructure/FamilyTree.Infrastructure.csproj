@@ -5,26 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20210117193719_InitialMigration.cs" />
-    <Compile Remove="Migrations\20210117193719_InitialMigration.Designer.cs" />
-    <Compile Remove="Migrations\20210117194437_InitialMigration.cs" />
-    <Compile Remove="Migrations\20210117194437_InitialMigration.Designer.cs" />
-    <Compile Remove="Migrations\20210117195609_InitialMigration.cs" />
-    <Compile Remove="Migrations\20210117195609_InitialMigration.Designer.cs" />
-    <Compile Remove="Migrations\20210117200645_InitialMigration.cs" />
-    <Compile Remove="Migrations\20210117200645_InitialMigration.Designer.cs" />
-    <Compile Remove="Migrations\20210117223201_InitialMigration.cs" />
-    <Compile Remove="Migrations\20210117223201_InitialMigration.Designer.cs" />
-    <Compile Remove="Migrations\20210117230922_InitialMigration.cs" />
-    <Compile Remove="Migrations\20210117230922_InitialMigration.Designer.cs" />
-    <Compile Remove="Migrations\20210117232758_InitialMigration.cs" />
-    <Compile Remove="Migrations\20210117232758_InitialMigration.Designer.cs" />
-    <Compile Remove="Migrations\20210117233046_InitialMigration.cs" />
-    <Compile Remove="Migrations\20210117233046_InitialMigration.Designer.cs" />
-    <Compile Remove="Migrations\20210117233512_InitialMigration.cs" />
-    <Compile Remove="Migrations\20210117233512_InitialMigration.Designer.cs" />
-    <Compile Remove="Migrations\20210117233714_InitialMigration.cs" />
-    <Compile Remove="Migrations\20210117233714_InitialMigration.Designer.cs" />
+    <Compile Remove="Migrations\20210128200053_AddedImageFormat.cs" />
+    <Compile Remove="Migrations\20210128200053_AddedImageFormat.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

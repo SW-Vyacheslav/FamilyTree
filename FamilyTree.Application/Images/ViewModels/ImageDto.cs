@@ -1,12 +1,10 @@
-﻿using FamilyTree.Domain.Common;
-
-namespace FamilyTree.Domain.Entities.Content
+﻿namespace FamilyTree.Application.Images.ViewModels
 {
-    public class Image : AuditableEntity
+    public class ImageDto
     {
         public int Id { get; set; }
 
-        public byte[] ImageData { get; set; }
+        public string ImageData { get; set; }
 
         public string ImageFormat { get; set; }
 

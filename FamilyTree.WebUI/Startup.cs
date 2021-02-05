@@ -25,7 +25,13 @@ namespace FamilyTree.WebUI
             services.AddInfrastructure(Configuration);
             services.AddApplication();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
-            services.AddControllersWithViews();
+            services.AddControllersWithViews()
+                .AddJsonOptions(options =>
+                {
+                    // Use the default property (Pascal) casing.
+                    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                });
+
             services.AddRazorPages();
         }
 

@@ -4,14 +4,16 @@ using FamilyTree.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FamilyTree.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210124223412_InitMigration")]
+    partial class InitMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,12 +38,7 @@ namespace FamilyTree.Infrastructure.Migrations
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<byte[]>("ImageData")
-                        .IsRequired()
                         .HasColumnType("image");
-
-                    b.Property<string>("ImageFormat")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(10)");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
