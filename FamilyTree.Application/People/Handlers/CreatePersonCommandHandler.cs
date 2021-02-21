@@ -2,8 +2,8 @@
 using FamilyTree.Application.People.Commands;
 using FamilyTree.Application.People.Enums;
 using FamilyTree.Domain.Entities.Tree;
-using FamilyTree.Domain.Entities.UserDefinedContent;
-using FamilyTree.Domain.Enums.UserDefinedContent;
+using FamilyTree.Domain.Entities.PersonContent;
+using FamilyTree.Domain.Enums.PersonContent;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -94,26 +94,98 @@ namespace FamilyTree.Application.People.Handlers
 
         private void CreateDefaults(CreatePersonCommand request, Person person)
         {
-            DataCategory dataCategory = new DataCategory()
+            DataCategory personInfoDataCategory = new DataCategory()
             {
                 CategoryType = CategoryType.InfoBlock,
                 Name = "Персональные данные",
                 OrderNumber = 1,
-                Person = person
+                Person = person,
+                IsDeletable = false
             };
 
             DataBlock dataBlock = new DataBlock() { Title = String.Empty };
             dataBlock.DataHolders = new List<DataHolder>();
-            dataBlock.DataHolders.Add(new DataHolder() { Title = "Имя", Data = request.Name, DataHolderType = DataHolderType.Name, OrderNumber = 1 });
-            dataBlock.DataHolders.Add(new DataHolder() { Title = "Фамилия", Data = request.Surname, DataHolderType = DataHolderType.Surname, OrderNumber = 2 });
-            dataBlock.DataHolders.Add(new DataHolder() { Title = "Отчество", Data = request.Middlename, DataHolderType = DataHolderType.MiddleName, OrderNumber = 3 });
-            dataBlock.DataHolders.Add(new DataHolder() { Title = "День рождения", Data = request.Birthday.ToString(), DataHolderType = DataHolderType.Birthday, OrderNumber = 4 });
-            dataBlock.DataHolders.Add(new DataHolder() { Title = "Пол", Data = request.Gender, DataHolderType = DataHolderType.Gender, OrderNumber = 5 });
+            dataBlock.DataHolders.Add(new DataHolder() 
+            { 
+                Title = "Имя", 
+                Data = request.Name, 
+                DataHolderType = DataHolderType.Name, 
+                OrderNumber = 1,
+                IsDeletable = false
+            });
+            dataBlock.DataHolders.Add(new DataHolder() 
+            { 
+                Title = "Фамилия", 
+                Data = request.Surname, 
+                DataHolderType = DataHolderType.Surname, 
+                OrderNumber = 2,
+                IsDeletable = false
+            });
+            dataBlock.DataHolders.Add(new DataHolder() 
+            { 
+                Title = "Отчество", 
+                Data = request.Middlename, 
+                DataHolderType = DataHolderType.MiddleName, 
+                OrderNumber = 3,
+                IsDeletable = false
+            });
+            dataBlock.DataHolders.Add(new DataHolder() 
+            { 
+                Title = "День рождения", 
+                Data = request.Birthday.ToString(), 
+                DataHolderType = DataHolderType.Birthday, 
+                OrderNumber = 4,
+                IsDeletable = false
+            });
+            dataBlock.DataHolders.Add(new DataHolder() 
+            { 
+                Title = "Пол", 
+                Data = request.Gender, 
+                DataHolderType = DataHolderType.Gender, 
+                OrderNumber = 5,
+                IsDeletable = false
+            });
 
-            dataCategory.DataBlocks = new List<DataBlock>();
-            dataCategory.DataBlocks.Add(dataBlock);
-            
-            _context.DataCategories.Add(dataCategory);
+            personInfoDataCategory.DataBlocks = new List<DataBlock>();
+            personInfoDataCategory.DataBlocks.Add(dataBlock);
+
+            DataCategory educationDataCategory = new DataCategory()
+            {
+                CategoryType = CategoryType.ListBlock,
+                Name = "Образование",
+                OrderNumber = 2,
+                Person = person
+            };
+
+            DataCategory laborActivitiesDataCategory = new DataCategory()
+            {
+                CategoryType = CategoryType.ListBlock,
+                Name = "Трудовая деятельность",
+                OrderNumber = 3,
+                Person = person
+            };
+
+            DataCategory residenciesDataCategory = new DataCategory()
+            {
+                CategoryType = CategoryType.ListBlock,
+                Name = "Места проживания",
+                OrderNumber = 4,
+                Person = person
+            };
+
+            DataCategory importantEventsDataCategory = new DataCategory()
+            {
+                CategoryType = CategoryType.ListBlock,
+                Name = "Важные cобытия",
+                OrderNumber = 5,
+                Person = person
+            };
+
+            _context.DataCategories.Add(personInfoDataCategory);
+            _context.DataCategories.Add(educationDataCategory);
+            _context.DataCategories.Add(laborActivitiesDataCategory);
+            _context.DataCategories.Add(residenciesDataCategory);
+            _context.DataCategories.Add(importantEventsDataCategory);
         }
 
         private async Task AddSibling(FamilyTie tie, Person person, CancellationToken cancellationToken)

@@ -1,4 +1,4 @@
-﻿using FamilyTree.Domain.Entities.Content;
+﻿using FamilyTree.Domain.Entities.Media;
 using FamilyTree.Domain.Entities.Privacy.Common;
 
 namespace FamilyTree.Domain.Entities.Privacy

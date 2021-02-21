@@ -1,5 +1,5 @@
 ﻿using FamilyTree.Domain.Common;
-using FamilyTree.Domain.Entities.Content;
+using FamilyTree.Domain.Entities.Media;
 
 namespace FamilyTree.Domain.Entities.Tree
 {

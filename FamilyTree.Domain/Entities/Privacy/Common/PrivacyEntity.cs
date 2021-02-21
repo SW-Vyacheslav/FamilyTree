@@ -12,6 +12,6 @@ namespace FamilyTree.Domain.Entities.Privacy.Common
 
         public DateTime EndDate { get; set; }
 
-        public bool IsAlways { get; set; }
+        public bool? IsAlways { get; set; }
     }
 }

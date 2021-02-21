@@ -2,12 +2,12 @@
 using FamilyTree.Application.Common.Interfaces;
 using FamilyTree.Application.FamilyTrees.Queries;
 using FamilyTree.Application.FamilyTrees.ViewModels;
-using FamilyTree.Application.Images.ViewModels;
+using FamilyTree.Application.Media.ViewModels;
 using FamilyTree.Application.People.Queries;
 using FamilyTree.Application.People.ViewModels;
 using FamilyTree.Domain.Entities.Tree;
-using FamilyTree.Domain.Entities.UserDefinedContent;
-using FamilyTree.Domain.Enums.UserDefinedContent;
+using FamilyTree.Domain.Entities.PersonContent;
+using FamilyTree.Domain.Enums.PersonContent;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

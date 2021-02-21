@@ -1,5 +1,5 @@
 ﻿using FamilyTree.Domain.Entities.Privacy.Common;
-using FamilyTree.Domain.Entities.UserDefinedContent;
+using FamilyTree.Domain.Entities.PersonContent;
 
 namespace FamilyTree.Domain.Entities.Privacy
 {

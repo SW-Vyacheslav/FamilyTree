@@ -1,7 +1,7 @@
-﻿using FamilyTree.Domain.Entities.Content;
+﻿using FamilyTree.Domain.Entities.Media;
 using FamilyTree.Domain.Entities.Privacy;
 using FamilyTree.Domain.Entities.Tree;
-using FamilyTree.Domain.Entities.UserDefinedContent;
+using FamilyTree.Domain.Entities.PersonContent;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;

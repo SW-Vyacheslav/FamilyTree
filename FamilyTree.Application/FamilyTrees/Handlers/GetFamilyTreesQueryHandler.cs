@@ -1,10 +1,8 @@
 ﻿using FamilyTree.Application.Common.Interfaces;
 using FamilyTree.Application.FamilyTrees.Queries;
 using FamilyTree.Application.FamilyTrees.ViewModels;
-using FamilyTree.Domain.Entities.Tree;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;

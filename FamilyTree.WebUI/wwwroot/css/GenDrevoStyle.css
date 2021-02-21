@@ -2,7 +2,13 @@
 
 /*#900000 - цвет крови*/
 
-#startBlock {
+#main-tree-block,
+#start-tree-block,
+#create-person-block {
+    display: none;
+}
+
+#start-tree-block {
     margin: 100px auto;
     width: 300px;
     height: 450px;
@@ -52,6 +58,7 @@
     width: 1300px;
     margin: 0 auto;
     position: relative;
+    min-height: 500px;
 }
 
 .person {

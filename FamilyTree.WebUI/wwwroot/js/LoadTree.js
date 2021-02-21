@@ -1,4 +1,6 @@
-﻿window.onload = function () {
+﻿import * as moment from "../lib/moment/moment";
+
+window.onload = function () {
     let _familyTrees = [];
     const PersonRelationTypes = {
         Parent: "Parent",
@@ -22,10 +24,13 @@
     var mainTree; // главное дерево
     var bloodTree; // дерево кровности
     var bloodFlag; // флаг на включенность режима кровного родства
+    var visibleModal = false;
+
+    moment.locale('ru');
 
     LoadFamilyTree();
 
-    function LoadFamilyTree() {        
+    function LoadFamilyTree() {
         $.ajax({
             type: 'GET',
             dataType: 'json',
@@ -61,64 +66,28 @@
         }
     }
 
-    $("#Send").click(() => {
-        _createPersonData.Name = $("input[name=\"Name\"]").val();
-        _createPersonData.Surname = $("input[name=\"Surname\"]").val();
-        _createPersonData.Middlename = $("input[name=\"Middlename\"]").val();
-        _createPersonData.Birthday = $("input[name=\"Birthday\"]").val();
-        _createPersonData.Gender = $("input[name=\"Gender\"]:checked").val();
-
-        $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            url: '/People/Create',
-            data: _createPersonData,
-            success: function (result) {
-                ReloadTree($("#mainPerson")[0].getAttribute("data-value"));
-                ShowCreatePersonForm(false);
-                ShowMainTree();
-                ClearInputs();
-            }
-        });
-    });
-
     function ClearInputs() {
-        $("input[name=\"Name\"]").val("");
-        $("input[name=\"Surname\"]").val("");
-        $("input[name=\"Middlename\"]").val("");
-        $("input[name=\"Birthday\"]").val("");
-        $("input[name=\"Gender\"][value=\"\"]").parent().click();
+        $("#create-person-block").find("input[name=\"person-name\"]").val("");
+        $("#create-person-block").find("input[name=\"person-surname\"]").val("");
+        $("#create-person-block").find("input[name=\"person-middlename\"]").val("");
+        $("#create-person-block").find("input[name=\"person-birthday\"]").val("");
+        $("#create-person-block").find("input[name=\"person-gender\"][value=\"\"]").parent().click();
     }
 
-    $("#startBlock").click(() => {
-        ShowStartTree(false);
-        ShowCreatePersonForm();
-    });
-
-    $("#createPersonBlockCloseButton").click(() => {
-        ShowCreatePersonForm(false);
-        if (_familyTrees.length == 0)
-            ShowStartTree();
-        else
-            ShowMainTree();
-
-        ClearInputs();
-    });
-
     function ShowStartTree(isShow = true) {
-        $("#startBlock")[0].style.display = isShow ? "block" : "none";
+        $("#start-tree-block")[0].style.display = isShow ? "block" : "none";
     }
 
     function ShowMainTree(isShow = true) {
-        $("#mainBlock")[0].style.display = isShow ? "block" : "none";
+        $("#main-tree-block")[0].style.display = isShow ? "block" : "none";
     }
 
     function ShowCreatePersonForm(isShow = true) {
-        $("#createPersonBlock")[0].style.display = isShow ? "block" : "none";
+        $("#create-person-block")[0].style.display = isShow ? "block" : "none";
     }
 
     function ShowPersonData(isShow = true) {
-        $(".person-data")[0].style.display = isShow ? "block" : "none";
+        $("#person-data-block")[0].style.display = isShow ? "block" : "none";
     }
 
     function FillTree(tree, wifePart) {
@@ -1453,13 +1422,6 @@
         }
     }
 
-    $(".person").dblclick(function (event) {
-        ReloadTree($(event.currentTarget)[0].getAttribute("data-value"));
-    });
-    $(".LittleTreePerson").dblclick(function (event) {
-        ReloadTree($(event.currentTarget)[0].getAttribute("data-value"));
-    });
-
     function ReloadTree(personId) {
         $.ajax({
             type: 'GET',
@@ -1487,8 +1449,6 @@
         });
     }
 
-    var visibleModal = false;
-
     function ShowModalPerson(event) {
 
         if (event.currentTarget.firstElementChild.classList[1] == "hiddenPersonContent") {
@@ -1509,6 +1469,8 @@
             var idPerson = person.getAttribute("data-value");
         }
 
+        $("#editPersonModal").attr("data-id", currentId);
+
         $.ajax({
             type: 'GET',
             dataType: 'text',
@@ -1520,7 +1482,6 @@
             url: '/People/GetRelationsByPeopleIds',
             success: function (result) {
                 textModal.innerText = result;
-                $("#editPersonModal").attr("data-id", currentId);
                 modalPerson.firstElementChild.firstElementChild.innerText = surname.innerText + " " + name.innerText + " " + middleName.innerText;
 
                 var modalRect = modalPerson.getBoundingClientRect();
@@ -1533,73 +1494,6 @@
             }
         });
     }
-
-    $("#editPersonModal").click((e) => {
-        let personId = $(e.currentTarget).attr("data-id");
-        ShowMainTree(false);
-        ShowPersonData();
-    });
-
-    $(".person").hover(function (event) {
-        ShowModalPerson(event);
-    }, function () {
-        setTimeout(function () {
-            if (!visibleModal) {
-                $("#modalBlockPerson")[0].style.visibility = "hidden";
-            }
-        }, 10);
-    });
-
-    $(".LittleTreePerson").hover(function (event) {
-        ShowModalPerson(event);
-    }, function () {
-        setTimeout(function () {
-            if (!visibleModal) {
-                $("#modalBlockPerson")[0].style.visibility = "hidden";
-            }
-        }, 10);
-    });
-
-    $("#modalBlockPerson").hover(function () {
-        visibleModal = true;
-    }, function () {
-        $("#modalBlockPerson")[0].style.visibility = "hidden";
-        visibleModal = false;
-    });
-
-    /////////////////////////////////////
-    $("#wifes .PrevItem").click(function (event) {
-        ChangeWifeTree($("#wifes .ListSlider")[0]);
-        PrevItem($("#prevWife")[0]);
-    });
-    $("#wifes .NextItem").click(function (event) {
-        ChangeWifeTree($("#wifes .ListSlider")[0]);
-        NextItem($("#nextWife")[0]);
-    });
-
-    $("#wifes-LittleTree .PrevItem").click(function (event) {
-        ChangeWifeTree($("#wifes-LittleTree .ListSlider")[0]);
-        PrevItem($("#wifes .PrevItem")[0]);
-    });
-    $("#wifes-LittleTree .NextItem").click(function (event) {
-        ChangeWifeTree($("#wifes-LittleTree .ListSlider")[0]);
-        NextItem($("#wifes .NextItem")[0]);
-    });
-
-    // Дети
-    $("#sons .PrevItem").click(function (event) {
-        RedrawSonsHasSonConnections($("#sons .itemCurrent")[0], 3, document.getElementById("canvas4"), 3, 12);
-    });
-    $("#sons .NextItem").click(function (event) {
-        RedrawSonsHasSonConnections($("#sons .itemCurrent")[0], 3, document.getElementById("canvas4"), 3, 12);
-    });
-
-    $("#sons-LittleTree .PrevItem").click(function (event) {
-        RedrawSonsHasSonConnections($("#sons-LittleTree .itemCurrent")[0], 2, document.getElementById("canvas8"), 5, 18);
-    });
-    $("#sons-LittleTree .NextItem").click(function (event) {
-        RedrawSonsHasSonConnections($("#sons-LittleTree .itemCurrent")[0], 2, document.getElementById("canvas8"), 5, 18);
-    });
 
     function ChangeWifeTree(list) {
         var idNewWife = ($(list).find(".itemCurrent")[0].children[0]).getAttribute("data-value");
@@ -1709,43 +1603,6 @@
         img.style.margin = intMarginHeight.toString() + "px " + intMarginWidth.toString() + "px";
     }
 
-    // Изменеие масштаба дерева
-    $("#ScaleTree").click(function () {
-        if ($("#ScaleTree")[0].innerText == "Увеличить масштаб") {
-            $("#BlockFullTree")[0].style.display = "none";
-            $("#BlockPartTree")[0].style.display = "block";
-            $("#ScaleTree")[0].innerText = "Уменьшить масштаб";
-            ImageAlign();
-        } else {
-            $("#BlockFullTree")[0].style.display = "block";
-            $("#BlockPartTree")[0].style.display = "none";
-            $("#ScaleTree")[0].innerText = "Увеличить масштаб";
-            ImageAlign();
-        }
-    });
-
-    $("#BloodTree").click(function () {
-        var btnBlood = $("#BloodTree")[0];
-
-        if (btnBlood.style.backgroundColor == "") {
-            btnBlood.style.backgroundColor = "#900000";
-            btnBlood.style.color = "#FFF";
-
-            $(btnBlood).attr("data-value", $("#mainPerson")[0].getAttribute("data-value"));
-            bloodFlag = true;
-
-            DrawBlood(0);
-
-        } else {
-            btnBlood.style.backgroundColor = "";
-            btnBlood.style.color = "";
-            bloodFlag = false;
-
-            DrawConnections(mainTree);
-            DrawConntecionsLittleTree(mainTree);
-        }
-    });
-
     function DrawBlood(idWife) {
         $.ajax({
             type: 'GET',
@@ -1767,33 +1624,6 @@
             }
         });
     }
-
-    // Добавление человека
-    $(".newPerson").click(function (event) {
-        if (event.currentTarget.classList.contains("newPerson")) {
-            AddNewPerson(event);
-        }
-
-    });
-    $(".person").click(function (event) {
-        if (event.currentTarget.classList.contains("newPerson")) {
-            AddNewPerson(event);
-        }
-    });
-
-    $(".LittleTreePerson").click(function (event) {
-        if (event.currentTarget.classList.contains("newPerson")) {
-            AddNewPerson(event);
-        }
-    });
-
-    $(".AddPerson-Tree").click(function (event) {
-        AddOneMorePerson(event);
-    });
-
-    $(".AddPerson-LittleTree").click(function (event) {
-        AddOneMorePerson(event);
-    });
 
     // Добавление человека
     function AddNewPerson(event) {
@@ -1877,4 +1707,179 @@
         ShowCreatePersonForm();
         ShowMainTree(false);
     }
+
+    $(".person").dblclick(function (event) {
+        ReloadTree($(event.currentTarget)[0].getAttribute("data-value"));
+    });
+    $(".person").hover(function (event) {
+        ShowModalPerson(event);
+    }, function () {
+        setTimeout(function () {
+            if (!visibleModal) {
+                $("#modalBlockPerson")[0].style.visibility = "hidden";
+            }
+        }, 10);
+    });
+    $(".LittleTreePerson").dblclick(function (event) {
+        ReloadTree($(event.currentTarget)[0].getAttribute("data-value"));
+    });
+    $(".LittleTreePerson").hover(function (event) {
+        ShowModalPerson(event);
+    }, function () {
+        setTimeout(function () {
+            if (!visibleModal) {
+                $("#modalBlockPerson")[0].style.visibility = "hidden";
+            }
+        }, 10);
+    });
+
+    $("#modalBlockPerson").hover(function () {
+        visibleModal = true;
+    }, function () {
+        $("#modalBlockPerson")[0].style.visibility = "hidden";
+        visibleModal = false;
+    });
+
+    $("#wifes .PrevItem").click(function (event) {
+        ChangeWifeTree($("#wifes .ListSlider")[0]);
+        PrevItem($("#prevWife")[0]);
+    });
+    $("#wifes .NextItem").click(function (event) {
+        ChangeWifeTree($("#wifes .ListSlider")[0]);
+        NextItem($("#nextWife")[0]);
+    });
+
+    $("#wifes-LittleTree .PrevItem").click(function (event) {
+        ChangeWifeTree($("#wifes-LittleTree .ListSlider")[0]);
+        PrevItem($("#wifes .PrevItem")[0]);
+    });
+    $("#wifes-LittleTree .NextItem").click(function (event) {
+        ChangeWifeTree($("#wifes-LittleTree .ListSlider")[0]);
+        NextItem($("#wifes .NextItem")[0]);
+    });
+
+    // Дети
+    $("#sons .PrevItem").click(function (event) {
+        RedrawSonsHasSonConnections($("#sons .itemCurrent")[0], 3, document.getElementById("canvas4"), 3, 12);
+    });
+    $("#sons .NextItem").click(function (event) {
+        RedrawSonsHasSonConnections($("#sons .itemCurrent")[0], 3, document.getElementById("canvas4"), 3, 12);
+    });
+
+    $("#sons-LittleTree .PrevItem").click(function (event) {
+        RedrawSonsHasSonConnections($("#sons-LittleTree .itemCurrent")[0], 2, document.getElementById("canvas8"), 5, 18);
+    });
+    $("#sons-LittleTree .NextItem").click(function (event) {
+        RedrawSonsHasSonConnections($("#sons-LittleTree .itemCurrent")[0], 2, document.getElementById("canvas8"), 5, 18);
+    });
+
+    // Изменеие масштаба дерева
+    $("#ScaleTree").click(function () {
+        if ($("#ScaleTree")[0].innerText == "Увеличить масштаб") {
+            $("#BlockFullTree")[0].style.display = "none";
+            $("#BlockPartTree")[0].style.display = "block";
+            $("#ScaleTree")[0].innerText = "Уменьшить масштаб";
+            ImageAlign();
+        } else {
+            $("#BlockFullTree")[0].style.display = "block";
+            $("#BlockPartTree")[0].style.display = "none";
+            $("#ScaleTree")[0].innerText = "Увеличить масштаб";
+            ImageAlign();
+        }
+    });
+    $("#BloodTree").click(function () {
+        var btnBlood = $("#BloodTree")[0];
+
+        if (btnBlood.style.backgroundColor == "") {
+            btnBlood.style.backgroundColor = "#900000";
+            btnBlood.style.color = "#FFF";
+
+            $(btnBlood).attr("data-value", $("#mainPerson")[0].getAttribute("data-value"));
+            bloodFlag = true;
+
+            DrawBlood(0);
+
+        } else {
+            btnBlood.style.backgroundColor = "";
+            btnBlood.style.color = "";
+            bloodFlag = false;
+
+            DrawConnections(mainTree);
+            DrawConntecionsLittleTree(mainTree);
+        }
+    });
+
+    // Добавление человека
+    $(".newPerson").click(function (event) {
+        if (event.currentTarget.classList.contains("newPerson")) {
+            AddNewPerson(event);
+        }
+
+    });
+    $(".person").click(function (event) {
+        if (event.currentTarget.classList.contains("newPerson")) {
+            AddNewPerson(event);
+        }
+    });
+
+    $(".LittleTreePerson").click(function (event) {
+        if (event.currentTarget.classList.contains("newPerson")) {
+            AddNewPerson(event);
+        }
+    });
+    $(".AddPerson-Tree").click(function (event) {
+        AddOneMorePerson(event);
+    });
+    $(".AddPerson-LittleTree").click(function (event) {
+        AddOneMorePerson(event);
+    });
+
+    $("#editPersonModal").click((e) => {
+        let personId = $(e.currentTarget).attr("data-id");
+        if (LoadPersonData(personId)) {
+            ShowMainTree(false);
+            ShowPersonData();
+        }
+    });
+
+    $("#start-tree-block").click(() => {
+        ShowStartTree(false);
+        ShowCreatePersonForm();
+    });
+
+    $("#create-person-block").find("#cancel-button").click(() => {
+        ShowCreatePersonForm(false);
+        if (_familyTrees.length == 0)
+            ShowStartTree();
+        else
+            ShowMainTree();
+
+        ClearInputs();
+    });
+
+    $("#create-person-block").find("#save-button").click(() => {
+        _createPersonData.Name = $("#create-person-block").find("input[name=\"person-name\"]").val();
+        _createPersonData.Surname = $("#create-person-block").find("input[name=\"person-surname\"]").val();
+        _createPersonData.Middlename = $("#create-person-block").find("input[name=\"person-middlename\"]").val();
+        _createPersonData.Birthday = $("#create-person-block").find("input[name=\"person-birthday\"]").val();
+        _createPersonData.Gender = $("#create-person-block").find("input[name=\"person-gender\"]:checked").val();
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/People/Create',
+            data: _createPersonData,
+            success: function () {
+                ReloadTree($("#mainPerson")[0].getAttribute("data-value"));
+                ShowCreatePersonForm(false);
+                ShowMainTree();
+                ClearInputs();
+            }
+        });
+    });
+
+    $("#person-data-block").find("#back-to-tree-button").click(() => {
+        ShowPersonData(false);
+        ShowMainTree();
+    });
 };
