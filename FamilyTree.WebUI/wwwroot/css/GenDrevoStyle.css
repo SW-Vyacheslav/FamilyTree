@@ -17,12 +17,11 @@
     transition: all 0.3s;
 }
 
-#startBlock:hover {
+#start-tree-block:hover {
     transition: all 0.3s;
     cursor: pointer;
     border-color: #007aff;
 }
-
 
 #imgAdd {
     margin: 120px 45px;
@@ -47,7 +46,6 @@
     margin-right: 50px;
     width: 200px;    
 }
-
 
 #BlockFullTree {
     display: block;
@@ -96,8 +94,6 @@
     display: none;
 }
 
-
-
 .newPerson img {
     width: 50px;
 }
@@ -141,7 +137,6 @@
     margin-right: 50px;
 }
 
-
 #blood-parentOne {
     margin-left: 75px;
 }
@@ -179,7 +174,6 @@
     margin-left: 140px;
 }
 
-
 #myModal {
     font-size: 14px;
 }
@@ -214,7 +208,6 @@
     margin-right: 15px;
 }
 
-
 /*Увеличенный масштаб дерева*/
 
 #BlockPartTree {    
@@ -246,6 +239,7 @@
     opacity: 0.4;
     transition: opacity 0.4s;
 }
+
 #BlockPartTree .newPerson:hover {
     opacity: 1;
     transition: opacity 0.4s;
@@ -255,11 +249,10 @@
     width: 100px;
 }
 
-
-    .LittleTreePerson .surname, .LittleTreePerson .name, .LittleTreePerson .middlename {
-        width: 200px;
-        text-align: center;
-    }
+.LittleTreePerson .surname, .LittleTreePerson .name, .LittleTreePerson .middlename {
+    width: 200px;
+    text-align: center;
+}
 
 .AddPerson-LittleTree {
     border: 5px dashed #003050;
@@ -482,9 +475,3 @@
     border-radius: 10px;
     box-shadow: 0 3px 10px rgba(0,0,0,0.4);
 }
-
-
-
-
-
-

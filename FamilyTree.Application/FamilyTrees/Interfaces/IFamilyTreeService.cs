@@ -4,7 +4,7 @@ using FamilyTree.Application.People.Queries;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FamilyTree.Application.Common.Interfaces
+namespace FamilyTree.Application.FamilyTrees.Interfaces
 {
     public interface IFamilyTreeService
     {

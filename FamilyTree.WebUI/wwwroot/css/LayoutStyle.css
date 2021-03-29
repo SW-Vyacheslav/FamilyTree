@@ -6,6 +6,7 @@
 #wrapper {
     min-width: 1200px;
     max-width: 2048px;
+    min-height: 1080px;
     margin: 0 auto;
     font: 20px Segoe UI Semilight sans-serif;
 }
@@ -121,9 +122,6 @@
     font-weight: 100;
     
 }
-
-
-
 
 /*Footer*/
 #footer {

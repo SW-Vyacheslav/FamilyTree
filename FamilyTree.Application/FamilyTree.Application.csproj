@@ -20,11 +20,7 @@
   <ItemGroup>
     <Folder Include="Common\Models\" />
     <Folder Include="Common\Mappings\" />
-    <Folder Include="Media\Commands\" />
-    <Folder Include="Media\Handlers\" />
     <Folder Include="Media\Validators\" />
-    <Folder Include="Media\Queries\" />
-    <Folder Include="PersonContent\Validators\" />
   </ItemGroup>
 
 </Project>

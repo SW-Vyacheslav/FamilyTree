@@ -9,6 +9,7 @@
     <link href="~/css/GenDrevoStyle.css" type="text/css" rel="stylesheet" />
     <link href="~/css/PersonInfo.css" type="text/css" rel="stylesheet"/>
     <link href="~/css/PersonDataStyle.css" type="text/css" rel="stylesheet" />
+    <link href="~/css/PrivacyStyle.css" type="text/css" rel="stylesheet" />
 }
 
 @section Scripts
@@ -17,6 +18,7 @@
     <script src="~/js/LoadTree.js"></script>
     <script src="~/lib/sortable/Sortable.js"></script>
     <script src="~/js/PersonData.js"></script>
+    <script src="~/js/PrivacyModal.js"></script>
 }
 
 @section HeaderText
@@ -73,15 +75,15 @@
                             <div>Пол</div>
                         </div>
                         <div class="data-holder-gender__data">
-                            <div class="btn-group" id="btns" data-toggle="buttons">
+                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                 <label class="btn btn-default">
-                                    <input type="radio" name="person-gender" value="м" />Мужской
+                                    <input type="radio" name="person-gender" value="Male" />Мужской
                                 </label>
                                 <label class="btn btn-default">
-                                    <input type="radio" name="person-gender" value="ж" />Женский
+                                    <input type="radio" name="person-gender" value="Female" />Женский
                                 </label>
                                 <label class="btn btn-default active">
-                                    <input type="radio" name="person-gender" value="" checked />Неизвестно
+                                    <input type="radio" name="person-gender" value="Unknown" checked />Неизвестно
                                 </label>
                             </div>
                         </div>
@@ -502,111 +504,64 @@
                         <div id="back-to-tree-button" class="btn btn-default button-back" data-toggle="tooltip" data-placement="top" title="Вернуться к дереву">
                             <div class="button-back__img"></div>
                         </div>
-                        <div id="add-category-button" class="btn btn-default button-add" title="Добавить категорию">
+                        <div id="add-data-category-button" class="btn btn-default button-add" title="Добавить категорию">
                             <div class="button-add__img"></div>
                         </div>
                         <div class="toolbox__horizontal-separator"></div>
                     </div>
                 </div>
-                <div class="data-categories person-data-block__data-categories">
-                    <div class="data-categories__item data-categories__item_active" data-id="">
-                        Category 1
-                    </div>
-                    <div class="data-categories__item" data-id="">
-                        Category 2
-                    </div>
-                    <div class="data-categories__item" data-id="">
-                        Category 3
-                    </div>
-                </div>
+                <div class="data-categories person-data-block__data-categories"></div>
             </div>
             <div class="col-md-9">
                 <div class="toolbox">
                     <div class="toolbox_buttons">
-                        <div class="btn btn-default button-up" data-toggle="tooltip" data-placement="top" title="Поднять вверх">
-                            <div class="button-up__img"></div>
+                        <div id="back-to-data-blocks-button" class="btn btn-default button-back" data-toggle="tooltip" data-placement="top" title="Вернуться к блокам данных">
+                            <div class="button-back__img"></div>
                         </div>
-                        <div class="btn btn-default button-down" data-toggle="tooltip" data-placement="top" title="Опустить вниз">
-                            <div class="button-down__img"></div>
-                        </div>
-                        <div class="toolbox__vertical-separator"></div>
-                        <div class="btn btn-default button-add" title="Добавить элемент">
+                        <div id="add-element-button" class="btn btn-default button-add" title="Добавить">
                             <div class="button-add__img"></div>
                         </div>
-                        <div class="btn btn-default button-copy" data-toggle="tooltip" data-placement="top" title="Копировать">
+                        <div id="edit-privacy-button" class="btn btn-default button-privacy" title="Приватность">
+                            <div class="button-privacy__img"></div>
+                        </div>
+                        <div id="copy-button" class="btn btn-default button-copy" data-toggle="tooltip" data-placement="top" title="Копировать">
                             <div class="button-copy__img"></div>
                         </div>
-                        <div class="btn btn-default button-edit" data-toggle="tooltip" data-placement="top" title="Редактировать">
+                        <div id="edit-element-button" class="btn btn-default button-edit" data-toggle="tooltip" data-placement="top" title="Редактировать">
                             <div class="button-edit__img"></div>
                         </div>
-                        <div class="btn btn-danger button-delete" data-toggle="tooltip" data-placement="top" title="Удалить">
+                        <div id="delete-button" class="btn btn-danger button-delete" data-toggle="tooltip" data-placement="top" title="Удалить">
                             <div class="button-delete__img"></div>
+                        </div>
+                        <div id="save-button" class="btn btn-default button-save">
+                            <div class="button-save__img"></div>
+                            <div class="btn__vertical-separator"></div>
+                            <div class="loader"></div>
+                            <div class="btn__text">Сохранить</div>
                         </div>
                         <div class="toolbox__horizontal-separator"></div>
                     </div>                    
                 </div>
-                <div class="data-blocks person-data-block__data-blocks">
-                    <div class="data-blocks__item data-block" data-id="">
-                        <div class="data-block__header"></div>
-                        <div class="data-block__body">
-                            <div class="data-block__selector">
-                                <div class="checkbox"><input type="checkbox" /></div>
-                            </div>
-                            <div class="data-block__content">
-                                <div class="data-block__item">
-                                    <div class="data-block__title">Заголовок:</div>
-                                    <div class="data-block__value">Data Block 1</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="data-block__footer"></div>
+                <div class="data-blocks person-data-block__data-blocks"></div>
+                <div class="data-block-content">
+                    <div class="tabs-containers data-block-content__tabs-containers">
+                        <div class="data-holders person-data-block__data-holders tab-container"></div>
+                        <div class="images tab-container"></div>
+                        <div class="videos tab-container"></div>
                     </div>
-                    <div class="data-blocks__item data-block" data-id="">
-                        <div class="data-block__header"></div>
-                        <div class="data-block__body">
-                            <div class="data-block__selector">
-                                <div class="checkbox">
-                                    <input type="checkbox" />
-                                </div>
-                            </div>
-                            <div class="data-block__content">
-                                <div class="data-block__item">
-                                    <div class="data-block__title">Заголовок:</div>
-                                    <div class="data-block__value">Data Block 2</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="data-block__footer"></div>
+                    <div class="tabs-buttons data-block-content__tabs-buttons">
+                        <div class="tabs-buttons__button tab-button-data">Данные</div>
+                        <div class="tabs-buttons__button tab-button-images">Изображения</div>
+                        <div class="tabs-buttons__button tab-button-videos">Видео</div>
                     </div>
-                </div>
-                <div class="data-holders person-data-block__data-holders">
-                    <div class="data-holders__item data-holder">
-                        <div class="data-holder__selector">
-                            <div class="checkbox"><input type="checkbox" /></div>
-                        </div>
-                        <div class="data-holder__title">
-                            <div>Data Holder 1</div>
-                        </div>
-                        <div class="data-holder__data">
-                            <input id="person-birthday" type="date" />
-                        </div>
-                        <div class="data-holder__privacy"></div>
-                    </div>
-                    <div class="data-holders__item data-holder">
-                        <div class="data-holder__selector">
-                            <div class="checkbox"><input type="checkbox" /></div>
-                        </div>
-                        <div class="data-holder__title">Data Holder 2</div>
-                        <div class="data-holder__data">
-                            <input id="person-birthday" type="date" />
-                        </div>
-                        <div class="data-holder__privacy"></div>
-                    </div>
-                </div>
+                </div>                
             </div>
         </div>
     </div>
 </div>
+
+<partial name="_PersonContentModals"/>
+<partial name="_PrivacyLevelModal" />
 
 @section ModalPersonInfo
 {

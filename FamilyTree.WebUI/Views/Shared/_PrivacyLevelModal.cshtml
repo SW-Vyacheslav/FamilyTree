@@ -1,0 +1,51 @@
+﻿<div class="modal fade" id="privacy-level-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Применение уровня доступа</h3>
+            </div>
+            <div class="modal-body">
+                <div class="form-group has-feedback">
+                    <div>Уровень доступа:</div>
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-default privacy-public-use">
+                            <input name="privacy-level" type="radio" value="3" />Публичный
+                        </label>
+                        <label class="btn btn-default privacy-internal-use">
+                            <input name="privacy-level" type="radio" value="2" />Внутренний
+                        </label>
+                        <label class="btn btn-default privacy-confidential">
+                            <input name="privacy-level" type="radio" value="1" />Личный
+                        </label>
+                        <label class="btn btn-default privacy-top-secret">
+                            <input name="privacy-level" type="radio" value="0" />Строго сикретно
+                        </label>
+                    </div>
+                    <div id="privacy-level-accounts">
+                        <div>Выберите аккаунты:</div>
+                        <div>На данный момент недоступно.</div>
+                    </div>
+                    <div>Ограничения:</div>
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-default">
+                            <input name="limit-type" type="radio" value="0" />Постоянно
+                        </label>
+                        <label class="btn btn-default">
+                            <input name="limit-type" type="radio" value="1"/>Период
+                        </label>
+                    </div>
+                    <div id="privacy-level-limits">
+                        <div>Дата начала:</div>
+                        <input id="privacy-level-begin-date" type="datetime-local" />
+                        <div>Дата окончания:</div>
+                        <input id="privacy-level-end-date" type="datetime-local" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="btn btn-my-dark" data-dismiss="modal">Отмена</div>
+                <div class="btn btn-my-danger" id="edit-privacy-level-submit-button">Сохранить</div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -2,6 +2,7 @@
 using FamilyTree.Application.Common.Interfaces;
 using FamilyTree.Application.PersonContent.Queries;
 using FamilyTree.Application.PersonContent.ViewModels;
+using FamilyTree.Application.Privacy.ViewModels;
 using FamilyTree.Domain.Entities.PersonContent;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -61,14 +62,30 @@ namespace FamilyTree.Application.PersonContent.Handlers
 
                 foreach (DataHolder dataHolder in dataHolders)
                 {
+                    var privacy = await _context.DataHolderPrivacies
+                        .SingleOrDefaultAsync(p => p.DataHolderId == dataHolder.Id,
+                                              cancellationToken);
+
                     DataHolderDto dataHolderDto = new DataHolderDto()
                     {
                         Id = dataHolder.Id,
                         Title = dataHolder.Title,
                         DataHolderType = dataHolder.DataHolderType,
                         Data = dataHolder.Data,
-                        IsDeletable = dataHolder.IsDeletable.Value
+                        IsDeletable = dataHolder.IsDeletable.Value                        
                     };
+
+                    if (privacy != null)
+                    {
+                        dataHolderDto.Privacy = new DataHolderPrivacyDto()
+                        {
+                            Id = privacy.Id,
+                            BeginDate = privacy.BeginDate,
+                            EndDate = privacy.EndDate,
+                            IsAlways = privacy.IsAlways,
+                            PrivacyLevel = privacy.PrivacyLevel
+                        };
+                    }
 
                     dataBlockDto.DataHolders.Add(dataHolderDto);
                 }

@@ -1,4 +1,5 @@
-﻿using FamilyTree.Domain.Enums.PersonContent;
+﻿using FamilyTree.Application.Privacy.ViewModels;
+using FamilyTree.Domain.Enums.PersonContent;
 
 namespace FamilyTree.Application.PersonContent.ViewModels
 {
@@ -13,5 +14,7 @@ namespace FamilyTree.Application.PersonContent.ViewModels
         public string Data { get; set; }
 
         public bool IsDeletable { get; set; }
+
+        public DataHolderPrivacyDto Privacy { get; set; }
     }
 }

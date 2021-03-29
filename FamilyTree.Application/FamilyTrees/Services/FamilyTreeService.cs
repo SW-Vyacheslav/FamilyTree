@@ -14,8 +14,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FamilyTree.Application.FamilyTrees.Interfaces;
 
-namespace FamilyTree.Infrastructure.Services
+namespace FamilyTree.Application.FamilyTrees.Services
 {
     public class FamilyTreeService : IFamilyTreeService
     {

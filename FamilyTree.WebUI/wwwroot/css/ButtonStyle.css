@@ -71,11 +71,11 @@
     border-color: #0096FF;
 }
 
-    .btn-my-primary:hover {
-        color: #fff;
-        background-color: #0069d9;
-        border-color: #0062cc;
-    }
+.btn-my-primary:hover {
+    color: #fff;
+    background-color: #0069d9;
+    border-color: #0062cc;
+}
 
 .btn-my-danger {
     color: #fff;

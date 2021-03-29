@@ -1,4 +1,4 @@
-﻿using FamilyTree.Application.Common.Interfaces;
+﻿using FamilyTree.Application.FamilyTrees.Interfaces;
 using FamilyTree.Application.People.Queries;
 using MediatR;
 using System.Threading;

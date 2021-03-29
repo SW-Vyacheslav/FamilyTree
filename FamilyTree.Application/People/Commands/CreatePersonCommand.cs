@@ -14,7 +14,7 @@ namespace FamilyTree.Application.People.Commands
 
         public DateTime? Birthday { get; set; }
 
-        public string Gender { get; set; }
+        public GenderType Gender { get; set; }
 
         public int TreeId { get; set; }
 

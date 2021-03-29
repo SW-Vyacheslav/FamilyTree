@@ -1,6 +1,4 @@
-﻿import * as moment from "../lib/moment/moment";
-
-window.onload = function () {
+﻿window.onload = function () {
     let _familyTrees = [];
     const PersonRelationTypes = {
         Parent: "Parent",
@@ -25,8 +23,6 @@ window.onload = function () {
     var bloodTree; // дерево кровности
     var bloodFlag; // флаг на включенность режима кровного родства
     var visibleModal = false;
-
-    moment.locale('ru');
 
     LoadFamilyTree();
 

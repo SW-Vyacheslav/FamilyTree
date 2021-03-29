@@ -1,6 +1,8 @@
 ﻿using FamilyTree.Application.Common.Interfaces;
+using FamilyTree.Application.PersonContent.Commands;
 using FamilyTree.Application.PersonContent.Queries;
 using FamilyTree.Application.PersonContent.ViewModels;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -34,6 +36,53 @@ namespace FamilyTree.WebUI.Controllers
                 DataCategoryId = dataCategoryId,
                 UserId = _currentUserService.UserId
             });
+        }
+
+        public async Task<ActionResult<int>> CreateDataCategory(CreateDataCategoryCommand command)
+        {
+            command.UserId = _currentUserService.UserId;
+
+            return await Mediator.Send(command);
+        }
+
+        public async Task<ActionResult<int>> CreateDataBlock(CreateDataBlockCommand command)
+        {
+            command.UserId = _currentUserService.UserId;
+
+            return await Mediator.Send(command);
+        }
+
+        public async Task<ActionResult<int>> CreateDataHolder(CreateDataHolderCommand command)
+        {
+            command.UserId = _currentUserService.UserId;
+
+            return await Mediator.Send(command);
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateDataHolder(int id, UpdateDataHolderCommand command)
+        {
+            if (id != command.Id)
+                return BadRequest();
+
+            command.UserId = _currentUserService.UserId;
+
+            await Mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateDataHolderDetail(int id, UpdateDataHolderDetailCommand command)
+        {
+            if (id != command.Id)
+                return BadRequest();
+
+            command.UserId = _currentUserService.UserId;
+
+            await Mediator.Send(command);
+
+            return NoContent();
         }
     }
 }

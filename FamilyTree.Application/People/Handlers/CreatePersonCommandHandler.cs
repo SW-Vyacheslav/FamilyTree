@@ -140,7 +140,7 @@ namespace FamilyTree.Application.People.Handlers
             dataBlock.DataHolders.Add(new DataHolder() 
             { 
                 Title = "Пол", 
-                Data = request.Gender, 
+                Data = request.Gender.ToString(), 
                 DataHolderType = DataHolderType.Gender, 
                 OrderNumber = 5,
                 IsDeletable = false
