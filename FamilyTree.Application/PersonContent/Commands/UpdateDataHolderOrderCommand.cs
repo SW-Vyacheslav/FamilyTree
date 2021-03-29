@@ -2,11 +2,11 @@
 
 namespace FamilyTree.Application.PersonContent.Commands
 {
-    public class UpdateDataHolderDetailCommand : IRequest
+    public class UpdateDataHolderOrderCommand : IRequest
     {
         public int Id { get; set; }
 
-        public string Title { get; set; }
+        public int Order { get; set; }
 
         public string UserId { get; set; }
     }

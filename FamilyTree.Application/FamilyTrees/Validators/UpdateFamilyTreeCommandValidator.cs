@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace FamilyTree.Application.FamilyTrees.Validators
 {
-    public class UpdateFamilyTreeCommandValidator : AbstractValidator<UpdateFamilyTreeCommand>
+    public class UpdateFamilyTreeCommandValidator : AbstractValidator<UpdateFamilyTreeNameCommand>
     {
         public UpdateFamilyTreeCommandValidator()
         {

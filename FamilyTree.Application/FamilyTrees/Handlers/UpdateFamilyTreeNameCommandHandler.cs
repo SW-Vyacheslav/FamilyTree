@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace FamilyTree.Application.FamilyTrees.Handlers
 {
-    public class UpdateFamilyTreeCommandHandler : IRequestHandler<UpdateFamilyTreeCommand>
+    public class UpdateFamilyTreeNameCommandHandler : IRequestHandler<UpdateFamilyTreeNameCommand>
     {
         private readonly IApplicationDbContext _context;
 
-        public UpdateFamilyTreeCommandHandler(IApplicationDbContext context)
+        public UpdateFamilyTreeNameCommandHandler(IApplicationDbContext context)
         {
             _context = context;
         }
 
-        public async Task<Unit> Handle(UpdateFamilyTreeCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UpdateFamilyTreeNameCommand request, CancellationToken cancellationToken)
         {
             FamilyTreeEntity entity = await _context.FamilyTrees
                 .Where(t => t.CreatedBy.Equals(request.UserId) &&

@@ -19,6 +19,7 @@ namespace FamilyTree.WebUI.Controllers
             _currentUserService = currentUserService;
         }
 
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
@@ -62,16 +63,14 @@ namespace FamilyTree.WebUI.Controllers
         }        
 
         [HttpPut]
-        public async Task<ActionResult> Update(int id, UpdateFamilyTreeCommand command)
+        public async Task<ActionResult> Update(int id, UpdateFamilyTreeNameCommand command)
         {
             if (id != command.Id)
                 return BadRequest();
 
-            await Mediator.Send(new UpdateFamilyTreeCommand()
-            {
-                Id = id,
-                UserId = _currentUserService.UserId
-            });
+            command.UserId = _currentUserService.UserId;
+
+            await Mediator.Send(command);
 
             return NoContent();
         }

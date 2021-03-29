@@ -995,13 +995,17 @@ namespace FamilyTree.Application.FamilyTrees.Services
                 if (line[i] == pn.Parent_1)
                 {
                     gender = People.Find(p => p.Id_person == pn.Parent_1).Gender;
-                    if (gender == "м")
+                    if (gender == "Male")
                     {
                         wordLine.Add("отец");
                     }
-                    else
+                    else if(gender == "Female")
                     {
                         wordLine.Add("мать");
+                    }
+                    else
+                    {
+                        wordLine.Add("неизвестно");
                     }
 
                     continue;
@@ -1011,13 +1015,17 @@ namespace FamilyTree.Application.FamilyTrees.Services
                 if (line[i] == pn.Parent_2)
                 {
                     gender = People.Find(p => p.Id_person == pn.Parent_2).Gender;
-                    if (gender == "м")
+                    if (gender == "Male")
                     {
                         wordLine.Add("отец");
                     }
-                    else
+                    else if(gender == "Female")
                     {
                         wordLine.Add("мать");
+                    }
+                    else
+                    {
+                        wordLine.Add("неизвестно");
                     }
 
                     continue;
@@ -1033,13 +1041,17 @@ namespace FamilyTree.Application.FamilyTrees.Services
                             if (line[i] == pn.WifeChildren[t].Wife)
                             {
                                 gender = People.Find(p => p.Id_person == pn.WifeChildren[t].Wife).Gender;
-                                if (gender == "м")
+                                if (gender == "Male")
                                 {
                                     wordLine.Add("муж");
                                 }
-                                else
+                                else if (gender == "Female")
                                 {
                                     wordLine.Add("жена");
+                                }
+                                else
+                                {
+                                    wordLine.Add("неизвестно");
                                 }
                             }
                         }
@@ -1058,13 +1070,17 @@ namespace FamilyTree.Application.FamilyTrees.Services
                                 if (line[i] == pn.WifeChildren[t].Children[k])
                                 {
                                     gender = People.Find(p => p.Id_person == pn.WifeChildren[t].Children[k]).Gender;
-                                    if (gender == "м")
+                                    if (gender == "Male")
                                     {
                                         wordLine.Add("сын");
                                     }
-                                    else
+                                    else if (gender == "Female")
                                     {
                                         wordLine.Add("дочь");
+                                    }
+                                    else
+                                    {
+                                        wordLine.Add("неизвестно");
                                     }
                                 }
                             }
@@ -1107,13 +1123,17 @@ namespace FamilyTree.Application.FamilyTrees.Services
                         {
                             line.RemoveAt(i + 1);
                             wordLine.RemoveAt(i + 1);
-                            if (pnBro.Gender == "м")
+                            if (pnBro.Gender == "Male")
                             {
                                 wordLine[i + 1] = "брат";
                             }
-                            else
+                            else if (pnBro.Gender == "Female")
                             {
                                 wordLine[i + 1] = "сестра";
+                            }
+                            else
+                            {
+                                wordLine[i + 1] = "неизвестно";
                             }
                         }
                     }
@@ -1129,7 +1149,7 @@ namespace FamilyTree.Application.FamilyTrees.Services
 
             for (int i = 0; i < wordLine.Count; i++)
             {
-                if (wordLine[i] == "отец" || wordLine[i] == "мать")
+                if (wordLine[i] == "отец" || wordLine[i] == "мать" || wordLine[i] == "неизвестно")
                 {
                     res.Add(1);
                 }

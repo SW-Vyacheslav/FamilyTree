@@ -1,8 +1,8 @@
 ﻿using MediatR;
 
-namespace FamilyTree.Application.FamilyTrees.Commands
+namespace FamilyTree.Application.PersonContent.Commands
 {
-    public class UpdateFamilyTreeCommand : IRequest
+    public class UpdateDataCategoryNameCommand : IRequest
     {
         public int Id { get; set; }
 

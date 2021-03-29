@@ -2,7 +2,6 @@
 using FamilyTree.Application.PersonContent.Commands;
 using FamilyTree.Application.PersonContent.Queries;
 using FamilyTree.Application.PersonContent.ViewModels;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -20,6 +19,7 @@ namespace FamilyTree.WebUI.Controllers
             _currentUserService = currentUserService;
         }
 
+        [HttpGet]
         public async Task<ActionResult<List<DataCategoryDto>>> GetDataCategories(int personId)
         {
             return await Mediator.Send(new GetDataCategoriesQuery() 
@@ -29,6 +29,7 @@ namespace FamilyTree.WebUI.Controllers
             });
         }
 
+        [HttpGet]
         public async Task<ActionResult<DataCategoryVm>> GetDataCategory(int dataCategoryId)
         {
             return await Mediator.Send(new GetDataCategoryQuery()
@@ -38,6 +39,7 @@ namespace FamilyTree.WebUI.Controllers
             });
         }
 
+        [HttpPost]
         public async Task<ActionResult<int>> CreateDataCategory(CreateDataCategoryCommand command)
         {
             command.UserId = _currentUserService.UserId;
@@ -45,6 +47,7 @@ namespace FamilyTree.WebUI.Controllers
             return await Mediator.Send(command);
         }
 
+        [HttpPost]
         public async Task<ActionResult<int>> CreateDataBlock(CreateDataBlockCommand command)
         {
             command.UserId = _currentUserService.UserId;
@@ -52,6 +55,7 @@ namespace FamilyTree.WebUI.Controllers
             return await Mediator.Send(command);
         }
 
+        [HttpPost]
         public async Task<ActionResult<int>> CreateDataHolder(CreateDataHolderCommand command)
         {
             command.UserId = _currentUserService.UserId;
@@ -60,7 +64,7 @@ namespace FamilyTree.WebUI.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateDataHolder(int id, UpdateDataHolderCommand command)
+        public async Task<ActionResult> UpdateDataCategoryName(int id, UpdateDataCategoryNameCommand command)
         {
             if (id != command.Id)
                 return BadRequest();
@@ -73,7 +77,72 @@ namespace FamilyTree.WebUI.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateDataHolderDetail(int id, UpdateDataHolderDetailCommand command)
+        public async Task<ActionResult> UpdateDataBlockTitle(int id, UpdateDataBlockTitleCommand command)
+        {
+            if (id != command.Id)
+                return BadRequest();
+
+            command.UserId = _currentUserService.UserId;
+
+            await Mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateDataHolderData(int id, UpdateDataHolderDataCommand command)
+        {
+            if (id != command.Id)
+                return BadRequest();
+
+            command.UserId = _currentUserService.UserId;
+
+            await Mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateDataHolderTitle(int id, UpdateDataHolderTitleCommand command)
+        {
+            if (id != command.Id)
+                return BadRequest();
+
+            command.UserId = _currentUserService.UserId;
+
+            await Mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateDataCategoryOrder(int id, UpdateDataCategoryOrderCommand command)
+        {
+            if (id != command.Id)
+                return BadRequest();
+
+            command.UserId = _currentUserService.UserId;
+
+            await Mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateDataBlockOrder(int id, UpdateDataBlockOrderCommand command)
+        {
+            if (id != command.Id)
+                return BadRequest();
+
+            command.UserId = _currentUserService.UserId;
+
+            await Mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateDataHolderOrder(int id, UpdateDataHolderOrderCommand command)
         {
             if (id != command.Id)
                 return BadRequest();
