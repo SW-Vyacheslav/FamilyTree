@@ -82,7 +82,7 @@ namespace FamilyTree.Application.PersonContent.Handlers
                             Id = privacy.Id,
                             BeginDate = privacy.BeginDate,
                             EndDate = privacy.EndDate,
-                            IsAlways = privacy.IsAlways,
+                            IsAlways = privacy.IsAlways.Value,
                             PrivacyLevel = privacy.PrivacyLevel
                         };
                     }

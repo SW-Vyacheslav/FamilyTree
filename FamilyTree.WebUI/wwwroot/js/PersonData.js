@@ -46,8 +46,10 @@ const WaitForMilliseconds = (ms) => new Promise(handler => setTimeout(handler, m
 let g_currentPersonId = null;
 let g_currentDataCategory = null;
 let g_currentDataBlock = null;
+let g_currentDataBlockImages = null;
 let g_currentAddButtonActionType = null;
 let g_editElementId = null;
+let g_editPrivacyElementId = null;
 let g_isSaving = false;
 
 function LoadPersonData(personId) {
@@ -122,6 +124,20 @@ function GetDataCategory(dataCategoryId) {
     return result;
 }
 
+function GetImages(dataBlockId) {
+    let result = [];
+    $.ajax({
+        async: false,
+        type: "GET",
+        dataType: "json",
+        url: "/Media/GetImages?dataBlockId=" + dataBlockId,
+        success: function (data) {
+            result = data;
+        }
+    });
+    return result;
+}
+
 /**
  * Send request to create DataCategory. Returns created DataCategory object Id or -1, if not created.
  * @param {object} dataCategory Object { CategoryType: string, Name: string, PersonId: number }
@@ -167,6 +183,24 @@ function CreateDataHolder(dataHolder) {
         type: "POST",
         data: dataHolder,
         url: "/PersonContent/CreateDataHolder",
+        success: function (response) {
+            result = response;
+        }
+    });
+
+    return result;
+}
+
+function CreateImage(image) {
+    let result = -1;
+
+    $.ajax({
+        async: false,
+        type: "POST",
+        data: image,
+        contentType: false,
+        processData: false,
+        url: "/Media/CreateImage",
         success: function (response) {
             result = response;
         }
@@ -376,6 +410,10 @@ function InitPersonDataBlockButtonEvents() {
     $("#edit-data-holder-modal")
         .find("#edit-data-holder-submit-button")
         .click(OnEditDataHolderSubmitButtonClick);
+
+    $("#add-image-modal")
+        .find("#add-image-submit-button")
+        .click(OnAddImageSubmitButtonClick);
 }
 
 function OnBackToDataBlocksButtonClick(event) {
@@ -402,6 +440,8 @@ function OnTabButtonClick(event) {
         ShowDataBlockContentTab(DataBlockContentTabs.Images);
         g_currentAddButtonActionType = AddButtonActionTypes.AddImage;
         ShowSaveButton(false);
+        RefreshImages();
+        UpdateImages();
     }
     else if (targetElement.hasClass("tab-button-videos")) {
         ShowDataBlockContentTab(DataBlockContentTabs.Videos);
@@ -433,8 +473,6 @@ function OnDataCategoryClick(event) {
         g_currentDataBlock = g_currentDataCategory.DataBlocks[0];
 
         UpdateDataHolders();
-        UpdateImages();
-        UpdateVideos();
 
         OpenDefaultDataBlockTab();
     }
@@ -473,13 +511,21 @@ function OnDataBlockClick(event) {
     g_currentAddButtonActionType = AddButtonActionTypes.AddDataHolder;
 
     UpdateDataHolders();
-    UpdateImages();
-    UpdateVideos();
 
     ShowBackToDataBlocksButton();
     ShowDataBlocks(false);
     ShowDataBlockContent();
     OpenDefaultDataBlockTab();
+}
+
+function OnImageClick(event) {
+    if ($(event.target).is("input")) return;
+
+    let imageId = $(event.currentTarget).attr("data-id");
+
+    UpdateImageSlider(imageId);
+
+    $("#image-carousel-modal").modal("show");
 }
 
 function OnAddDataCategoryButtonClick(event) {
@@ -513,7 +559,7 @@ function OnAddElementButtonClick(event) {
             break;
         }
         case AddButtonActionTypes.AddImage: {
-            alert("Add image modal");
+            $("#add-image-modal").modal("show");
             break;
         }
         case AddButtonActionTypes.AddVideo: {
@@ -537,10 +583,7 @@ function OnAddDataBlockSubmitButtonClick(event) {
     }
     else {
         $("#add-data-block-modal").modal("hide");
-        $("#person-data-block")
-            .find(".data-categories")
-            .find(".data-categories__item[data-id=\"" + g_currentDataCategory.Id + "\"]")
-            .click();
+        RefreshDataBlocks();
     }
 }
 
@@ -557,14 +600,33 @@ function OnAddDataHolderSubmitButtonClick(event) {
     }
     else {
         $("#add-data-holder-modal").modal("hide");
-        $("#person-data-block")
-            .find(".data-categories")
-            .find(".data-categories__item[data-id=\"" + g_currentDataCategory.Id + "\"]")
-            .click();
-        $("#person-data-block")
-            .find(".data-blocks")
-            .find(".data-blocks__item[data-id=\"" + g_currentDataBlock.Id + "\"]")
-            .click();
+        RefreshDataHolders();
+    }
+}
+
+function OnAddImageSubmitButtonClick(event) {
+    let imageModal = $("#add-image-modal");
+
+    let files = imageModal.find("#image-file")[0].files;
+
+    if (files.length == 0) {
+        alert("Пожалуйста выберите файл.");
+        return;
+    }
+
+    let formData = new FormData();
+    formData.append("DataBlockId", g_currentDataBlock.Id);
+    formData.append("Title", imageModal.find("#image-title").val());
+    formData.append("Description", imageModal.find("#image-desc").val());
+    formData.append("ImageFile", files[0]);
+
+    if (CreateImage(formData) == -1) {
+        alert("Ошибка при создании изображения.");
+    }
+    else {
+        $("#add-image-modal").modal("hide");
+        RefreshImages();
+        UpdateImages();
     }
 }
 
@@ -669,6 +731,9 @@ function OnSaveButtonClick() {
             await WaitForMilliseconds(2000);
 
             g_currentDataCategory = GetDataCategory(g_currentDataCategory.Id);
+
+            if (!g_currentDataCategory.IsDeletable)
+                ReloadTree($("#mainPerson")[0].getAttribute("data-value"));
         }
         else {
             alert("Произошла ошибка во время сохранения.");
@@ -693,6 +758,7 @@ function OnEditPrivacyButtonClick(event) {
                 selectedDataHolders.length > 1) return;
 
             let dataHolderId = selectedDataHolders.attr("data-id");
+            g_editPrivacyElementId = dataHolderId;
             LoadDataHolderPrivacyData(dataHolderId);
             break;
         }
@@ -704,6 +770,7 @@ function OnEditPrivacyButtonClick(event) {
                 selectedImages.length > 1) return;
 
             let imageId = selectedImages.attr("data-id");
+            g_editPrivacyElementId = imageId;
             LoadImagePrivacyData(imageId);
             break;
         }
@@ -715,6 +782,7 @@ function OnEditPrivacyButtonClick(event) {
                 selectedVideos.length > 1) return;
 
             let videoId = selectedVideos.attr("data-id");
+            g_editPrivacyElementId = videoId;
             LoadVideoPrivacyData(videoId);
             break;
         }
@@ -762,10 +830,7 @@ function OnEditDataBlockSubmitButtonClick(event) {
     }
     else {
         $("#edit-data-block-modal").modal("hide");
-        $("#person-data-block")
-            .find(".data-categories")
-            .find(".data-categories__item[data-id=\"" + g_currentDataCategory.Id + "\"]")
-            .click();
+        RefreshDataBlocks();
     }
 }
 
@@ -785,15 +850,19 @@ function OnEditDataHolderSubmitButtonClick(event) {
     }
     else {
         $("#edit-data-holder-modal").modal("hide");
-        $("#person-data-block")
-            .find(".data-categories")
-            .find(".data-categories__item[data-id=\"" + g_currentDataCategory.Id + "\"]")
-            .click();
-        $("#person-data-block")
-            .find(".data-blocks")
-            .find(".data-blocks__item[data-id=\"" + g_currentDataBlock.Id + "\"]")
-            .click();
+        RefreshDataHolders();
     }
+}
+
+function OnSliderArrowClick() {
+    let slider = $("#image-carousel-modal")
+        .find(".slider");
+
+    let imageId = slider
+        .find(".slick-active")
+        .attr("data-id");
+
+    UpdateSliderImageDetails(imageId);
 }
 
 //UI
@@ -857,14 +926,101 @@ function UpdateDataHolders() {
     });
 }
 
-//TODO:
 function UpdateImages() {
+    ClearImages();
 
+    if (g_currentDataBlockImages == null)
+        return;
+
+    g_currentDataBlockImages
+        .forEach((item) => {
+            AddItemToImages(item);
+        });
+
+    $("#person-data-block")
+        .find(".images .images__item")
+        .click(OnImageClick);
+}
+
+function UpdateImageSlider(imageId) {
+    let slider = $("#image-carousel-modal")
+        .find(".slider");
+
+    if (slider.hasClass("slick-initialized")) {
+        slider.slick("unslick");
+        ClearSliderImages();
+    }        
+
+    if (g_currentDataBlockImages == null)
+        return;
+
+    g_currentDataBlockImages
+        .forEach((item) => {
+            AddImageToSlider(item);
+        });
+
+    let initialSlide = 0;
+
+    let selectedImage = g_currentDataBlockImages
+        .find(item => item.Id == imageId);
+
+    initialSlide = g_currentDataBlockImages.indexOf(selectedImage);
+
+    slider.slick({
+        slidesToScroll: 1,
+        slidesToShow: 1,
+        draggable: false
+    });
+
+    slider
+        .find(".slick-arrow")
+        .click(OnSliderArrowClick);
+
+    UpdateSliderImageDetails(imageId);
+
+    slider.slick("slickGoTo", initialSlide);
+}
+
+function UpdateSliderImageDetails(imageId) {
+    let sliderModal = $("#image-carousel-modal");
+
+    let image = g_currentDataBlockImages
+        .find(item => item.Id == imageId);
+
+    sliderModal
+        .find("#slider-image-title")
+        .val(image.Title);
+
+    sliderModal
+        .find("#slider-image-desc")
+        .val(image.Description);
 }
 
 //TODO:
 function UpdateVideos() {
 
+}
+
+function RefreshDataBlocks() {
+    $("#person-data-block")
+        .find(".data-categories")
+        .find(".data-categories__item[data-id=\"" + g_currentDataCategory.Id + "\"]")
+        .click();
+}
+
+function RefreshDataHolders() {
+    $("#person-data-block")
+        .find(".data-categories")
+        .find(".data-categories__item[data-id=\"" + g_currentDataCategory.Id + "\"]")
+        .click();
+    $("#person-data-block")
+        .find(".data-blocks")
+        .find(".data-blocks__item[data-id=\"" + g_currentDataBlock.Id + "\"]")
+        .click();
+}
+
+function RefreshImages() {
+    g_currentDataBlockImages = GetImages(g_currentDataBlock.Id);
 }
 
 function OpenDefaultDataBlockTab() {
@@ -937,6 +1093,16 @@ function ClearDataBlocks() {
 
 function ClearDataHolders() {
     $("#person-data-block").find(".data-holders").empty();
+}
+
+function ClearImages() {
+    $("#person-data-block").find(".images").empty();
+}
+
+function ClearSliderImages() {
+    $("#image-carousel-modal")
+        .find(".slider")
+        .empty();
 }
 
 function AddItemToDataCategories(dataCategory) {
@@ -1054,6 +1220,46 @@ function AddItemToDataHolders(dataHolder) {
     $("#person-data-block")
         .find(".data-holders")[0]
         .appendChild(dataHolderElement);
+}
+
+function AddItemToImages(image) {
+    let imageElement = document.createElement("div");
+    imageElement.classList.add("image");
+    imageElement.classList.add("images__item");
+    imageElement.setAttribute("data-id", image.Id);
+
+    let selectorElement = document.createElement("div");
+    selectorElement.classList.add("image__selector");
+
+    let checkboxElement = document.createElement("div");
+    checkboxElement.classList.add("checkbox");
+
+    let inputElement = document.createElement("input");
+    inputElement.type = "checkbox";
+
+    checkboxElement.appendChild(inputElement);
+    selectorElement.appendChild(checkboxElement);
+
+    let imgElement = document.createElement("img");
+    imgElement.src = "data:image/" + image.ImageFormat + ";base64," + image.ImageData;
+
+    imageElement.appendChild(selectorElement);
+    imageElement.appendChild(imgElement);
+
+    $("#person-data-block")
+        .find(".images")[0]
+        .appendChild(imageElement);
+}
+
+function AddImageToSlider(image) {
+    let slider = $("#image-carousel-modal")
+        .find(".slider")[0];
+
+    let imgElement = document.createElement("img");
+    imgElement.src = "data:image/" + image.ImageFormat + ";base64," + image.ImageData;
+    imgElement.setAttribute("data-id", image.Id);
+
+    slider.appendChild(imgElement);
 }
 
 function CreateDataHolderElement(dataHolder) {

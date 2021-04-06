@@ -1,13 +1,10 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace FamilyTree.Application.Media.Commands
 {
-    public class CreateImageCommand : IRequest<int>
+    public class UpdateImageCommand : IRequest
     {
-        public int DataBlockId { get; set; }
-
-        public IFormFile ImageFile { get; set; }
+        public int Id { get; set; }
 
         public string Title { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace FamilyTree.Application.Media.Commands
 {
@@ -6,7 +7,7 @@ namespace FamilyTree.Application.Media.Commands
     {
         public int DataBlockId { get; set; }
 
-        public string FilePath { get; set; }
+        public IFormFile VideoFile { get; set; }
 
         public string Title { get; set; }
 

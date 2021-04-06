@@ -34,7 +34,11 @@ namespace FamilyTree.Application.Common.Interfaces
 
         DbSet<Image> Images { get; set; }
 
+        DbSet<DataBlockImage> DataBlockImages { get; set; }
+
         DbSet<Video> Videos { get; set; }
+
+        DbSet<DataBlockVideo> DataBlockVideos { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

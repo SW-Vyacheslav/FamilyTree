@@ -1,9 +1,9 @@
 ﻿using FamilyTree.Domain.Enums.Privacy;
 using System;
 
-namespace FamilyTree.Application.Privacy.ViewModels
+namespace FamilyTree.Application.Privacy.Commands
 {
-    public class DataHolderPrivacyDto
+    public abstract class UpdatePrivacyCommandBase
     {
         public int Id { get; set; }
 
@@ -14,5 +14,7 @@ namespace FamilyTree.Application.Privacy.ViewModels
         public DateTime EndDate { get; set; }
 
         public bool IsAlways { get; set; }
+
+        public string UserId { get; set; }
     }
 }

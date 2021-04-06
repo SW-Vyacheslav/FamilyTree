@@ -349,12 +349,12 @@ namespace FamilyTree.Application.FamilyTrees.Services
 
             if (parentTie.Parent1Id != null)
             {
-                result[0] = await GetPerson(treeId, (int)parentTie.Parent1Id, userId, cancellationToken);
+                result[0] = await GetPerson(treeId, parentTie.Parent1Id.Value, userId, cancellationToken);
             }
 
             if (parentTie.Parent2Id != null)
             {
-                result[1] = await GetPerson(treeId, (int)parentTie.Parent2Id, userId, cancellationToken); ;
+                result[1] = await GetPerson(treeId, parentTie.Parent2Id.Value, userId, cancellationToken); ;
             }
 
             return result;
@@ -406,7 +406,7 @@ namespace FamilyTree.Application.FamilyTrees.Services
 
             for (int i = 0; i < wifes_2.Count; i++)
             {
-                int val = (int)wifes_2[i];
+                int val = wifes_2[i].Value;
 
                 Wifes.Add(await GetPerson(treeId, val, userId, cancellationToken));
             }
@@ -442,7 +442,7 @@ namespace FamilyTree.Application.FamilyTrees.Services
 
             for (int i = 0; i < sons_2.Count; i++)
             {
-                int val = (int)sons_2[i];
+                int val = sons_2[i].Value;
                 Sons.Add(await GetPerson(treeId, val, userId, cancellationToken));
             }
 
@@ -857,28 +857,28 @@ namespace FamilyTree.Application.FamilyTrees.Services
         {
             List<int> list = new List<int>();
 
-            if (pNode.Parent_1 != null && !line.Contains((int)pNode.Parent_1))
+            if (pNode.Parent_1 != null && !line.Contains(pNode.Parent_1.Value))
             {
-                list.Add((int)pNode.Parent_1);
+                list.Add(pNode.Parent_1.Value);
             }
 
-            if (pNode.Parent_2 != null && !line.Contains((int)pNode.Parent_2))
+            if (pNode.Parent_2 != null && !line.Contains(pNode.Parent_2.Value))
             {
-                list.Add((int)pNode.Parent_2);
+                list.Add(pNode.Parent_2.Value);
             }
 
             for (int i = 0; i < pNode.WifeChildren.Count; i++)
             {
-                if (pNode.WifeChildren[i].Wife != null && !line.Contains((int)pNode.WifeChildren[i].Wife))
+                if (pNode.WifeChildren[i].Wife != null && !line.Contains(pNode.WifeChildren[i].Wife.Value))
                 {
-                    list.Add((int)pNode.WifeChildren[i].Wife);
+                    list.Add(pNode.WifeChildren[i].Wife.Value);
                 }
 
                 for (int k = 0; k < pNode.WifeChildren[i].Children.Count; k++)
                 {
-                    if (pNode.WifeChildren[i].Children[k] != null && !line.Contains((int)pNode.WifeChildren[i].Children[k]))
+                    if (pNode.WifeChildren[i].Children[k] != null && !line.Contains(pNode.WifeChildren[i].Children[k].Value))
                     {
-                        list.Add((int)pNode.WifeChildren[i].Children[k]);
+                        list.Add(pNode.WifeChildren[i].Children[k].Value);
                     }
                 }
             }
@@ -944,15 +944,17 @@ namespace FamilyTree.Application.FamilyTrees.Services
         {
             List<int> list = new List<int>();
 
+            if (pn == null)
+                return list;
 
             if (pn.Parent_1 != null)
             {
-                list.Add((int)pn.Parent_1);
+                list.Add(pn.Parent_1.Value);
 
             }
             if (pn.Parent_2 != null)
             {
-                list.Add((int)pn.Parent_2);
+                list.Add(pn.Parent_2.Value);
 
             }
 
@@ -960,14 +962,14 @@ namespace FamilyTree.Application.FamilyTrees.Services
             {
                 if (pn.WifeChildren[k].Wife != null)
                 {
-                    list.Add((int)pn.WifeChildren[k].Wife);
+                    list.Add(pn.WifeChildren[k].Wife.Value);
                 }
 
                 for (int c = 0; c < pn.WifeChildren[k].Children.Count; c++)
                 {
                     if (pn.WifeChildren[k].Children[c] != null)
                     {
-                        list.Add((int)pn.WifeChildren[k].Children[c]);
+                        list.Add(pn.WifeChildren[k].Children[c].Value);
                     }
                 }
             }
@@ -1101,7 +1103,6 @@ namespace FamilyTree.Application.FamilyTrees.Services
             {
                 if (i < line.Count - 2)
                 {
-
                     int lineVal = 0;
 
                     if (i == -1)

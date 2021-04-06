@@ -11,6 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FamilyTree.Domain.Entities.Privacy;
+using FamilyTree.Domain.Enums.Privacy;
+using FamilyTree.Application.Common.Exceptions;
 
 namespace FamilyTree.Application.People.Handlers
 {
@@ -31,24 +34,23 @@ namespace FamilyTree.Application.People.Handlers
                 .Include(ft => ft.People)
                 .SingleOrDefaultAsync(cancellationToken);
 
+            if (familyTree == null)
+                throw new NotFoundException(nameof(FamilyTreeEntity), request.TreeId);
+
             Person person = new Person();
 
-            if (familyTree == null)
+            if (familyTree.People.Count == 0)
             {
-                FamilyTreeEntity tree = new FamilyTreeEntity() { Name = "Имя дерева" };
-                tree.People = new List<Person>();
-                tree.People.Add(person);
-
                 FamilyTie tie = new FamilyTie();
                 tie.Person = person;
 
-                FamilyTreeMainPerson mainPerson = new FamilyTreeMainPerson();
-                mainPerson.FamilyTree = tree;
+                FamilyTreeMainPerson mainPerson = await _context.FamilyTreesMainPeople
+                    .SingleOrDefaultAsync(mp => mp.FamilyTreeId == familyTree.Id,
+                                          cancellationToken);
+
                 mainPerson.MainPerson = person;
 
-                _context.FamilyTreesMainPeople.Add(mainPerson);
                 _context.FamilyTies.Add(tie);
-                _context.FamilyTrees.Add(tree);
             }
             else 
             {
@@ -80,11 +82,11 @@ namespace FamilyTree.Application.People.Handlers
 
                     default:
                         break;
-                }
-
-                familyTree.People.Add(person);
+                }                
             }
-                       
+
+            familyTree.People.Add(person);
+
             CreateDefaults(request, person);
             _context.People.Add(person);
             await _context.SaveChangesAsync(cancellationToken);            
@@ -146,6 +148,27 @@ namespace FamilyTree.Application.People.Handlers
                 IsDeletable = false
             });
 
+            var namePrivacy = CreateDefaultDataHolderPrivacy();
+            namePrivacy.DataHolder = dataBlock.DataHolders[0];
+
+            var surnamePrivacy = CreateDefaultDataHolderPrivacy();
+            surnamePrivacy.DataHolder = dataBlock.DataHolders[1];
+
+            var middlenamePrivacy = CreateDefaultDataHolderPrivacy();
+            middlenamePrivacy.DataHolder = dataBlock.DataHolders[2];
+
+            var birthdayPrivacy = CreateDefaultDataHolderPrivacy();
+            birthdayPrivacy.DataHolder = dataBlock.DataHolders[3];
+
+            var genderPrivacy = CreateDefaultDataHolderPrivacy();
+            genderPrivacy.DataHolder = dataBlock.DataHolders[4];
+
+            _context.DataHolderPrivacies.Add(namePrivacy);
+            _context.DataHolderPrivacies.Add(surnamePrivacy);
+            _context.DataHolderPrivacies.Add(middlenamePrivacy);
+            _context.DataHolderPrivacies.Add(birthdayPrivacy);
+            _context.DataHolderPrivacies.Add(genderPrivacy);
+
             personInfoDataCategory.DataBlocks = new List<DataBlock>();
             personInfoDataCategory.DataBlocks.Add(dataBlock);
 
@@ -186,6 +209,15 @@ namespace FamilyTree.Application.People.Handlers
             _context.DataCategories.Add(laborActivitiesDataCategory);
             _context.DataCategories.Add(residenciesDataCategory);
             _context.DataCategories.Add(importantEventsDataCategory);
+        }
+
+        private DataHolderPrivacy CreateDefaultDataHolderPrivacy()
+        {
+            return new DataHolderPrivacy() 
+            {
+                PrivacyLevel = PrivacyLevel.Confidential,
+                IsAlways = true
+            };
         }
 
         private async Task AddSibling(FamilyTie tie, Person person, CancellationToken cancellationToken)

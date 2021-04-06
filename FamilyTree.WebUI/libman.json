@@ -33,6 +33,10 @@
     {
       "library": "Sortable@1.13.0",
       "destination": "wwwroot/lib/sortable"
+    },
+    {
+      "library": "slick-carousel@1.8.1",
+      "destination": "wwwroot/lib/slick"
     }
   ]
 }

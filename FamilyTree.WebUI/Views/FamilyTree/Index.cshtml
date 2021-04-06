@@ -19,12 +19,21 @@
     <script src="~/lib/sortable/Sortable.js"></script>
     <script src="~/js/PersonData.js"></script>
     <script src="~/js/PrivacyModal.js"></script>
+    <script src="~/lib/slick/slick.min.js"></script>
 }
 
 @section HeaderText
 {
     <div id="headerText">Ваше генеалогическое древо</div>
 }
+
+<div id="has-no-trees-block">
+    <div class="has-no-trees-block__content">
+        <h3>У вас нету деревьев.</h3>
+        <h3>Создайте новое дерево.</h3>
+        <div id="create-family-tree-button" class="btn btn-my-primary">Создать</div>
+    </div>
+</div>
 
 <div id="create-person-block" class="create-person-block">
     <div class="container">
@@ -562,6 +571,7 @@
 
 <partial name="_PersonContentModals"/>
 <partial name="_PrivacyLevelModal" />
+<partial name="_FamilyTreeModals" />
 
 @section ModalPersonInfo
 {

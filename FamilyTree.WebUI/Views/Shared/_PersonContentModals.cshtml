@@ -118,3 +118,69 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="add-image-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Добавление изображения</h3>
+            </div>
+            <div class="modal-body">
+                <div>Заголовок</div>
+                <input id="image-title" type="text" />
+                <div>Файл</div>
+                <input id="image-file" type="file" accept="image/*" />
+                <div>Описание</div>
+                <input id="image-desc" type="text" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-my-dark" data-dismiss="modal">Отмена</button>
+                <button id="add-image-submit-button" type="button" class="btn btn-my-primary">Добавить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="image-carousel-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="slider"></div>
+                    </div>
+                    <div class="col-md-4 image-details">
+                        <div class="image-details__title image-title">
+                            <div class="image-title__text">Заголовок</div>
+                            <div class="image-title__value">
+                                <textarea id="slider-image-title" rows="2"></textarea>
+                            </div>
+                        </div>
+                        <div class="image-details__desc image-desc">
+                            <div class="image-desc__text">Описание</div>
+                            <div class="image-desc__value">
+                                <textarea id="slider-image-desc" rows="6"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="pages modal-footer__pages">
+                    <div class="pages__current-page"></div>
+                    <div class="pages__separator">/</div>
+                    <div class="pages__count"></div>
+                </div>
+                <div class="buttons modal-footer__buttons">
+                    <button id="set-image-as-avatar-button" type="button" class="btn">Сделать изображением персоны</button>
+                    <button id="save-image-submit-button" type="button" class="btn">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

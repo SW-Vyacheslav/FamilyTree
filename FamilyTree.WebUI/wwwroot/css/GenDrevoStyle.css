@@ -4,8 +4,19 @@
 
 #main-tree-block,
 #start-tree-block,
-#create-person-block {
+#create-person-block,
+#has-no-trees-block {
     display: none;
+}
+
+#has-no-trees-block {
+    text-align: center;
+}
+
+#has-no-trees-block #create-family-tree-button {
+    padding: 10px 50px;
+    margin: 20px;
+    font-size: 20px;
 }
 
 #start-tree-block {

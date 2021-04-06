@@ -51,7 +51,11 @@ namespace FamilyTree.Infrastructure.Persistence
 
         public DbSet<Image> Images { get; set; }
 
+        public DbSet<DataBlockImage> DataBlockImages { get; set; }
+
         public DbSet<Video> Videos { get; set; }
+
+        public DbSet<DataBlockVideo> DataBlockVideos { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {

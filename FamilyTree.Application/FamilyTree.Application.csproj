@@ -10,6 +10,7 @@
     <PackageReference Include="FluentValidation" Version="9.4.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="9.4.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="3.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.1" />
   </ItemGroup>
 
@@ -20,7 +21,7 @@
   <ItemGroup>
     <Folder Include="Common\Models\" />
     <Folder Include="Common\Mappings\" />
-    <Folder Include="Media\Validators\" />
+    <Folder Include="Privacy\Queries\" />
   </ItemGroup>
 
 </Project>

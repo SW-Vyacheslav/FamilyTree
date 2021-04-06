@@ -53,7 +53,51 @@ function OnLimitTypeButtonClick(event) {
 }
 
 function OnEditPrivacyLevelSubmitButtonClick(event) {
+    let editPrivacyModal = $("#privacy-level-modal");
+    let beginDate = editPrivacyModal.find("#privacy-level-begin-date").val();
+    let endDate = editPrivacyModal.find("#privacy-level-end-date").val();
+    let isAlways = editPrivacyModal.find("input[name=\"limit-type\"]:checked").val() == "0";
+    let privacyLevel = editPrivacyModal.find("input[name=\"privacy-level\"]:checked").val();
 
+    let privacy = {
+        Id: g_editPrivacyElementId,
+        PrivacyLevel: privacyLevel,
+        BeginDate: beginDate,
+        EndDate: endDate,
+        IsAlways: isAlways
+    };
+
+    switch (g_currentAddButtonActionType) {
+        case AddButtonActionTypes.AddDataHolder: {
+            if (!UpdateDataHolderPrivacy(privacy)) {
+                alert("Ошибка при изменении приватности ячейки данных.");
+                return;
+            }
+            RefreshDataHolders();
+            break;
+        }
+
+        case AddButtonActionTypes.AddImage: {
+            if (!UpdateImagePrivacy(privacy)) {
+                alert("Ошибка при изменении приватности изображения.");
+                return;
+            }
+            break;
+        }
+
+        case AddButtonActionTypes.AddVideo: {
+            if (!UpdateVideoPrivacy(privacy)) {
+                alert("Ошибка при изменении приватности видео.");
+                return;
+            }
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    editPrivacyModal.modal("hide");
 }
 
 // Requests
@@ -101,19 +145,19 @@ function LoadDataHolderPrivacyData(dataHolderId) {
             privacyModal
                 .find("input[name=\"limit-type\"][value=\"1\"]")
                 .parent()
-                .click();
+                .click();            
+        }      
 
-            let beginDate = new Date(dataHolderPrivacy.BeginDate);
-            let endDate = new Date(dataHolderPrivacy.EndDate);
+        let beginDate = dataHolderPrivacy.BeginDate.substr(0, dataHolderPrivacy.BeginDate.lastIndexOf(":"));
+        let endDate = dataHolderPrivacy.EndDate.substr(0, dataHolderPrivacy.EndDate.lastIndexOf(":"));
 
-            privacyModal
-                .find("#privacy-level-begin-date")
-                .val(beginDate.toISOString());
+        privacyModal
+            .find("#privacy-level-begin-date")
+            .val(beginDate);
 
-            privacyModal
-                .find("#privacy-level-end-date")
-                .val(endDate.toISOString());
-        }                
+        privacyModal
+            .find("#privacy-level-end-date")
+            .val(endDate);
     }
 }
 
@@ -128,7 +172,19 @@ function LoadVideoPrivacyData(videoId) {
 }
 
 function UpdateDataHolderPrivacy(dataHolderPrivacy) {
+    let result = false;
 
+    $.ajax({
+        async: false,
+        type: "PUT",
+        data: dataHolderPrivacy,
+        url: "/Privacy/UpdateDataHolderPrivacy/" + dataHolderPrivacy.Id,
+        success: function (response) {
+            result = true;
+        }
+    });
+
+    return result;
 }
 
 //TODO:

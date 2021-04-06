@@ -634,3 +634,160 @@ input:focus {
         transform: rotate(360deg);
     }
 }
+
+/* Images */
+.images .images__item {
+    width: 32%;
+    height: 200px;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    float: left;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    padding: 2% 0;
+    cursor: pointer;
+    transition: all ease 0.5s;
+}
+
+.images .images__item:hover {
+    border-color: #0096FF;
+    background-color: #0096FF;
+    transition: all ease 0.5s;
+}
+
+.image img {
+    width: 100%;
+    height: 96%;
+    position: relative;
+}
+
+.image .image__selector {
+    margin-left: 10px;
+    position: absolute;
+    z-index: 1;
+}
+
+.image .image__selector .checkbox input[type="checkbox"] {
+    width: 25px;
+    height: 25px;
+    margin-top: 0;
+}
+
+#image-carousel-modal .modal-header {
+    position: relative;
+    padding: 25px;
+    border-bottom-color: #676767;
+}
+
+#image-carousel-modal .modal-dialog {
+    width: 1000px;
+}
+
+#image-carousel-modal .modal-content {
+    background-color: #454545;
+    min-height: 597px;
+}
+
+#image-carousel-modal .modal-header .close {
+    position: absolute;
+    right: 25px;
+    float: none;
+    margin-top: -13px;
+    color: white;
+    font-size: 30px;
+}
+
+#image-carousel-modal .modal-header .close:hover {
+    color: #676767;
+}
+
+#image-carousel-modal .modal-footer {
+    border-top-color: #676767;
+}
+
+#image-carousel-modal .image-details {
+    color: #b1b1b1;
+}
+
+#image-carousel-modal .modal-footer__pages {
+    float: left;
+    width: 30%;
+}
+
+#image-carousel-modal .modal-footer__buttons {
+    float: right;
+    width: 70%;
+}
+
+#image-carousel-modal .pages__current-page, .pages__separator, .pages__count {
+    float: left;
+    color: #b1b1b1;
+}
+
+/* Images Slider */
+/* Classes names source: https://fls.guru/slick.html */
+/* Слайдер */
+.slider {
+    position: relative;
+    padding: 0px 100px;
+}
+
+.slick-slider {
+
+}
+/* Слайдер запущен */
+.slick-slider.slick-initialized{}
+/* Слайдер с точками */
+.slick-slider.slick-dotted{}
+/* Ограничивающая оболочка */
+.slick-list {
+    overflow: hidden;
+}
+/* Лента слайдов */
+.slick-track {
+    display: flex;
+}
+/* Слайд */
+.slick-slide{}
+/* Слайд активный (показывается) */
+.slick-slide.slick-active{}
+/* Слайд основной */
+.slick-slide.slick-current{}
+/* Слайд по центру */
+.slick-slide.slick-center{}
+/* Клонированный слайд */
+.slick-slide.slick-cloned{}
+/* Стрелка */
+.slick-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    font-size: 0;
+    width: 100px;
+    height: 100px;
+    transform: translateY(-50px);
+    border: none;
+}
+
+.slick-arrow:focus {
+    outline: none;
+}
+/* Стрелка влево */
+.slick-arrow.slick-prev {
+    left: 0;
+    background: url(../images/back.png) 0 0 / 100% no-repeat;
+}
+/* Стрелка вправо */
+.slick-arrow.slick-next {
+    right: 0;
+    background: url(../images/forward.png) 0 0 / 100% no-repeat;
+}
+/* Стрелка не активная */
+.slick-arrow.slick-disabled{}
+/* Точки (булиты) */
+.slick-dots{}
+.slick-dots li{}
+/* Активная точка */
+.slick-dots li.slick-active{}
+/* Элемент точки */
+.slick-dots li button{}

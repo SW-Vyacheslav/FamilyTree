@@ -2,6 +2,8 @@
 using FamilyTree.Application.Common.Interfaces;
 using FamilyTree.Application.PersonContent.Commands;
 using FamilyTree.Domain.Entities.PersonContent;
+using FamilyTree.Domain.Entities.Privacy;
+using FamilyTree.Domain.Enums.Privacy;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -37,7 +39,13 @@ namespace FamilyTree.Application.PersonContent.Handlers
             entity.DataBlockId = dataBlock.Id;
             entity.OrderNumber = dataBlock.DataHolders.Count() + 1;
 
+            DataHolderPrivacy privacy = new DataHolderPrivacy();
+            privacy.IsAlways = true;
+            privacy.PrivacyLevel = PrivacyLevel.Confidential;
+            privacy.DataHolder = entity;
+
             _context.DataHolders.Add(entity);
+            _context.DataHolderPrivacies.Add(privacy);
             await _context.SaveChangesAsync(cancellationToken);
 
             return entity.Id;

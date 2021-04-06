@@ -7,6 +7,8 @@
   <ItemGroup>
     <Compile Remove="Migrations\20210128200053_AddedImageFormat.cs" />
     <Compile Remove="Migrations\20210128200053_AddedImageFormat.Designer.cs" />
+    <Compile Remove="Migrations\20210404153256_AddedDataBlockImagesAndVideos.cs" />
+    <Compile Remove="Migrations\20210404153256_AddedDataBlockImagesAndVideos.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
