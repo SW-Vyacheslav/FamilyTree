@@ -98,7 +98,7 @@ namespace FamilyTree.Application.People.Handlers
         {
             DataCategory personInfoDataCategory = new DataCategory()
             {
-                CategoryType = CategoryType.InfoBlock,
+                DataCategoryType = DataCategoryType.PersonInfo,
                 Name = "Персональные данные",
                 OrderNumber = 1,
                 Person = person,
@@ -174,34 +174,38 @@ namespace FamilyTree.Application.People.Handlers
 
             DataCategory educationDataCategory = new DataCategory()
             {
-                CategoryType = CategoryType.ListBlock,
+                DataCategoryType = DataCategoryType.Education,
                 Name = "Образование",
                 OrderNumber = 2,
-                Person = person
+                Person = person,
+                IsDeletable = false
             };
 
             DataCategory laborActivitiesDataCategory = new DataCategory()
             {
-                CategoryType = CategoryType.ListBlock,
+                DataCategoryType = DataCategoryType.LaborActivities,
                 Name = "Трудовая деятельность",
                 OrderNumber = 3,
-                Person = person
+                Person = person,
+                IsDeletable = false
             };
 
             DataCategory residenciesDataCategory = new DataCategory()
             {
-                CategoryType = CategoryType.ListBlock,
+                DataCategoryType = DataCategoryType.Residencies,
                 Name = "Места проживания",
                 OrderNumber = 4,
-                Person = person
+                Person = person,
+                IsDeletable = false
             };
 
             DataCategory importantEventsDataCategory = new DataCategory()
             {
-                CategoryType = CategoryType.ListBlock,
+                DataCategoryType = DataCategoryType.ImportantEvents,
                 Name = "Важные cобытия",
                 OrderNumber = 5,
-                Person = person
+                Person = person,
+                IsDeletable = false
             };
 
             _context.DataCategories.Add(personInfoDataCategory);

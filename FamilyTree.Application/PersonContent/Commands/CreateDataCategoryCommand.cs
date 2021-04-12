@@ -5,7 +5,7 @@ namespace FamilyTree.Application.PersonContent.Commands
 {
     public class CreateDataCategoryCommand : IRequest<int>
     {
-        public CategoryType CategoryType { get; set; }
+        public DataCategoryType DataCategoryType { get; set; }
 
         public string Name { get; set; }
 

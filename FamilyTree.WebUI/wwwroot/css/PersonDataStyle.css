@@ -334,6 +334,7 @@ input:focus {
 /* Person data block data holders*/
 .person-data-block .person-data-block__data-holders .data-holders__item .data-holder__selector {
     width: 10%;
+    height: 100%;
 }
 
 .person-data-block .person-data-block__data-holders .data-holders__item .data-holder__title {
@@ -673,6 +674,35 @@ input:focus {
     margin-top: 0;
 }
 
+/*Edit, add data category, data block, data holder, image modal */
+#add-data-category-modal .form-horizontal, #edit-data-category-modal .form-horizontal,
+#add-data-block-modal .form-horizontal, #edit-data-block-modal .form-horizontal,
+#add-data-holder-modal .form-horizontal, #edit-data-holder-modal .form-horizontal,
+#add-image-modal .form-horizontal,
+#privacy-level-modal .form-horizontal {
+    min-height: 0px;
+}
+
+#add-data-category-modal .form-control, #edit-data-category-modal .form-control,
+#add-data-block-modal .form-control, #edit-data-block-modal .form-control,
+#add-data-holder-modal .form-control, #edit-data-holder-modal .form-control,
+#add-image-modal .form-control {
+    font-size: 18px;
+}
+
+#privacy-level-modal .form-control {
+    font-size: 20px;
+}
+
+#privacy-level-modal .modal-dialog {
+    width: 650px;
+}
+
+#privacy-level-modal #privacy-level-accounts {
+    text-align: center;
+}
+
+/* Images Modal */
 #image-carousel-modal .modal-header {
     position: relative;
     padding: 25px;
@@ -681,6 +711,10 @@ input:focus {
 
 #image-carousel-modal .modal-dialog {
     width: 1000px;
+}
+
+#image-carousel-modal .modal-body {
+    min-height: 455px;
 }
 
 #image-carousel-modal .modal-content {
@@ -724,12 +758,27 @@ input:focus {
     color: #b1b1b1;
 }
 
+.image-title .image-title__value textarea {
+    width: 100%;
+    resize: none;
+    background-color: #b1b1b1;
+    color: #454545;
+}
+
+.image-desc .image-desc__value textarea {
+    width: 100%;
+    resize: none;
+    background-color: #b1b1b1;
+    color: #454545;
+}
+
 /* Images Slider */
 /* Classes names source: https://fls.guru/slick.html */
 /* Слайдер */
 .slider {
     position: relative;
     padding: 0px 100px;
+    height: 415px;
 }
 
 .slick-slider {
@@ -748,7 +797,10 @@ input:focus {
     display: flex;
 }
 /* Слайд */
-.slick-slide{}
+.slick-slide {
+    width: 415px;
+    height: 415px;
+}
 /* Слайд активный (показывается) */
 .slick-slide.slick-active{}
 /* Слайд основной */

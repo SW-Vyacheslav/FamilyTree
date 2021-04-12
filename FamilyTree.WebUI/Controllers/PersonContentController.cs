@@ -153,5 +153,25 @@ namespace FamilyTree.WebUI.Controllers
 
             return NoContent();
         }
+
+        [HttpPost]
+        public async Task<ActionResult> CopyDataBlocks(CopyDataBlocksCommand command)
+        {
+            command.UserId = _currentUserService.UserId;
+
+            await Mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CopyDataHolders(CopyDataHoldersCommand command)
+        {
+            command.UserId = _currentUserService.UserId;
+
+            await Mediator.Send(command);
+
+            return NoContent();
+        }
     }
 }

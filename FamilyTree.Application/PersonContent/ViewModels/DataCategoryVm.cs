@@ -9,7 +9,7 @@ namespace FamilyTree.Application.PersonContent.ViewModels
 
         public string Name { get; set; }
 
-        public CategoryType CategoryType { get; set; }
+        public DataCategoryType DataCategoryType { get; set; }
 
         public bool IsDeletable { get; set; }
 

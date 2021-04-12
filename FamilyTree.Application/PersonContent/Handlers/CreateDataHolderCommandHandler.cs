@@ -1,11 +1,14 @@
 ﻿using FamilyTree.Application.Common.Exceptions;
 using FamilyTree.Application.Common.Interfaces;
 using FamilyTree.Application.PersonContent.Commands;
+using FamilyTree.Application.PersonContent.Extensions;
 using FamilyTree.Domain.Entities.PersonContent;
 using FamilyTree.Domain.Entities.Privacy;
+using FamilyTree.Domain.Enums.PersonContent;
 using FamilyTree.Domain.Enums.Privacy;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,6 +34,11 @@ namespace FamilyTree.Application.PersonContent.Handlers
 
             if (dataBlock == null)
                 throw new NotFoundException(nameof(DataBlock), request.DataBlockId);
+
+            if (!request.CanCreate())
+                throw new ArgumentException(
+                    $"DataHolder with DataHolderType = \"{request.DataHolderType}\" is not allowed to create.", 
+                    nameof(request.DataHolderType));
 
             DataHolder entity = new DataHolder();
             entity.Data = request.Data;

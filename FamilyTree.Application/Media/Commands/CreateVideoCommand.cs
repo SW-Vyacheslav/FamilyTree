@@ -9,6 +9,8 @@ namespace FamilyTree.Application.Media.Commands
 
         public IFormFile VideoFile { get; set; }
 
+        public string FilePath { get; set; }
+
         public string Title { get; set; }
 
         public string Description { get; set; }

@@ -2,7 +2,7 @@
 
 namespace FamilyTree.Application.Media.Commands
 {
-    public class UpdateImageCommand : IRequest
+    public class UpdateImageDetailsCommand : IRequest
     {
         public int Id { get; set; }
 

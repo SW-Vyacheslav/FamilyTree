@@ -1,11 +1,13 @@
 ﻿using FamilyTree.Application.Common.Exceptions;
 using FamilyTree.Application.Common.Interfaces;
 using FamilyTree.Application.PersonContent.Commands;
+using FamilyTree.Application.PersonContent.Extensions;
 using FamilyTree.Domain.Entities.PersonContent;
 using FamilyTree.Domain.Entities.Tree;
 using FamilyTree.Domain.Enums.PersonContent;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -32,17 +34,22 @@ namespace FamilyTree.Application.PersonContent.Handlers
             if (person == null)
                 throw new NotFoundException(nameof(Person), request.PersonId);
 
+            if (!request.CanCreate())
+                throw new ArgumentException(
+                    $"Category with CategoryType = \"{request.DataCategoryType}\" is not allowed to create.",
+                    nameof(request.DataCategoryType));
+
             var dataCategories = await _context.DataCategories
                 .Where(dc => dc.PersonId == person.Id)
                 .ToListAsync(cancellationToken);
 
             DataCategory entity = new DataCategory();
-            entity.CategoryType = request.CategoryType;
+            entity.DataCategoryType = request.DataCategoryType;
             entity.PersonId = person.Id;
             entity.Name = request.Name;
             entity.OrderNumber = dataCategories.Count() + 1;
 
-            if (request.CategoryType == CategoryType.InfoBlock)
+            if (request.DataCategoryType == DataCategoryType.InfoBlock)
             {
                 entity.DataBlocks = new List<DataBlock>() 
                 { 

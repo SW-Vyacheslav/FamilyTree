@@ -38,7 +38,7 @@ namespace FamilyTree.Application.PersonContent.Handlers
             {
                 Id = dataCategory.Id,
                 Name = dataCategory.Name,
-                CategoryType = dataCategory.CategoryType,
+                DataCategoryType = dataCategory.DataCategoryType,
                 IsDeletable = dataCategory.IsDeletable.Value
             };
             result.DataBlocks = new List<DataBlockDto>();

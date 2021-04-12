@@ -2,9 +2,14 @@
     InitPersonDataBlockButtonEvents();
 });
 
-const CategoryTypes = {
+const DataCategoryTypes = {
     InfoBlock: 0,
-    ListBlock: 1    
+    ListBlock: 1,
+    PersonInfo: 2,
+    Education: 3,
+    Residencies: 4,
+    LaborActivities: 5,
+    ImportantEvents: 6   
 };
 const DataHolderTypes = {
     Text: 0,
@@ -40,6 +45,13 @@ const PrivacyLevels = {
     InternalUse: 2,
     PublicUse: 3
 };
+const CopyObjectTypes = {
+    DataCategory: 0,
+    DataBlock: 1,
+    DataHolder: 2,
+    Image: 3,
+    Video: 4
+};
 
 const WaitForMilliseconds = (ms) => new Promise(handler => setTimeout(handler, ms));
 
@@ -47,10 +59,12 @@ let g_currentPersonId = null;
 let g_currentDataCategory = null;
 let g_currentDataBlock = null;
 let g_currentDataBlockImages = null;
+let g_currentDataBlockVideos = null;
 let g_currentAddButtonActionType = null;
 let g_editElementId = null;
 let g_editPrivacyElementId = null;
 let g_isSaving = false;
+let g_copyObject = null;
 
 function LoadPersonData(personId) {
     let dataCategories = GetDataCategories(personId);
@@ -131,6 +145,20 @@ function GetImages(dataBlockId) {
         type: "GET",
         dataType: "json",
         url: "/Media/GetImages?dataBlockId=" + dataBlockId,
+        success: function (data) {
+            result = data;
+        }
+    });
+    return result;
+}
+
+function GetVideos(dataBlockId) {
+    let result = [];
+    $.ajax({
+        async: false,
+        type: "GET",
+        dataType: "json",
+        url: "/Media/GetVideos?dataBlockId=" + dataBlockId,
         success: function (data) {
             result = data;
         }
@@ -321,6 +349,41 @@ function UpdateDataHolderOrder(dataHolder) {
     return result;
 }
 
+function UpdateImageDetails(image) {
+    let result = false;
+
+    $.ajax({
+        async: false,
+        type: "PUT",
+        data: image,
+        url: "/Media/UpdateImageDetails/" + image.Id,
+        success: function (response) {
+            result = true;
+        }
+    });
+
+    return result;
+}
+
+function UpdatePersonAvatarImage(personId, imageId) {
+    let result = false;
+
+    $.ajax({
+        async: false,
+        type: "PUT",
+        data: {
+            Id: personId,
+            ImageId: imageId
+        },
+        url: "/People/UpdatePersonAvatarImage/" + personId,
+        success: function (response) {
+            result = true;
+        }
+    });
+
+    return result;
+}
+
 function SaveDataHolders() {
     let isSaved = [];
 
@@ -352,6 +415,63 @@ function SaveDataHolders() {
     });
 
     return isSaved.find(el => el == false) == null;
+}
+
+function CopyDataBlocks(ids, dataCategoryId) {
+    let result = false;
+
+    $.ajax({
+        async: false,
+        type: "POST",
+        data: {
+            DataBlocksIds: ids,
+            DataCategoryId: dataCategoryId
+        },
+        url: "/PersonContent/CopyDataBlocks",
+        success: function (response) {
+            result = true;
+        }
+    });
+
+    return result;
+}
+
+function CopyDataHolders(ids, dataBlockId) {
+    let result = false;
+
+    $.ajax({
+        async: false,
+        type: "POST",
+        data: {
+            DataHoldersIds: ids,
+            DataBlockId: dataBlockId
+        },
+        url: "/PersonContent/CopyDataHolders",
+        success: function (response) {
+            result = true;
+        }
+    });
+
+    return result;
+}
+
+function CopyImages(ids, dataBlockId) {
+    let result = false;
+
+    $.ajax({
+        async: false,
+        type: "POST",
+        data: {
+            ImagesIds: ids,
+            DataBlockId: dataBlockId
+        },
+        url: "/Media/CopyImages",
+        success: function (response) {
+            result = true;
+        }
+    });
+
+    return result;
 }
 
 //Events
@@ -392,6 +512,9 @@ function InitPersonDataBlockButtonEvents() {
     $("#copy-button")
         .click(OnCopyButtonClick);
 
+    $("#paste-button")
+        .click(OnPasteButtonClick);
+
     $("#person-data-block")
         .find("#save-button")
         .click(OnSaveButtonClick);
@@ -414,9 +537,17 @@ function InitPersonDataBlockButtonEvents() {
     $("#add-image-modal")
         .find("#add-image-submit-button")
         .click(OnAddImageSubmitButtonClick);
+
+    $("#image-carousel-modal")
+        .find("#save-image-submit-button")
+        .click(OnSaveImageSubmitButtonClick);
+
+    $("#image-carousel-modal")
+        .find("#set-image-as-avatar-button")
+        .click(OnSetImageAsAvatarButtonClick);
 }
 
-function OnBackToDataBlocksButtonClick(event) {
+function OnBackToDataBlocksButtonClick() {
     ShowDataBlocks();
     ShowDataBlockContent(false);
     ShowBackToDataBlocksButton(false);
@@ -466,7 +597,8 @@ function OnDataCategoryClick(event) {
     if (g_currentDataCategory == null)
         return;
 
-    if (g_currentDataCategory.CategoryType == CategoryTypes.InfoBlock) {
+    if (g_currentDataCategory.DataCategoryType == DataCategoryTypes.InfoBlock ||
+        g_currentDataCategory.DataCategoryType == DataCategoryTypes.PersonInfo) {
         ShowDataBlocks(false);
         ShowDataBlockContent();
 
@@ -476,7 +608,12 @@ function OnDataCategoryClick(event) {
 
         OpenDefaultDataBlockTab();
     }
-    else if (g_currentDataCategory.CategoryType == CategoryTypes.ListBlock) {
+    else if (g_currentDataCategory.DataCategoryType == DataCategoryTypes.ListBlock ||
+        g_currentDataCategory.DataCategoryType == DataCategoryTypes.Education ||
+        g_currentDataCategory.DataCategoryType == DataCategoryTypes.ImportantEvents ||
+        g_currentDataCategory.DataCategoryType == DataCategoryTypes.LaborActivities ||
+        g_currentDataCategory.DataCategoryType == DataCategoryTypes.Residencies) {
+
         ShowDataBlocks();
         ShowDataBlockContent(false);
         ShowSaveButton(false);
@@ -528,13 +665,13 @@ function OnImageClick(event) {
     $("#image-carousel-modal").modal("show");
 }
 
-function OnAddDataCategoryButtonClick(event) {
+function OnAddDataCategoryButtonClick() {
     $('#add-data-category-modal').modal("show");
 }
 
-function OnAddDataCategorySubmitButtonClick(event) {
+function OnAddDataCategorySubmitButtonClick() {
     let dataCategory = {
-        CategoryType: $("#add-data-category-modal").find("#data-category-type").val(),
+        DataCategoryType: $("#add-data-category-modal").find("#data-category-type").val(),
         Name: $("#add-data-category-modal").find("#data-category-name").val(),
         PersonId: g_currentPersonId
     };
@@ -548,7 +685,7 @@ function OnAddDataCategorySubmitButtonClick(event) {
     }
 }
 
-function OnAddElementButtonClick(event) {
+function OnAddElementButtonClick() {
     switch (g_currentAddButtonActionType) {
         case AddButtonActionTypes.AddDataBlock: {
             $("#add-data-block-modal").modal("show");
@@ -572,7 +709,7 @@ function OnAddElementButtonClick(event) {
     }
 }
 
-function OnAddDataBlockSubmitButtonClick(event) {
+function OnAddDataBlockSubmitButtonClick() {
     let dataBlock = {
         Title: $("#add-data-block-modal").find("#data-block-title").val(),
         DataCategoryId: g_currentDataCategory.Id
@@ -587,7 +724,7 @@ function OnAddDataBlockSubmitButtonClick(event) {
     }
 }
 
-function OnAddDataHolderSubmitButtonClick(event) {
+function OnAddDataHolderSubmitButtonClick() {
     let dataHolder = {
         DataHolderType: $("#add-data-holder-modal").find("#data-holder-type").val(),
         Title: $("#add-data-holder-modal").find("#data-holder-title").val(),
@@ -604,7 +741,7 @@ function OnAddDataHolderSubmitButtonClick(event) {
     }
 }
 
-function OnAddImageSubmitButtonClick(event) {
+function OnAddImageSubmitButtonClick() {
     let imageModal = $("#add-image-modal");
 
     let files = imageModal.find("#image-file")[0].files;
@@ -630,7 +767,7 @@ function OnAddImageSubmitButtonClick(event) {
     }
 }
 
-function OnEditElementButtonClick(event) {
+function OnEditElementButtonClick() {
     switch (g_currentAddButtonActionType) {
         case AddButtonActionTypes.AddDataBlock: {
             let selectedDataBlocks = $("#person-data-block")
@@ -698,18 +835,53 @@ function OnEditElementButtonClick(event) {
     }
 }
 
+function OnCopyButtonClick() {
+    switch (g_currentAddButtonActionType) {
+        case AddButtonActionTypes.AddDataBlock: {
+            CopySelectedDataBlocks();
+            break;
+        }
+        case AddButtonActionTypes.AddDataHolder: {
+            CopySelectedDataHolders();
+            break;
+        }
+        case AddButtonActionTypes.AddImage: {
+            CopySelectedImages();
+            break;
+        }
+
+        default:
+            break;
+    }
+}
+
+function OnPasteButtonClick() {
+    switch (g_currentAddButtonActionType) {
+        case AddButtonActionTypes.AddDataBlock: {
+            PasteDataBlocks();
+            break;
+        }
+        case AddButtonActionTypes.AddDataHolder: {
+            PasteDataHolders();
+            break;
+        }
+        case AddButtonActionTypes.AddImage: {
+            PasteImages();
+            break;
+        }
+
+        default:
+            break;
+    }
+}
+
 //TODO:
-function OnCopyButtonClick(event) {
+function OnDeleteDataCategoryButtonClick() {
 
 }
 
 //TODO:
-function OnDeleteDataCategoryButtonClick(event) {
-
-}
-
-//TODO:
-function OnDeleteButtonClick(event) {
+function OnDeleteButtonClick() {
 
 }
 
@@ -746,7 +918,7 @@ function OnSaveButtonClick() {
     SaveFunc();
 }
 
-function OnEditPrivacyButtonClick(event) {  
+function OnEditPrivacyButtonClick() {  
     switch (g_currentAddButtonActionType) {
         case AddButtonActionTypes.AddDataHolder: {
             let selectedDataHolders = $("#person-data-block")
@@ -794,7 +966,7 @@ function OnEditPrivacyButtonClick(event) {
     $("#privacy-level-modal").modal("show");
 }
 
-function OnEditDataCategorySubmitButtonClick(event) {
+function OnEditDataCategorySubmitButtonClick() {
     let dataCategory = {
         id: g_editElementId,
         command: {
@@ -814,7 +986,7 @@ function OnEditDataCategorySubmitButtonClick(event) {
     }
 }
 
-function OnEditDataBlockSubmitButtonClick(event) {
+function OnEditDataBlockSubmitButtonClick() {
     let dataBlock = {
         id: g_editElementId,
         command: {
@@ -834,7 +1006,7 @@ function OnEditDataBlockSubmitButtonClick(event) {
     }
 }
 
-function OnEditDataHolderSubmitButtonClick(event) {
+function OnEditDataHolderSubmitButtonClick() {
     let dataHolder = {
         id: g_editElementId,
         command: {
@@ -863,6 +1035,34 @@ function OnSliderArrowClick() {
         .attr("data-id");
 
     UpdateSliderImageDetails(imageId);
+}
+
+function OnSaveImageSubmitButtonClick() {
+    let currentImageId = GetImageSliderCurrentImageId();
+    let sliderModal = $("#image-carousel-modal");
+
+    let image = {
+        Id: currentImageId,
+        Title: sliderModal.find("#slider-image-title").val(),
+        Description: sliderModal.find("#slider-image-desc").val()
+    };
+
+    if (!UpdateImageDetails(image)) {
+        alert("Ошибка при сохранении данных изображения.");
+    }
+    else {
+        RefreshImages();
+        UpdateImageSlider(currentImageId);
+    }
+}
+
+function OnSetImageAsAvatarButtonClick() {
+    if (!UpdatePersonAvatarImage(g_currentPersonId, GetImageSliderCurrentImageId())) {
+        alert("Ошибка при задании изображения аватара персоны.");
+    }
+    else {
+        ReloadTree(_currentFamilyTree.MainPersonId);
+    }
 }
 
 //UI
@@ -969,16 +1169,18 @@ function UpdateImageSlider(imageId) {
     slider.slick({
         slidesToScroll: 1,
         slidesToShow: 1,
-        draggable: false
+        draggable: false,
+        arrows: true,
+        variableWidth: true
     });
 
     slider
         .find(".slick-arrow")
-        .click(OnSliderArrowClick);
+        .click(OnSliderArrowClick);    
+
+    slider.slick("slickGoTo", initialSlide, false);
 
     UpdateSliderImageDetails(imageId);
-
-    slider.slick("slickGoTo", initialSlide);
 }
 
 function UpdateSliderImageDetails(imageId) {
@@ -994,6 +1196,14 @@ function UpdateSliderImageDetails(imageId) {
     sliderModal
         .find("#slider-image-desc")
         .val(image.Description);
+
+    sliderModal
+        .find(".pages__current-page")
+        .text(sliderModal.find(".slider").slick("slickCurrentSlide") + 1);
+
+    sliderModal
+        .find(".pages__count")
+        .text(g_currentDataBlockImages.length);
 }
 
 //TODO:
@@ -1021,6 +1231,10 @@ function RefreshDataHolders() {
 
 function RefreshImages() {
     g_currentDataBlockImages = GetImages(g_currentDataBlock.Id);
+}
+
+function RefreshVideos() {
+    g_currentDataBlockVideos = GetVideos(g_currentDataBlock.Id);
 }
 
 function OpenDefaultDataBlockTab() {
@@ -1097,6 +1311,10 @@ function ClearDataHolders() {
 
 function ClearImages() {
     $("#person-data-block").find(".images").empty();
+}
+
+function ClearVideos() {
+    $("#person-data-block").find(".videos").empty();
 }
 
 function ClearSliderImages() {
@@ -1538,4 +1756,133 @@ function CreateGenderDataHolderElement(dataHolder) {
     }
 
     return dataHolderElement;
+}
+
+function GetSelectedDataBlocksIds() {
+    let result = [];
+
+    $("#person-data-block")
+        .find(".data-blocks .data-blocks__item")
+        .each((i, el) => {
+            if ($(el).find("input[type=\"checkbox\"]:checked").length == 1) {
+                result.push(el.getAttribute("data-id"));
+            }
+        });
+
+    return result;
+}
+
+function GetSelectedDataHoldersIds() {
+    let result = [];
+
+    $("#person-data-block")
+        .find(".data-holders .data-holders__item")
+        .each((i, el) => {
+            if ($(el).find("input[type=\"checkbox\"]:checked").length == 1) {
+                result.push(el.getAttribute("data-id"));
+            }
+        });
+
+    return result;
+}
+
+function GetSelectedImagesIds() {
+    let result = [];
+
+    $("#person-data-block")
+        .find(".images .images__item")
+        .each((i, el) => {
+            if ($(el).find("input[type=\"checkbox\"]:checked").length == 1) {
+                result.push(el.getAttribute("data-id"));
+            }
+        });
+
+    return result;
+}
+
+function GetImageSliderCurrentImageId() {
+    return $("#image-carousel-modal")
+        .find(".slider .slick-current")
+        .attr("data-id");
+}
+
+function CopySelectedDataBlocks() {    
+    g_copyObject = {
+        Ids: GetSelectedDataBlocksIds(),
+        CopyObjectType: CopyObjectTypes.DataBlock
+    };
+}
+
+function CopySelectedDataHolders() {
+    g_copyObject = {
+        Ids: GetSelectedDataHoldersIds(),
+        CopyObjectType: CopyObjectTypes.DataHolder
+    };
+}
+
+function CopySelectedImages() {
+    g_copyObject = {
+        Ids: GetSelectedImagesIds(),
+        CopyObjectType: CopyObjectTypes.Image
+    };
+}
+
+function PasteDataBlocks() {
+    if (g_copyObject == null ||
+        g_copyObject.Ids.length == 0)
+        return;
+
+    if (g_copyObject.CopyObjectType == null ||
+        g_copyObject.CopyObjectType != CopyObjectTypes.DataBlock) {
+        alert("Ошибка при вставке из буфера (неверный тип объектов)");
+        return;
+    }
+
+    if (!CopyDataBlocks(g_copyObject.Ids, g_currentDataCategory.Id)) {
+        alert("Ошибка при вставке из буфера");
+        return;
+    }
+
+    RefreshDataBlocks();
+    UpdateDataBlocks();
+}
+
+function PasteDataHolders() {
+    if (g_copyObject == null ||
+        g_copyObject.Ids.length == 0)
+        return;
+
+    if (g_copyObject.CopyObjectType == null ||
+        g_copyObject.CopyObjectType != CopyObjectTypes.DataHolder) {
+        alert("Ошибка при вставке из буфера (неверный тип объектов)");
+        return;
+    }
+
+    if (!CopyDataHolders(g_copyObject.Ids, g_currentDataBlock.Id)) {
+        alert("Ошибка при вставке из буфера");
+        return;
+    }
+
+    RefreshDataHolders();
+    UpdateDataHolders();
+}
+
+function PasteImages() {
+    if (g_copyObject == null ||
+        g_copyObject.Ids.length == 0)
+        return;
+
+    if (g_copyObject.CopyObjectType == null ||
+        g_copyObject.CopyObjectType != CopyObjectTypes.Image) {
+        alert("Ошибка при вставке из буфера (неверный тип объектов)");
+        return;
+    }
+
+    if (!CopyImages(g_copyObject.Ids, g_currentDataBlock.Id)) {
+        alert("Ошибка при вставке из буфера");
+        return;
+    }
+
+    RefreshImages();
+    UpdateImages();
 }

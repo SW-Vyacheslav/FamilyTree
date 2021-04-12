@@ -36,5 +36,18 @@ namespace FamilyTree.WebUI.Controllers
                 FamilyTreeId = treeId
             });
         }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdatePersonAvatarImage(int id, UpdatePersonAvatarImageCommand command)
+        {
+            if (command.Id != id)
+                return BadRequest();
+
+            command.UserId = _currentUserService.UserId;
+
+            await Mediator.Send(command);
+
+            return NoContent();
+        }
     }
 }

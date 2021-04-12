@@ -977,8 +977,7 @@ function FillPerson(person, data) {
     $(person).find(".middlename")[0].innerText = data.Middlename;
 
     // Текстовое представление изображения
-    if (data.AvatarImageId != null) {
-
+    if (data.AvatarImage != null) {
         person.firstElementChild.firstElementChild.src = "data:image/" + data.AvatarImage.ImageFormat + ";base64," + data.AvatarImage.ImageData;
     } else {
         person.firstElementChild.firstElementChild.src = "/images/person.png";

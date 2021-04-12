@@ -38,7 +38,7 @@ namespace FamilyTree.WebUI.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateImage(int id, UpdateImageCommand command)
+        public async Task<ActionResult> UpdateImageDetails(int id, UpdateImageDetailsCommand command)
         {
             if (command.Id != id)
                 return BadRequest();
@@ -58,6 +58,16 @@ namespace FamilyTree.WebUI.Controllers
                 Id = id,
                 UserId = _currentUserService.UserId
             });
+
+            return NoContent();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CopyImages(CopyImagesCommand command)
+        {
+            command.UserId = _currentUserService.UserId;
+
+            await Mediator.Send(command);
 
             return NoContent();
         }

@@ -9,7 +9,7 @@ namespace FamilyTree.Domain.Entities.PersonContent
     {
         public int Id { get; set; }
                
-        public CategoryType CategoryType { get; set; }
+        public DataCategoryType DataCategoryType { get; set; }
 
         public string Name { get; set; }
 
