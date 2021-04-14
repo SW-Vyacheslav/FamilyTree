@@ -20,8 +20,6 @@
     <Folder Include="Views\Support\" />
     <Folder Include="wwwroot\lib\" />
     <Folder Include="wwwroot\images\" />
-    <Folder Include="wwwroot\uploads\" />
-    <Folder Include="wwwroot\uploads\videos\" />
   </ItemGroup>
 
 

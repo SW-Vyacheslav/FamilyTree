@@ -1,13 +1,10 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace FamilyTree.Application.Media.Commands
 {
-    public class CreateVideoCommand : IRequest<int>
+    public class UpdateVideoDetailsCommand : IRequest
     {
-        public int DataBlockId { get; set; }
-
-        public IFormFile VideoFile { get; set; }
+        public int Id { get; set; }
 
         public string Title { get; set; }
 

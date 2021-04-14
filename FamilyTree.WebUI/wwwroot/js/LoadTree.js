@@ -822,7 +822,6 @@ function FillChildren(tree, listSlider, itemMarginPerson, NumChild) {
 // Функция заполнения братьев
 // NumBrothers - количество видимых людей в слайдере "Братья"
 function FillBrothers(tree, listSlider, itemMarginPerson, NumBrothers) {
-    console.log(tree, "Brothers");
     if (NumBrothers == 2) { // для УМД
         var Prev = $("#brothers-LittleTree .PrevItem")[0];
         var Next = $("#brothers-LittleTree .NextItem")[0];
@@ -1410,7 +1409,6 @@ function DrawConnections(tree, blood) {
     }
 
     // Two       
-    console.log(tree, "Children");
     if (tree.Children == null) {
         draw(context, 270, 0, 575, 80, width, colorMuted, true, dashLength, false);
         draw(context, 875, 0, 575, 80, width, colorMuted, true, dashLength, true);
@@ -1778,7 +1776,6 @@ function ChangeWifeTree(list) {
         success: function (result) {
             mainTree = result;
             FillTree(result, true);
-            console.log("Success GetWifeTree");
             if (bloodFlag) {
                 DrawBlood(idNewWife);
             } else {
@@ -1882,8 +1879,6 @@ function DrawBlood(idWife) {
         },
         url: '/FamilyTree/GetBloodTreeById',
         success: function (result) {
-            console.log("Success GetBloodCon");
-            console.log(result);
             bloodTree = result;
             DrawConnections(mainTree);
             DrawConntecionsLittleTree(mainTree);

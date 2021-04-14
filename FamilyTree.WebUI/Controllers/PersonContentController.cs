@@ -154,6 +154,42 @@ namespace FamilyTree.WebUI.Controllers
             return NoContent();
         }
 
+        [HttpDelete]
+        public async Task<ActionResult> DeleteDataCategory(int id)
+        {
+            await Mediator.Send(new DeleteDataCategoryCommand()
+            {
+                Id = id,
+                UserId = _currentUserService.UserId
+            });
+
+            return NoContent();
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeleteDataBlock(int id)
+        {
+            await Mediator.Send(new DeleteDataBlockCommand()
+            {
+                Id = id,
+                UserId = _currentUserService.UserId
+            });
+
+            return NoContent();
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeleteDataHolder(int id)
+        {
+            await Mediator.Send(new DeleteDataHolderCommand() 
+            {
+                Id = id,
+                UserId = _currentUserService.UserId
+            });
+
+            return NoContent();
+        }
+
         [HttpPost]
         public async Task<ActionResult> CopyDataBlocks(CopyDataBlocksCommand command)
         {

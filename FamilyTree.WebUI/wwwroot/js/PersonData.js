@@ -65,6 +65,7 @@ let g_editElementId = null;
 let g_editPrivacyElementId = null;
 let g_isSaving = false;
 let g_copyObject = null;
+let g_isUploadingVideo = false;
 
 function LoadPersonData(personId) {
     let dataCategories = GetDataCategories(personId);
@@ -138,31 +139,23 @@ function GetDataCategory(dataCategoryId) {
     return result;
 }
 
-function GetImages(dataBlockId) {
-    let result = [];
-    $.ajax({
-        async: false,
+async function GetImages(dataBlockId) {
+    const result = await $.ajax({
         type: "GET",
         dataType: "json",
-        url: "/Media/GetImages?dataBlockId=" + dataBlockId,
-        success: function (data) {
-            result = data;
-        }
+        url: "/Media/GetImages?dataBlockId=" + dataBlockId
     });
+
     return result;
 }
 
-function GetVideos(dataBlockId) {
-    let result = [];
-    $.ajax({
-        async: false,
+async function GetVideos(dataBlockId) {
+    const result = await $.ajax({
         type: "GET",
         dataType: "json",
-        url: "/Media/GetVideos?dataBlockId=" + dataBlockId,
-        success: function (data) {
-            result = data;
-        }
+        url: "/Media/GetVideos?dataBlockId=" + dataBlockId
     });
+
     return result;
 }
 
@@ -231,6 +224,34 @@ function CreateImage(image) {
         url: "/Media/CreateImage",
         success: function (response) {
             result = response;
+        }
+    });
+
+    return result;
+}
+
+async function CreateVideo(video) {
+    const result = await $.ajax({
+        type: "POST",
+        data: video,
+        cache: false,
+        contentType: false,
+        processData: false,
+        url: "/Media/CreateVideo",
+        xhr: function () {
+            var myXhr = $.ajaxSettings.xhr();
+            if (myXhr.upload) {
+                myXhr.upload.addEventListener("progress", function (e) {
+                    if (e.lengthComputable) {
+                        $("#add-video-modal #video-upload-progress")
+                            .attr({
+                                value: e.loaded,
+                                max: e.total
+                            });
+                    }
+                }, false);
+            }
+            return myXhr;
         }
     });
 
@@ -365,6 +386,22 @@ function UpdateImageDetails(image) {
     return result;
 }
 
+function UpdateVideoDetails(video) {
+    let result = false;
+
+    $.ajax({
+        async: false,
+        type: "PUT",
+        data: video,
+        url: "/Media/UpdateVideoDetails/" + video.Id,
+        success: function (response) {
+            result = true;
+        }
+    });
+
+    return result;
+}
+
 function UpdatePersonAvatarImage(personId, imageId) {
     let result = false;
 
@@ -474,6 +511,42 @@ function CopyImages(ids, dataBlockId) {
     return result;
 }
 
+async function DeleteDataBlock(dataBlockId) {
+    const result = await $.ajax({
+        type: "DELETE",
+        url: "/PersonContent/DeleteDataBlock/" + dataBlockId
+    });
+
+    return result;
+}
+
+async function DeleteDataHolder(dataHolderId) {
+    const result = await $.ajax({
+        type: "DELETE",
+        url: "/PersonContent/DeleteDataHolder/" + dataHolderId
+    });
+
+    return result;
+}
+
+async function DeleteImage(imageId) {
+    const result = await $.ajax({
+        type: "DELETE",
+        url: "/Media/DeleteImage/" + imageId
+    });
+
+    return result;
+}
+
+async function DeleteVideo(videoId) {
+    let result = await $.ajax({
+        type: "DELETE",
+        url: "/Media/DeleteVideo/" + videoId
+    });
+
+    return result;
+}
+
 //Events
 function InitPersonDataBlockButtonEvents() {
     $("#person-data-block")
@@ -545,6 +618,18 @@ function InitPersonDataBlockButtonEvents() {
     $("#image-carousel-modal")
         .find("#set-image-as-avatar-button")
         .click(OnSetImageAsAvatarButtonClick);
+
+    $("#add-video-modal")
+        .find("#add-video-submit-button")
+        .click(OnAddVideoSubmitButtonClick);
+
+    $("#video-modal")
+        .find("#save-video-submit-button")
+        .click(OnSaveVideoSubmitButtonClick);
+
+    $("#delete-modal")
+        .find("#delete-submit-button")
+        .click(OnDeleteSubmitButtonClick);
 }
 
 function OnBackToDataBlocksButtonClick() {
@@ -571,8 +656,6 @@ function OnTabButtonClick(event) {
         ShowDataBlockContentTab(DataBlockContentTabs.Images);
         g_currentAddButtonActionType = AddButtonActionTypes.AddImage;
         ShowSaveButton(false);
-        RefreshImages();
-        UpdateImages();
     }
     else if (targetElement.hasClass("tab-button-videos")) {
         ShowDataBlockContentTab(DataBlockContentTabs.Videos);
@@ -605,6 +688,8 @@ function OnDataCategoryClick(event) {
         g_currentDataBlock = g_currentDataCategory.DataBlocks[0];
 
         UpdateDataHolders();
+        RefreshImages().then((val) => UpdateImages());
+        RefreshVideos().then((val) => UpdateVideos());
 
         OpenDefaultDataBlockTab();
     }
@@ -648,6 +733,8 @@ function OnDataBlockClick(event) {
     g_currentAddButtonActionType = AddButtonActionTypes.AddDataHolder;
 
     UpdateDataHolders();
+    RefreshImages().then((val) => UpdateImages());
+    RefreshVideos().then((val) => UpdateVideos());
 
     ShowBackToDataBlocksButton();
     ShowDataBlocks(false);
@@ -663,6 +750,19 @@ function OnImageClick(event) {
     UpdateImageSlider(imageId);
 
     $("#image-carousel-modal").modal("show");
+}
+
+function OnVideoClick(event) {
+    if ($(event.target).is("input")) return;
+
+    let videoId = $(event.currentTarget).attr("data-id");
+
+    UpdateVideoModalVideos();
+
+    $("#video-modal .videos-list .videos-list__item[data-id=\"" + videoId + "\"]")
+        .click();
+
+    $("#video-modal").modal("show");
 }
 
 function OnAddDataCategoryButtonClick() {
@@ -700,7 +800,7 @@ function OnAddElementButtonClick() {
             break;
         }
         case AddButtonActionTypes.AddVideo: {
-            alert("Add video modal");
+            $("#add-video-modal").modal("show");
             break;
         }
 
@@ -761,10 +861,50 @@ function OnAddImageSubmitButtonClick() {
         alert("Ошибка при создании изображения.");
     }
     else {
-        $("#add-image-modal").modal("hide");
-        RefreshImages();
-        UpdateImages();
+        imageModal.modal("hide");
+        RefreshImages().then((val) => UpdateImages());
     }
+}
+
+function OnAddVideoSubmitButtonClick() {
+    if (g_isUploadingVideo) return;
+
+    let videoModal = $("#add-video-modal");
+
+    let files = videoModal.find("#video-file")[0].files;
+
+    if (files.length == 0) {
+        alert("Пожалуйста выберите файл.");
+        return;
+    }
+
+    //File must be smaller than 500MB
+    if(files[0].size > 524288000) {
+        alert("Размер файла превышает лимит в 500МБ");
+        return;
+    }
+
+    let formData = new FormData();
+    formData.append("DataBlockId", g_currentDataBlock.Id);
+    formData.append("Title", videoModal.find("#video-title").val());
+    formData.append("Description", videoModal.find("#video-desc").val());
+    formData.append("VideoFile", files[0]);
+
+    g_isUploadingVideo = true;
+    videoModal.find("#video-file").attr("disabled", "");
+
+    CreateVideo(formData).then(
+        (data) => {
+            videoModal.modal("hide");
+            RefreshVideos().then((val) => UpdateVideos());
+            g_isUploadingVideo = false;
+            videoModal.find("#video-file").removeAttr("disabled");
+        },
+        (r) => {
+            alert("Ошибка при создании видео.");
+            g_isUploadingVideo = false;
+            videoModal.find("#video-file").removeAttr("disabled");
+        });
 }
 
 function OnEditElementButtonClick() {
@@ -880,42 +1020,86 @@ function OnDeleteDataCategoryButtonClick() {
 
 }
 
-//TODO:
 function OnDeleteButtonClick() {
+    $("#delete-modal").modal("show");
+}
 
+function OnDeleteSubmitButtonClick() {
+    switch (g_currentAddButtonActionType) {
+        case AddButtonActionTypes.AddDataBlock: {
+            DeleteSelectedDataBlocks().then((val) => {
+                RefreshDataBlocks();
+                UpdateDataBlocks();
+                $("#delete-modal").modal("hide");
+            });
+            break;
+        }
+        case AddButtonActionTypes.AddDataHolder: {
+            DeleteSelectedDataHolders().then((val) => {
+                RefreshDataHolders();
+                UpdateDataHolders();
+                $("#delete-modal").modal("hide");
+            });
+            break;
+        }
+        case AddButtonActionTypes.AddImage: {
+            DeleteSelectedImages().then((val) => {
+                RefreshImages().then((val) => {
+                    UpdateImages();
+                    $("#delete-modal").modal("hide");
+                });
+            });            
+            break;
+        }
+        case AddButtonActionTypes.AddVideo: {
+            DeleteSelectedVideos().then((val) => {
+                RefreshVideos().then((val) => {
+                    UpdateVideos();
+                    $("#delete-modal").modal("hide");
+                });                
+            });
+            break;
+        }
+
+        default:
+            break;
+    }    
 }
 
 function OnSaveButtonClick() {
-    let SaveFunc = async () => {
-        if (g_isSaving) return;
-        if ($("#person-data-block").find(".data-holders .data-holders__item").length === 0) return;
+    if (g_isSaving) return;
+    if ($("#person-data-block").find(".data-holders .data-holders__item").length === 0) return;
+    g_isSaving = true;
 
-        g_isSaving = true;
-        let saveButton = $("#person-data-block #save-button");
-        saveButton.find(".loader").css("display", "block");
-        saveButton.find(".btn__text")[0].innerHTML = "Сохранение";
+    SaveData();
+}
 
-        if (SaveDataHolders()) {
-            saveButton.find(".loader").css("display", "none");
-            saveButton.find(".btn__text")[0].innerHTML = "Сохранено";
-            saveButton.removeClass("btn-default");
-            saveButton.addClass("btn-success");
-            await WaitForMilliseconds(2000);
+async function SaveData() {
+    let saveButton = $("#person-data-block #save-button");
+    saveButton.find(".loader").css("display", "block");
+    saveButton.find(".btn__text")[0].innerHTML = "Сохранение";
 
-            g_currentDataCategory = GetDataCategory(g_currentDataCategory.Id);
+    if (SaveDataHolders()) {
+        saveButton.find(".loader").css("display", "none");
+        saveButton.find(".btn__text")[0].innerHTML = "Сохранено";
+        saveButton.removeClass("btn-default");
+        saveButton.addClass("btn-success");
+        await WaitForMilliseconds(1500);
 
-            if (!g_currentDataCategory.IsDeletable)
-                ReloadTree($("#mainPerson")[0].getAttribute("data-value"));
-        }
-        else {
-            alert("Произошла ошибка во время сохранения.");
-        }
-        saveButton.find(".btn__text")[0].innerHTML = "Сохранить";
-        saveButton.removeClass("btn-success"); 
-        saveButton.addClass("btn-default");
-        g_isSaving = false;
-    };
-    SaveFunc();
+        g_currentDataCategory = GetDataCategory(g_currentDataCategory.Id);
+
+        if (g_currentDataCategory.DataCategoryType == DataCategoryTypes.PersonInfo)
+            ReloadTree($("#mainPerson")[0].getAttribute("data-value"));
+    }
+    else {
+        alert("Произошла ошибка во время сохранения.");
+    }
+
+    saveButton.find(".btn__text")[0].innerHTML = "Сохранить";
+    saveButton.removeClass("btn-success");
+    saveButton.addClass("btn-default");
+
+    g_isSaving = false;
 }
 
 function OnEditPrivacyButtonClick() {  
@@ -1051,8 +1235,7 @@ function OnSaveImageSubmitButtonClick() {
         alert("Ошибка при сохранении данных изображения.");
     }
     else {
-        RefreshImages();
-        UpdateImageSlider(currentImageId);
+        RefreshImages().then(val => UpdateSliderImageDetails(currentImageId));
     }
 }
 
@@ -1062,6 +1245,36 @@ function OnSetImageAsAvatarButtonClick() {
     }
     else {
         ReloadTree(_currentFamilyTree.MainPersonId);
+    }
+}
+
+function OnVideoModalVideoClick(event) {    
+    let videosListItemElement = $(event.currentTarget);
+    let videoId = videosListItemElement.attr("data-id");
+
+    UpdateVideoModal(videoId);
+
+    SelectVideoModalVideo(videoId);
+}
+
+function OnSaveVideoSubmitButtonClick() {
+    let currentVideoId = GetVideoModalCurrentVideoId();
+    let videoModal = $("#video-modal");
+
+    let video = {
+        Id: currentVideoId,
+        Title: videoModal.find("#current-video-title").val(),
+        Description: videoModal.find("#current-video-desc").val()
+    };
+
+    if (!UpdateVideoDetails(video)) {
+        alert("Ошибка при сохранении данных видео.");
+    }
+    else {
+        RefreshVideos().then((val) => {
+            UpdateVideoModalVideos();
+            SelectVideoModalVideo(currentVideoId);
+        });
     }
 }
 
@@ -1206,9 +1419,51 @@ function UpdateSliderImageDetails(imageId) {
         .text(g_currentDataBlockImages.length);
 }
 
-//TODO:
 function UpdateVideos() {
+    ClearVideos();
 
+    if (g_currentDataBlockVideos == null)
+        return;
+
+    g_currentDataBlockVideos
+        .forEach((item) => {
+            AddItemToVideos(item);
+        });
+
+    $("#person-data-block")
+        .find(".videos .videos__item")
+        .click(OnVideoClick);
+}
+
+function UpdateVideoModal(videoId) {
+    let videoModal = $("#video-modal");
+    let currentVideoElement = videoModal.find("#current-video")[0];
+
+    let currentVideo = g_currentDataBlockVideos
+        .find((item) => item.Id == videoId);
+
+    videoModal.find("#current-video-title").val(currentVideo.Title);
+    videoModal.find("#current-video-desc").val(currentVideo.Description);
+
+    currentVideoElement.poster = "data:image/" + currentVideo.PreviewImageFormat + ";base64," + currentVideo.PreviewImageData;
+    currentVideoElement.src = "Media/GetVideo/" + videoId;
+    currentVideoElement.volume = 0.5;
+    currentVideoElement.load();
+}
+
+function UpdateVideoModalVideos() {
+    ClearVideoModalVideos();
+
+    if (g_currentDataBlockVideos == null)
+        return;
+
+    g_currentDataBlockVideos
+        .forEach((item) => {
+            AddVideoToVideoModal(item);
+        });
+
+    $("#video-modal .videos-list .videos-list__item")
+        .click(OnVideoModalVideoClick);
 }
 
 function RefreshDataBlocks() {
@@ -1229,12 +1484,12 @@ function RefreshDataHolders() {
         .click();
 }
 
-function RefreshImages() {
-    g_currentDataBlockImages = GetImages(g_currentDataBlock.Id);
+async function RefreshImages() {
+    g_currentDataBlockImages = await GetImages(g_currentDataBlock.Id);
 }
 
-function RefreshVideos() {
-    g_currentDataBlockVideos = GetVideos(g_currentDataBlock.Id);
+async function RefreshVideos() {
+    g_currentDataBlockVideos = await GetVideos(g_currentDataBlock.Id);
 }
 
 function OpenDefaultDataBlockTab() {
@@ -1321,6 +1576,10 @@ function ClearSliderImages() {
     $("#image-carousel-modal")
         .find(".slider")
         .empty();
+}
+
+function ClearVideoModalVideos() {
+    $("#video-modal .videos-list").empty();
 }
 
 function AddItemToDataCategories(dataCategory) {
@@ -1469,6 +1728,35 @@ function AddItemToImages(image) {
         .appendChild(imageElement);
 }
 
+function AddItemToVideos(video) {
+    let videoElement = document.createElement("div");
+    videoElement.classList.add("video");
+    videoElement.classList.add("videos__item");
+    videoElement.setAttribute("data-id", video.Id);
+
+    let selectorElement = document.createElement("div");
+    selectorElement.classList.add("video__selector");
+
+    let checkboxElement = document.createElement("div");
+    checkboxElement.classList.add("checkbox");
+
+    let inputElement = document.createElement("input");
+    inputElement.type = "checkbox";
+
+    checkboxElement.appendChild(inputElement);
+    selectorElement.appendChild(checkboxElement);
+
+    let imgElement = document.createElement("img");
+    imgElement.src = "data:image/" + video.PreviewImageFormat + ";base64," + video.PreviewImageData;
+
+    videoElement.appendChild(selectorElement);
+    videoElement.appendChild(imgElement);
+
+    $("#person-data-block")
+        .find(".videos")[0]
+        .appendChild(videoElement);
+}
+
 function AddImageToSlider(image) {
     let slider = $("#image-carousel-modal")
         .find(".slider")[0];
@@ -1480,6 +1768,32 @@ function AddImageToSlider(image) {
     slider.appendChild(imgElement);
 }
 
+function AddVideoToVideoModal(video) {
+    let videosList = $("#video-modal .videos-list");
+
+    let videosLitsItemElement = $(document.createElement("div"));
+    videosLitsItemElement.addClass("videos-list__item");
+    videosLitsItemElement.addClass("video-info");
+    videosLitsItemElement.attr("data-id", video.Id);
+
+    let videoPreviewImage = $(document.createElement("div"));
+    videoPreviewImage.addClass("video-info__preview-image");
+
+    let imgElement = document.createElement("img");
+    imgElement.src = "data:image/" + video.PreviewImageFormat + ";base64," + video.PreviewImageData;
+
+    videoPreviewImage.append(imgElement);
+
+    let videoTitleElement = document.createElement("div");
+    videoTitleElement.classList.add("video-info__title");
+    videoTitleElement.innerHTML = video.Title;
+
+    videosLitsItemElement.append(videoPreviewImage);
+    videosLitsItemElement.append(videoTitleElement);
+
+    videosList.append(videosLitsItemElement);
+}
+
 function CreateDataHolderElement(dataHolder) {
     let dataHolderElement = document.createElement("div");
     dataHolderElement.classList.add("data-holders__item");
@@ -1488,16 +1802,19 @@ function CreateDataHolderElement(dataHolder) {
     return dataHolderElement;
 }
 
-function CreateDataHolderSelectorElement() {
+function CreateDataHolderSelectorElement(dataHolder) {
     let dataHolderSelectorElement = document.createElement("div");
     dataHolderSelectorElement.classList.add("data-holder__selector");
 
-    let checkboxElement = document.createElement("div");
-    checkboxElement.classList.add("checkbox");
-    let checkboxInputElement = document.createElement("input");
-    checkboxInputElement.type = "checkbox";
-    checkboxElement.appendChild(checkboxInputElement);
-    dataHolderSelectorElement.appendChild(checkboxElement);
+    if (dataHolder.IsDeletable) {
+        let checkboxElement = document.createElement("div");
+        checkboxElement.classList.add("checkbox");
+        let checkboxInputElement = document.createElement("input");
+        checkboxInputElement.type = "checkbox";
+
+        checkboxElement.appendChild(checkboxInputElement);
+        dataHolderSelectorElement.appendChild(checkboxElement);
+    }    
 
     return dataHolderSelectorElement;
 }
@@ -1576,7 +1893,7 @@ function CreateTextDataHolderElement(dataHolder) {
     inputElement.value = dataHolder.Data;
     dataHolderDataElement.appendChild(inputElement);
 
-    dataHolderElement.appendChild(CreateDataHolderSelectorElement());
+    dataHolderElement.appendChild(CreateDataHolderSelectorElement(dataHolder));
     dataHolderElement.appendChild(CreateDataHolderTitleElement(dataHolder));
     dataHolderElement.appendChild(dataHolderDataElement);
     dataHolderElement.appendChild(CreateDataHolderPrivacyElement(dataHolder));
@@ -1588,7 +1905,7 @@ function CreateTextAreaDataHolderElement(dataHolder) {
     let dataHolderElement = CreateDataHolderElement(dataHolder);
     dataHolderElement.classList.replace("data-holder", "data-holder-textarea");
 
-    let dataHolderSelectorElement = CreateDataHolderSelectorElement();
+    let dataHolderSelectorElement = CreateDataHolderSelectorElement(dataHolder);
     dataHolderSelectorElement.classList.replace("data-holder__selector", "data-holder-textarea__selector");
 
     let dataHolderTitleElement = CreateDataHolderTitleElement(dataHolder);
@@ -1629,7 +1946,7 @@ function CreateDateDataHolderElement(dataHolder) {
     }
     dataHolderDataElement.appendChild(inputElement);
 
-    dataHolderElement.appendChild(CreateDataHolderSelectorElement());
+    dataHolderElement.appendChild(CreateDataHolderSelectorElement(dataHolder));
     dataHolderElement.appendChild(CreateDataHolderTitleElement(dataHolder));
     dataHolderElement.appendChild(dataHolderDataElement);
     dataHolderElement.appendChild(CreateDataHolderPrivacyElement(dataHolder));
@@ -1646,7 +1963,7 @@ function CreateDateTimeDataHolderElement(dataHolder) {
     inputElement.value = dataHolder.Data;
     dataHolderDataElement.appendChild(inputElement);
 
-    dataHolderElement.appendChild(CreateDataHolderSelectorElement());
+    dataHolderElement.appendChild(CreateDataHolderSelectorElement(dataHolder));
     dataHolderElement.appendChild(CreateDataHolderTitleElement(dataHolder));
     dataHolderElement.appendChild(dataHolderDataElement);
     dataHolderElement.appendChild(CreateDataHolderPrivacyElement(dataHolder));
@@ -1663,7 +1980,7 @@ function CreateTimeDataHolderElement(dataHolder) {
     inputElement.value = dataHolder.Data;
     dataHolderDataElement.appendChild(inputElement);
 
-    dataHolderElement.appendChild(CreateDataHolderSelectorElement());
+    dataHolderElement.appendChild(CreateDataHolderSelectorElement(dataHolder));
     dataHolderElement.appendChild(CreateDataHolderTitleElement(dataHolder));
     dataHolderElement.appendChild(dataHolderDataElement);
     dataHolderElement.appendChild(CreateDataHolderPrivacyElement(dataHolder));
@@ -1675,7 +1992,7 @@ function CreateGenderDataHolderElement(dataHolder) {
     let dataHolderElement = CreateDataHolderElement(dataHolder);
     dataHolderElement.classList.replace("data-holder", "data-holder-gender");
 
-    let dataHolderSelectorElement = CreateDataHolderSelectorElement();
+    let dataHolderSelectorElement = CreateDataHolderSelectorElement(dataHolder);
     dataHolderSelectorElement.classList.replace("data-holder__selector", "data-holder-gender__selector");
 
     let dataHolderTitleElement = CreateDataHolderTitleElement(dataHolder);
@@ -1800,9 +2117,28 @@ function GetSelectedImagesIds() {
     return result;
 }
 
+function GetSelectedVideosIds() {
+    let result = [];
+
+    $("#person-data-block")
+        .find(".videos .videos__item")
+        .each((i, el) => {
+            if ($(el).find("input[type=\"checkbox\"]:checked").length == 1) {
+                result.push(el.getAttribute("data-id"));
+            }
+        });
+
+    return result;
+}
+
 function GetImageSliderCurrentImageId() {
     return $("#image-carousel-modal")
         .find(".slider .slick-current")
+        .attr("data-id");
+}
+
+function GetVideoModalCurrentVideoId() {
+    return $("#video-modal .videos-list .videos-list__item_active")
         .attr("data-id");
 }
 
@@ -1883,6 +2219,61 @@ function PasteImages() {
         return;
     }
 
-    RefreshImages();
-    UpdateImages();
+    RefreshImages().then((val) => UpdateImages());
+}
+
+function SelectVideoModalVideo(videoId) {
+    let videosListElement = $("#video-modal .videos-list");
+
+    videosListElement
+        .children()
+        .removeClass("videos-list__item_active");
+
+    videosListElement
+        .find(".videos-list__item[data-id=\"" + videoId + "\"]")
+        .addClass("videos-list__item_active");
+}
+
+async function DeleteSelectedDataBlocks() {
+    let dataBlocksIds = GetSelectedDataBlocksIds();
+
+    if (dataBlocksIds.length == 0)
+        return;
+
+    const promises = dataBlocksIds.map(DeleteDataBlock);
+
+    await Promise.all(promises);
+}
+
+async function DeleteSelectedDataHolders() {
+    let dataHoldersIds = GetSelectedDataHoldersIds();
+
+    if (dataHoldersIds.length == 0)
+        return;
+
+    const promises = dataHoldersIds.map(DeleteDataHolder);
+
+    await Promise.all(promises);
+}
+
+async function DeleteSelectedImages() {
+    let imagesIds = GetSelectedImagesIds();
+
+    if (imagesIds.length == 0)
+        return;
+
+    const promises = imagesIds.map(DeleteImage);
+
+    await Promise.all(promises);
+}
+
+async function DeleteSelectedVideos() {
+    let videosIds = GetSelectedVideosIds();
+
+    if (videosIds.length == 0)
+        return;
+    
+    const promises = videosIds.map(DeleteVideo);
+
+    await Promise.all(promises);
 }

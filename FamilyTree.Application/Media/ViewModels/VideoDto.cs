@@ -11,7 +11,5 @@
         public string PreviewImageData { get; set; }
 
         public string PreviewImageFormat { get; set; }
-
-        public string FilePath { get; set; }
     }
 }

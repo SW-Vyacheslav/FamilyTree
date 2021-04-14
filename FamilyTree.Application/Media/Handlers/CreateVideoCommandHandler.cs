@@ -5,32 +5,39 @@ using FamilyTree.Domain.Entities.Media;
 using FamilyTree.Domain.Entities.PersonContent;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Hosting;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using FamilyTree.Application.Media.Interfaces;
+using FamilyTree.Domain.Entities.Privacy;
+using FamilyTree.Domain.Enums.Privacy;
 
 namespace FamilyTree.Application.Media.Handlers
 {
-    //TODO:
     public class CreateVideoCommandHandler : IRequestHandler<CreateVideoCommand, int>
     {
         private readonly IApplicationDbContext _context;
 
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IConfiguration _configuration;
 
-        public CreateVideoCommandHandler(IApplicationDbContext context, IHostingEnvironment hostingEnvironment)
+        private readonly IVideoThumbnailService _thumbnailService;
+
+        public CreateVideoCommandHandler(IApplicationDbContext context, 
+            IConfiguration configuration, 
+            IVideoThumbnailService thumbnailService)
         {
             _context = context;
-            _hostingEnvironment = hostingEnvironment;
+            _configuration = configuration;
+            _thumbnailService = thumbnailService;
         }
 
         public async Task<int> Handle(CreateVideoCommand request, CancellationToken cancellationToken)
         {
             DataBlock dataBlock = await _context.DataBlocks
+                .Include(db => db.DataCategory)
+                .ThenInclude(dc => dc.Person)
                 .SingleOrDefaultAsync(db => db.CreatedBy.Equals(request.UserId) &&
                                             db.Id == request.DataBlockId,
                                       cancellationToken);
@@ -40,30 +47,42 @@ namespace FamilyTree.Application.Media.Handlers
 
             Video entity = new Video();
             entity.Title = request.Title;
-            entity.Description = request.Description;            
+            entity.Description = request.Description;
 
-            if (request.IsUploadOnServer)
+            string rootPath = Path.Combine(_configuration["FilesStorageFolderPath"], 
+                _configuration["VideosUploadsFolderPath"]);
+            int treeId = dataBlock.DataCategory.Person.FamilyTreeId;
+            int personId = dataBlock.DataCategory.PersonId;
+            int dataCategoryId = dataBlock.DataCategoryId;
+            string subDirectoriesPath = $"{treeId}_tree/{personId}_person/{dataCategoryId}_datacategory/{dataBlock.Id}_datablock";
+            string directoryPath = Path.Combine(rootPath, subDirectoriesPath);
+            string fileName = $"{Guid.NewGuid()}.{request.VideoFile.ContentType.Split('/')[1]}";
+            string filePath = Path.Combine(directoryPath, fileName);
+
+            Directory.CreateDirectory(directoryPath);
+
+            using (var stream = File.OpenWrite(filePath))
             {
-                string fileName = $"{Guid.NewGuid()}.{request.VideoFile.ContentType.Split('/')[1]}";
-                string path = $"{_hostingEnvironment.WebRootPath}/uploads/videos/{fileName}";
-
-                using (var stream = File.OpenWrite(path))
-                {
-                    await request.VideoFile.CopyToAsync(stream);
-                }
-
-                entity.FilePath = path;
+                await request.VideoFile.CopyToAsync(stream);
             }
-            else
-            {
-                entity.FilePath = request.FilePath;
-            }
+
+            entity.FilePath = filePath;
+            entity.PreviewImageData = _thumbnailService.GetVideoThumbnailBytes(filePath);
+            entity.PreviewImageFormat = "jpeg";
 
             DataBlockVideo dataBlockVideo = new DataBlockVideo();
             dataBlockVideo.DataBlock = dataBlock;
             dataBlockVideo.Video = entity;
 
+            VideoPrivacy privacy = new VideoPrivacy()
+            {
+                Video = entity,
+                PrivacyLevel = PrivacyLevel.Confidential,
+                IsAlways = true
+            };
+
             _context.Videos.Add(entity);
+            _context.VideoPrivacies.Add(privacy);
             _context.DataBlockVideos.Add(dataBlockVideo);
 
             await _context.SaveChangesAsync(cancellationToken);

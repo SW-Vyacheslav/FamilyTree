@@ -2,6 +2,8 @@
 using FamilyTree.Application.Common.Behaviours;
 using FamilyTree.Application.FamilyTrees.Interfaces;
 using FamilyTree.Application.FamilyTrees.Services;
+using FamilyTree.Application.Media.Interfaces;
+using FamilyTree.Application.Media.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +21,7 @@ namespace FamilyTree.Application
             //services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             services.AddTransient<IFamilyTreeService, FamilyTreeService>();
+            services.AddTransient<IVideoThumbnailService, WindowsVideoThumbnailService>();
 
             return services;
         }

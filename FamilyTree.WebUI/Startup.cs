@@ -7,6 +7,8 @@ using FamilyTree.Application.Common.Interfaces;
 using FamilyTree.Infrastructure;
 using FamilyTree.WebUI.Services;
 using FamilyTree.Application;
+using System.IO;
+using System;
 
 namespace FamilyTree.WebUI
 {
@@ -48,6 +50,7 @@ namespace FamilyTree.WebUI
                 //app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -56,6 +59,9 @@ namespace FamilyTree.WebUI
             app.UseAuthentication();
             app.UseAuthorization();
 
+            CheckUploadsFolderPath();
+            CheckTempFilesFolderPath();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -63,6 +69,22 @@ namespace FamilyTree.WebUI
                     pattern: "{controller=FamilyTree}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+        }
+
+        private void CheckUploadsFolderPath()
+        {
+            string dir = Path.Combine(Configuration["FilesStorageFolderPath"],
+                Configuration["VideosUploadsFolderPath"]);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+        }
+
+        private void CheckTempFilesFolderPath()
+        {
+            string dir = Path.Combine(Configuration["FilesStorageFolderPath"],
+                Configuration["TempFilesFolderPath"]);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
         }
     }
 }
