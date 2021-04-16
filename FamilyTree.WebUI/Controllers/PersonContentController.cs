@@ -19,6 +19,7 @@ namespace FamilyTree.WebUI.Controllers
             _currentUserService = currentUserService;
         }
 
+        //DataCategory
         [HttpGet]
         public async Task<ActionResult<List<DataCategoryDto>>> GetDataCategories(int personId)
         {
@@ -47,22 +48,6 @@ namespace FamilyTree.WebUI.Controllers
             return await Mediator.Send(command);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<int>> CreateDataBlock(CreateDataBlockCommand command)
-        {
-            command.UserId = _currentUserService.UserId;
-
-            return await Mediator.Send(command);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<int>> CreateDataHolder(CreateDataHolderCommand command)
-        {
-            command.UserId = _currentUserService.UserId;
-
-            return await Mediator.Send(command);
-        }
-
         [HttpPut]
         public async Task<ActionResult> UpdateDataCategoryName(int id, UpdateDataCategoryNameCommand command)
         {
@@ -77,11 +62,99 @@ namespace FamilyTree.WebUI.Controllers
         }
 
         [HttpPut]
+        public async Task<ActionResult> UpdateDataCategoryOrder(int id, UpdateDataCategoryOrderCommand command)
+        {
+            if (id != command.Id)
+                return BadRequest();
+
+            command.UserId = _currentUserService.UserId;
+
+            await Mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeleteDataCategory(int id)
+        {
+            await Mediator.Send(new DeleteDataCategoryCommand()
+            {
+                Id = id,
+                UserId = _currentUserService.UserId
+            });
+
+            return NoContent();
+        }
+
+        //DataBlock
+        [HttpPost]
+        public async Task<ActionResult<int>> CreateDataBlock(CreateDataBlockCommand command)
+        {
+            command.UserId = _currentUserService.UserId;
+
+            return await Mediator.Send(command);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CopyDataBlocks(CopyDataBlocksCommand command)
+        {
+            command.UserId = _currentUserService.UserId;
+
+            await Mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [HttpPut]
         public async Task<ActionResult> UpdateDataBlockTitle(int id, UpdateDataBlockTitleCommand command)
         {
             if (id != command.Id)
                 return BadRequest();
 
+            command.UserId = _currentUserService.UserId;
+
+            await Mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateDataBlockOrder(int id, UpdateDataBlockOrderCommand command)
+        {
+            if (id != command.Id)
+                return BadRequest();
+
+            command.UserId = _currentUserService.UserId;
+
+            await Mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeleteDataBlock(int id)
+        {
+            await Mediator.Send(new DeleteDataBlockCommand()
+            {
+                Id = id,
+                UserId = _currentUserService.UserId
+            });
+
+            return NoContent();
+        }
+
+        //DataHolder
+        [HttpPost]
+        public async Task<ActionResult<int>> CreateDataHolder(CreateDataHolderCommand command)
+        {
+            command.UserId = _currentUserService.UserId;
+
+            return await Mediator.Send(command);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CopyDataHolders(CopyDataHoldersCommand command)
+        {
             command.UserId = _currentUserService.UserId;
 
             await Mediator.Send(command);
@@ -116,32 +189,6 @@ namespace FamilyTree.WebUI.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateDataCategoryOrder(int id, UpdateDataCategoryOrderCommand command)
-        {
-            if (id != command.Id)
-                return BadRequest();
-
-            command.UserId = _currentUserService.UserId;
-
-            await Mediator.Send(command);
-
-            return NoContent();
-        }
-
-        [HttpPut]
-        public async Task<ActionResult> UpdateDataBlockOrder(int id, UpdateDataBlockOrderCommand command)
-        {
-            if (id != command.Id)
-                return BadRequest();
-
-            command.UserId = _currentUserService.UserId;
-
-            await Mediator.Send(command);
-
-            return NoContent();
-        }
-
-        [HttpPut]
         public async Task<ActionResult> UpdateDataHolderOrder(int id, UpdateDataHolderOrderCommand command)
         {
             if (id != command.Id)
@@ -155,30 +202,6 @@ namespace FamilyTree.WebUI.Controllers
         }
 
         [HttpDelete]
-        public async Task<ActionResult> DeleteDataCategory(int id)
-        {
-            await Mediator.Send(new DeleteDataCategoryCommand()
-            {
-                Id = id,
-                UserId = _currentUserService.UserId
-            });
-
-            return NoContent();
-        }
-
-        [HttpDelete]
-        public async Task<ActionResult> DeleteDataBlock(int id)
-        {
-            await Mediator.Send(new DeleteDataBlockCommand()
-            {
-                Id = id,
-                UserId = _currentUserService.UserId
-            });
-
-            return NoContent();
-        }
-
-        [HttpDelete]
         public async Task<ActionResult> DeleteDataHolder(int id)
         {
             await Mediator.Send(new DeleteDataHolderCommand() 
@@ -186,26 +209,6 @@ namespace FamilyTree.WebUI.Controllers
                 Id = id,
                 UserId = _currentUserService.UserId
             });
-
-            return NoContent();
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> CopyDataBlocks(CopyDataBlocksCommand command)
-        {
-            command.UserId = _currentUserService.UserId;
-
-            await Mediator.Send(command);
-
-            return NoContent();
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> CopyDataHolders(CopyDataHoldersCommand command)
-        {
-            command.UserId = _currentUserService.UserId;
-
-            await Mediator.Send(command);
 
             return NoContent();
         }

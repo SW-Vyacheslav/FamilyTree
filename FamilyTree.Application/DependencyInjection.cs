@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using FamilyTree.Application.Common.Behaviours;
+using FamilyTree.Application.Copying.Interfaces;
+using FamilyTree.Application.Copying.Services;
 using FamilyTree.Application.FamilyTrees.Interfaces;
 using FamilyTree.Application.FamilyTrees.Services;
 using FamilyTree.Application.Media.Interfaces;
@@ -22,6 +24,7 @@ namespace FamilyTree.Application
 
             services.AddTransient<IFamilyTreeService, FamilyTreeService>();
             services.AddTransient<IVideoThumbnailService, WindowsVideoThumbnailService>();
+            services.AddTransient<ICopyingService, CopyingService>();
 
             return services;
         }

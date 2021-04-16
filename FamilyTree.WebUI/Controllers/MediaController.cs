@@ -19,6 +19,7 @@ namespace FamilyTree.WebUI.Controllers
             _currentUserService = currentUserService;
         }
 
+        //Images
         [HttpGet]
         public async Task<ActionResult<List<ImageDto>>> GetImages(int dataBlockId)
         {
@@ -72,6 +73,7 @@ namespace FamilyTree.WebUI.Controllers
             return NoContent();
         }
 
+        //Videos
         [HttpGet]
         public async Task<ActionResult<List<VideoDto>>> GetVideos(int dataBlockId)
         {

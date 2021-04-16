@@ -38,7 +38,7 @@ namespace FamilyTree.Application.Media.Services
             };
 
             process.Start();
-            process.WaitForExit(3000);
+            process.WaitForExit(10000);
 
             byte[] thumbnailBytes = null;
 

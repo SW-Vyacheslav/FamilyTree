@@ -54,7 +54,7 @@ namespace FamilyTree.Application.Media.Handlers
             int treeId = dataBlock.DataCategory.Person.FamilyTreeId;
             int personId = dataBlock.DataCategory.PersonId;
             int dataCategoryId = dataBlock.DataCategoryId;
-            string subDirectoriesPath = $"{treeId}_tree/{personId}_person/{dataCategoryId}_datacategory/{dataBlock.Id}_datablock";
+            string subDirectoriesPath = $"{treeId}_tree\\{personId}_person\\{dataCategoryId}_datacategory\\{dataBlock.Id}_datablock";
             string directoryPath = Path.Combine(rootPath, subDirectoriesPath);
             string fileName = $"{Guid.NewGuid()}.{request.VideoFile.ContentType.Split('/')[1]}";
             string filePath = Path.Combine(directoryPath, fileName);

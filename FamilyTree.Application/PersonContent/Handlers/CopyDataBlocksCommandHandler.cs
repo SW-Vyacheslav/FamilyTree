@@ -1,8 +1,8 @@
 ﻿using FamilyTree.Application.Common.Exceptions;
 using FamilyTree.Application.Common.Interfaces;
+using FamilyTree.Application.Copying.Interfaces;
 using FamilyTree.Application.PersonContent.Commands;
 using FamilyTree.Domain.Entities.PersonContent;
-using FamilyTree.Domain.Entities.Privacy;
 using FamilyTree.Domain.Enums.PersonContent;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -17,9 +17,12 @@ namespace FamilyTree.Application.PersonContent.Handlers
     {
         private readonly IApplicationDbContext _context;
 
-        public CopyDataBlocksCommandHandler(IApplicationDbContext context)
+        private readonly ICopyingService _copying;
+
+        public CopyDataBlocksCommandHandler(IApplicationDbContext context, ICopyingService copying)
         {
             _context = context;
+            _copying = copying;
         }
 
         public async Task<Unit> Handle(CopyDataBlocksCommand request, CancellationToken cancellationToken)
@@ -37,51 +40,15 @@ namespace FamilyTree.Application.PersonContent.Handlers
                 dataCategory.DataCategoryType == DataCategoryType.PersonInfo)
                 throw new Exception($"Can not copy to DataCategory with CategoryType = \"{dataCategory.DataCategoryType}\"");
 
-            foreach (var item in request.DataBlocksIds)
-            {
-                DataBlock dataBlock = await _context.DataBlocks
-                    .Include(db => db.DataHolders)
-                    .SingleOrDefaultAsync(db => db.CreatedBy.Equals(request.UserId) &&
-                                                db.Id == item,
-                                          cancellationToken);
+            var dataBlocks = await _context.DataBlocks
+                .Where(db => db.CreatedBy.Equals(request.UserId) &&
+                             request.DataBlocksIds.Contains(db.Id))
+                .ToListAsync(cancellationToken);
 
-                if (dataBlock == null)
-                    continue;
-
-                DataBlock entity = new DataBlock();
-                entity.Title = dataBlock.Title;
-                entity.OrderNumber = dataCategory.DataBlocks.Count + 1;
-                entity.DataHolders = dataBlock.DataHolders
-                    .Select(dh =>
-                    {
-                        DataHolder dataHolder = new DataHolder() 
-                        {
-                            Title = dh.Title,
-                            Data = dh.Data,
-                            DataHolderType = dh.DataHolderType,
-                            IsDeletable = true,
-                            OrderNumber = dh.OrderNumber
-                        };
-
-                        var privacy = _context.DataHolderPrivacies
-                            .SingleOrDefault(dhp => dhp.DataHolderId == dh.Id);
-
-                        DataHolderPrivacy dataHolderPrivacy = new DataHolderPrivacy()
-                        {
-                            DataHolder = dataHolder,
-                            BeginDate = privacy.BeginDate,
-                            EndDate = privacy.EndDate,
-                            IsAlways = privacy.IsAlways,
-                            PrivacyLevel = privacy.PrivacyLevel
-                        };
-
-                        _context.DataHolderPrivacies.Add(dataHolderPrivacy);
-
-                        return dataHolder;
-                    })
-                    .ToList();
-
-                dataCategory.DataBlocks.Add(entity);
+            foreach (var dataBlock in dataBlocks)
+            {            
+                _context.DataBlocks
+                    .Add(await _copying.CopyDataBlockToDataCategory(dataCategory, dataBlock, cancellationToken));
             }
 
             await _context.SaveChangesAsync(cancellationToken);

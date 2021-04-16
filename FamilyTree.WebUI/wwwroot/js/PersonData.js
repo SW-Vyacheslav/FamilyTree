@@ -492,20 +492,27 @@ function CopyDataHolders(ids, dataBlockId) {
     return result;
 }
 
-function CopyImages(ids, dataBlockId) {
-    let result = false;
-
-    $.ajax({
-        async: false,
+async function CopyImages(ids, dataBlockId) {
+    const  result = await $.ajax({
         type: "POST",
         data: {
             ImagesIds: ids,
             DataBlockId: dataBlockId
         },
-        url: "/Media/CopyImages",
-        success: function (response) {
-            result = true;
-        }
+        url: "/Media/CopyImages"
+    });
+
+    return result;
+}
+
+async function CopyVideos(ids, dataBlockId) {
+    const result = await $.ajax({
+        type: "POST",
+        data: {
+            VideosIds: ids,
+            DataBlockId: dataBlockId
+        },
+        url: "/Media/CopyVideos"
     });
 
     return result;
@@ -989,6 +996,10 @@ function OnCopyButtonClick() {
             CopySelectedImages();
             break;
         }
+        case AddButtonActionTypes.AddVideo: {
+            CopySelectedVideos();
+            break;
+        }
 
         default:
             break;
@@ -1007,6 +1018,10 @@ function OnPasteButtonClick() {
         }
         case AddButtonActionTypes.AddImage: {
             PasteImages();
+            break;
+        }
+        case AddButtonActionTypes.AddVideo: {
+            PasteVideos();
             break;
         }
 
@@ -2081,7 +2096,7 @@ function GetSelectedDataBlocksIds() {
     $("#person-data-block")
         .find(".data-blocks .data-blocks__item")
         .each((i, el) => {
-            if ($(el).find("input[type=\"checkbox\"]:checked").length == 1) {
+            if ($(el).find("input[type=\"checkbox\"]").is(":checked")) {
                 result.push(el.getAttribute("data-id"));
             }
         });
@@ -2095,7 +2110,7 @@ function GetSelectedDataHoldersIds() {
     $("#person-data-block")
         .find(".data-holders .data-holders__item")
         .each((i, el) => {
-            if ($(el).find("input[type=\"checkbox\"]:checked").length == 1) {
+            if ($(el).find("input[type=\"checkbox\"]").is(":checked")) {
                 result.push(el.getAttribute("data-id"));
             }
         });
@@ -2109,7 +2124,7 @@ function GetSelectedImagesIds() {
     $("#person-data-block")
         .find(".images .images__item")
         .each((i, el) => {
-            if ($(el).find("input[type=\"checkbox\"]:checked").length == 1) {
+            if ($(el).find("input[type=\"checkbox\"]").is(":checked")) {
                 result.push(el.getAttribute("data-id"));
             }
         });
@@ -2123,7 +2138,7 @@ function GetSelectedVideosIds() {
     $("#person-data-block")
         .find(".videos .videos__item")
         .each((i, el) => {
-            if ($(el).find("input[type=\"checkbox\"]:checked").length == 1) {
+            if ($(el).find("input[type=\"checkbox\"]").is(":checked")) {
                 result.push(el.getAttribute("data-id"));
             }
         });
@@ -2160,6 +2175,13 @@ function CopySelectedImages() {
     g_copyObject = {
         Ids: GetSelectedImagesIds(),
         CopyObjectType: CopyObjectTypes.Image
+    };
+}
+
+function CopySelectedVideos() {
+    g_copyObject = {
+        Ids: GetSelectedVideosIds(),
+        CopyObjectType: CopyObjectTypes.Video
     };
 }
 
@@ -2214,12 +2236,33 @@ function PasteImages() {
         return;
     }
 
-    if (!CopyImages(g_copyObject.Ids, g_currentDataBlock.Id)) {
-        alert("Ошибка при вставке из буфера");
+    CopyImages(g_copyObject.Ids, g_currentDataBlock.Id)
+        .then((data) => {
+            RefreshImages().then((val) => UpdateImages());
+        },
+        (r) => { 
+            alert("Ошибка при вставке из буфера");
+        });    
+}
+
+function PasteVideos() {
+    if (g_copyObject == null ||
+        g_copyObject.Ids.length == 0)
+        return;
+
+    if (g_copyObject.CopyObjectType == null ||
+        g_copyObject.CopyObjectType != CopyObjectTypes.Video) {
+        alert("Ошибка при вставке из буфера (неверный тип объектов)");
         return;
     }
 
-    RefreshImages().then((val) => UpdateImages());
+    CopyVideos(g_copyObject.Ids, g_currentDataBlock.Id)
+        .then((data) => {
+            RefreshVideos().then((val) => UpdateVideos());
+        },
+        (r) => {
+            alert("Ошибка при вставке из буфера");
+        });  
 }
 
 function SelectVideoModalVideo(videoId) {

@@ -4,6 +4,7 @@ using FamilyTree.Application.Media.Commands;
 using FamilyTree.Domain.Entities.Media;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,6 +28,13 @@ namespace FamilyTree.Application.Media.Handlers
 
             if (video == null)
                 throw new NotFoundException(nameof(Video), request.Id);
+
+            int videoLinksCount = await _context.Videos
+                .CountAsync(v => v.FilePath.Equals(video.FilePath), 
+                            cancellationToken);
+
+            if (videoLinksCount == 1 && File.Exists(video.FilePath))
+                File.Delete(video.FilePath);
 
             _context.Videos.Remove(video);
 
