@@ -22,6 +22,7 @@
   <ItemGroup>
     <Folder Include="Common\Models\" />
     <Folder Include="Common\Mappings\" />
+    <Folder Include="Media\Videos\Validators\" />
     <Folder Include="Privacy\Queries\" />
   </ItemGroup>
 

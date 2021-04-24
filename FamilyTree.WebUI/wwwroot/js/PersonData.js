@@ -52,6 +52,7 @@ const CopyObjectTypes = {
     Image: 3,
     Video: 4
 };
+const CopyObjectSessionStorageKey = "COPY_OBJECT";
 
 const WaitForMilliseconds = (ms) => new Promise(handler => setTimeout(handler, ms));
 
@@ -64,7 +65,12 @@ let g_currentAddButtonActionType = null;
 let g_editElementId = null;
 let g_editPrivacyElementId = null;
 let g_isSaving = false;
-let g_copyObject = null;
+let g_copyObject = {
+    Ids: [0],
+    ImagesIds: [0],
+    VideosIds: [0],
+    CopyObjectType: 0
+};
 let g_isUploadingVideo = false;
 
 function LoadPersonData(personId) {
@@ -117,7 +123,7 @@ function GetDataCategories(personId) {
         async: false,
         type: "GET",
         dataType: "json",
-        url: "/PersonContent/GetDataCategories?personId=" + personId,
+        url: "/PersonContent/DataCategory/GetAll?personId=" + personId,
         success: function (data) {
             result = data;
         }
@@ -131,7 +137,7 @@ function GetDataCategory(dataCategoryId) {
         async: false,
         type: "GET",
         dataType: "json",
-        url: "/PersonContent/GetDataCategory?dataCategoryId=" + dataCategoryId,
+        url: "/PersonContent/DataCategory/Get?dataCategoryId=" + dataCategoryId,
         success: function (data) {
             result = data;
         }
@@ -143,7 +149,7 @@ async function GetImages(dataBlockId) {
     const result = await $.ajax({
         type: "GET",
         dataType: "json",
-        url: "/Media/GetImages?dataBlockId=" + dataBlockId
+        url: "/Media/Image/GetAll?dataBlockId=" + dataBlockId
     });
 
     return result;
@@ -153,7 +159,7 @@ async function GetVideos(dataBlockId) {
     const result = await $.ajax({
         type: "GET",
         dataType: "json",
-        url: "/Media/GetVideos?dataBlockId=" + dataBlockId
+        url: "/Media/Video/GetAll?dataBlockId=" + dataBlockId
     });
 
     return result;
@@ -171,7 +177,7 @@ function CreateDataCategory(dataCategory) {
         async: false,
         type: "POST",
         data: dataCategory,
-        url: "/PersonContent/CreateDataCategory",
+        url: "/PersonContent/DataCategory/Create",
         success: function (response) {
             result = response;
         }
@@ -187,7 +193,7 @@ function CreateDataBlock(dataBlock) {
         async: false,
         type: "POST",
         data: dataBlock,
-        url: "/PersonContent/CreateDataBlock",
+        url: "/PersonContent/DataBlock/Create",
         success: function (response) {
             result = response;
         }
@@ -203,7 +209,7 @@ function CreateDataHolder(dataHolder) {
         async: false,
         type: "POST",
         data: dataHolder,
-        url: "/PersonContent/CreateDataHolder",
+        url: "/PersonContent/DataHolder/Create",
         success: function (response) {
             result = response;
         }
@@ -221,7 +227,7 @@ function CreateImage(image) {
         data: image,
         contentType: false,
         processData: false,
-        url: "/Media/CreateImage",
+        url: "/Media/Image/Create",
         success: function (response) {
             result = response;
         }
@@ -237,7 +243,7 @@ async function CreateVideo(video) {
         cache: false,
         contentType: false,
         processData: false,
-        url: "/Media/CreateVideo",
+        url: "/Media/Video/Create",
         xhr: function () {
             var myXhr = $.ajaxSettings.xhr();
             if (myXhr.upload) {
@@ -265,7 +271,7 @@ function UpdateDataCategoryName(dataCategory) {
         async: false,
         type: "PUT",
         data: dataCategory,
-        url: "/PersonContent/UpdateDataCategoryName",
+        url: "/PersonContent/DataCategory/UpdateName",
         success: function (response) {
             result = true;
         }
@@ -281,7 +287,7 @@ function UpdateDataCategoryOrder(dataCategory) {
         async: false,
         type: "PUT",
         data: dataCategory,
-        url: "/PersonContent/UpdateDataCategoryOrder",
+        url: "/PersonContent/DataCategory/UpdateOrder",
         success: function (response) {
             result = true;
         }
@@ -297,7 +303,7 @@ function UpdateDataBlockTitle(dataBlock) {
         async: false,
         type: "PUT",
         data: dataBlock,
-        url: "/PersonContent/UpdateDataBlockTitle",
+        url: "/PersonContent/DataBlock/UpdateTitle",
         success: function (response) {
             result = true;
         }
@@ -313,7 +319,7 @@ function UpdateDataBlockOrder(dataBlock) {
         async: false,
         type: "PUT",
         data: dataBlock,
-        url: "/PersonContent/UpdateDataBlockOrder",
+        url: "/PersonContent/DataBlock/UpdateOrder",
         success: function (response) {
             result = true;
         }
@@ -329,7 +335,7 @@ function UpdateDataHolderTitle(dataHolder) {
         async: false,
         type: "PUT",
         data: dataHolder,
-        url: "/PersonContent/UpdateDataHolderTitle",
+        url: "/PersonContent/DataHolder/UpdateTitle",
         success: function (response) {
             result = true;
         }
@@ -345,7 +351,7 @@ function UpdateDataHolderData(dataHolder) {
         async: false,
         type: "PUT",
         data: dataHolder,
-        url: "/PersonContent/UpdateDataHolderData",
+        url: "/PersonContent/DataHolder/UpdateData",
         success: function (response) {
             result = true;
         }
@@ -361,7 +367,7 @@ function UpdateDataHolderOrder(dataHolder) {
         async: false,
         type: "PUT",
         data: dataHolder,
-        url: "/PersonContent/UpdateDataHolderOrder",
+        url: "/PersonContent/DataHolder/UpdateOrder",
         success: function (response) {
             result = true;
         }
@@ -377,7 +383,7 @@ function UpdateImageDetails(image) {
         async: false,
         type: "PUT",
         data: image,
-        url: "/Media/UpdateImageDetails/" + image.Id,
+        url: "/Media/Image/UpdateDetails/" + image.Id,
         success: function (response) {
             result = true;
         }
@@ -393,7 +399,7 @@ function UpdateVideoDetails(video) {
         async: false,
         type: "PUT",
         data: video,
-        url: "/Media/UpdateVideoDetails/" + video.Id,
+        url: "/Media/Video/UpdateDetails/" + video.Id,
         success: function (response) {
             result = true;
         }
@@ -464,7 +470,7 @@ function CopyDataBlocks(ids, dataCategoryId) {
             DataBlocksIds: ids,
             DataCategoryId: dataCategoryId
         },
-        url: "/PersonContent/CopyDataBlocks",
+        url: "/PersonContent/DataBlock/Copy",
         success: function (response) {
             result = true;
         }
@@ -483,7 +489,7 @@ function CopyDataHolders(ids, dataBlockId) {
             DataHoldersIds: ids,
             DataBlockId: dataBlockId
         },
-        url: "/PersonContent/CopyDataHolders",
+        url: "/PersonContent/DataHolder/Copy",
         success: function (response) {
             result = true;
         }
@@ -499,7 +505,7 @@ async function CopyImages(ids, dataBlockId) {
             ImagesIds: ids,
             DataBlockId: dataBlockId
         },
-        url: "/Media/CopyImages"
+        url: "/Media/Image/Copy"
     });
 
     return result;
@@ -512,7 +518,7 @@ async function CopyVideos(ids, dataBlockId) {
             VideosIds: ids,
             DataBlockId: dataBlockId
         },
-        url: "/Media/CopyVideos"
+        url: "/Media/Video/Copy"
     });
 
     return result;
@@ -521,7 +527,7 @@ async function CopyVideos(ids, dataBlockId) {
 async function DeleteDataBlock(dataBlockId) {
     const result = await $.ajax({
         type: "DELETE",
-        url: "/PersonContent/DeleteDataBlock/" + dataBlockId
+        url: "/PersonContent/DataBlock/Delete/" + dataBlockId
     });
 
     return result;
@@ -530,7 +536,7 @@ async function DeleteDataBlock(dataBlockId) {
 async function DeleteDataHolder(dataHolderId) {
     const result = await $.ajax({
         type: "DELETE",
-        url: "/PersonContent/DeleteDataHolder/" + dataHolderId
+        url: "/PersonContent/DataHolder/Delete/" + dataHolderId
     });
 
     return result;
@@ -539,7 +545,7 @@ async function DeleteDataHolder(dataHolderId) {
 async function DeleteImage(imageId) {
     const result = await $.ajax({
         type: "DELETE",
-        url: "/Media/DeleteImage/" + imageId
+        url: "/Media/Image/Delete/" + imageId
     });
 
     return result;
@@ -548,7 +554,7 @@ async function DeleteImage(imageId) {
 async function DeleteVideo(videoId) {
     let result = await $.ajax({
         type: "DELETE",
-        url: "/Media/DeleteVideo/" + videoId
+        url: "/Media/Video/Delete/" + videoId
     });
 
     return result;
@@ -594,6 +600,15 @@ function InitPersonDataBlockButtonEvents() {
 
     $("#paste-button")
         .click(OnPasteButtonClick);
+
+    $("#select-all-button")
+        .click(OnSelectAllButtonClick);
+
+    $("#deselect-all-button")
+        .click(OnDeselectAllButtonClick);
+
+    $("#invert-selection-button")
+        .click(OnInvertSelectionButtonClick);
 
     $("#person-data-block")
         .find("#save-button")
@@ -658,16 +673,22 @@ function OnTabButtonClick(event) {
         ShowDataBlockContentTab(DataBlockContentTabs.Data);
         g_currentAddButtonActionType = AddButtonActionTypes.AddDataHolder;
         ShowSaveButton();
+        ShowEditButton();
+        ShowPrivacyButton();
     }
     else if (targetElement.hasClass("tab-button-images")) {
         ShowDataBlockContentTab(DataBlockContentTabs.Images);
         g_currentAddButtonActionType = AddButtonActionTypes.AddImage;
         ShowSaveButton(false);
+        ShowEditButton(false);
+        ShowPrivacyButton(false);
     }
     else if (targetElement.hasClass("tab-button-videos")) {
         ShowDataBlockContentTab(DataBlockContentTabs.Videos);
         g_currentAddButtonActionType = AddButtonActionTypes.AddVideo;
         ShowSaveButton(false);
+        ShowEditButton(false);
+        ShowPrivacyButton(false);
     }
     else {
         return;
@@ -681,6 +702,8 @@ function OnTabButtonClick(event) {
 }
 
 function OnDataCategoryClick(event) {
+    if ($(event.target).is("input")) return;
+
     let dataCategoryId = $(event.currentTarget).attr("data-id");
     g_currentDataCategory = GetDataCategory(dataCategoryId);
 
@@ -1293,6 +1316,18 @@ function OnSaveVideoSubmitButtonClick() {
     }
 }
 
+function OnSelectAllButtonClick() {   
+    SelectAllCheckboxes(GetCurrentActionTypeElements());
+}
+
+function OnDeselectAllButtonClick() {
+    DeselectAllCheckboxes(GetCurrentActionTypeElements());
+}
+
+function OnInvertSelectionButtonClick() {
+    InverseSelectCheckboxes(GetCurrentActionTypeElements());
+}
+
 //UI
 function UpdateDataBlocks() {
     ClearDataBlocks();
@@ -1461,7 +1496,7 @@ function UpdateVideoModal(videoId) {
     videoModal.find("#current-video-desc").val(currentVideo.Description);
 
     currentVideoElement.poster = "data:image/" + currentVideo.PreviewImageFormat + ";base64," + currentVideo.PreviewImageData;
-    currentVideoElement.src = "Media/GetVideo/" + videoId;
+    currentVideoElement.src = "Media/Video/GetFile/" + videoId;
     currentVideoElement.volume = 0.5;
     currentVideoElement.load();
 }
@@ -1567,6 +1602,16 @@ function ShowSaveButton(isShow = true) {
         .css("display", isShow ? "block" : "none");
 }
 
+function ShowEditButton(isShow = true) {
+    $("#person-data-block #edit-element-button")
+        .css("display", isShow ? "inline-block" : "none");
+}
+
+function ShowPrivacyButton(isShow = true) {
+    $("#person-data-block #edit-privacy-button")
+        .css("display", isShow ? "inline-block" : "none");
+}
+
 function ClearDataCategories() {
     $("#person-data-block").find(".data-categories").empty();
 }
@@ -1602,6 +1647,15 @@ function AddItemToDataCategories(dataCategory) {
     dataCategoryElement.classList.add("data-categories__item");
     dataCategoryElement.setAttribute("data-id", dataCategory.Id);
     dataCategoryElement.innerHTML = dataCategory.Name;
+
+    let checkboxElement = document.createElement("div");
+    checkboxElement.classList.add("checkbox");
+
+    let inputElement = document.createElement("input");
+    inputElement.type = "checkbox";
+
+    checkboxElement.appendChild(inputElement);
+    dataCategoryElement.appendChild(checkboxElement);
 
     $("#person-data-block")
         .find(".data-categories")[0]
@@ -1821,15 +1875,13 @@ function CreateDataHolderSelectorElement(dataHolder) {
     let dataHolderSelectorElement = document.createElement("div");
     dataHolderSelectorElement.classList.add("data-holder__selector");
 
-    if (dataHolder.IsDeletable) {
-        let checkboxElement = document.createElement("div");
-        checkboxElement.classList.add("checkbox");
-        let checkboxInputElement = document.createElement("input");
-        checkboxInputElement.type = "checkbox";
+    let checkboxElement = document.createElement("div");
+    checkboxElement.classList.add("checkbox");
+    let checkboxInputElement = document.createElement("input");
+    checkboxInputElement.type = "checkbox";
 
-        checkboxElement.appendChild(checkboxInputElement);
-        dataHolderSelectorElement.appendChild(checkboxElement);
-    }    
+    checkboxElement.appendChild(checkboxInputElement);
+    dataHolderSelectorElement.appendChild(checkboxElement);   
 
     return dataHolderSelectorElement;
 }
@@ -2157,35 +2209,61 @@ function GetVideoModalCurrentVideoId() {
         .attr("data-id");
 }
 
+function GetCurrentActionTypeElements() {
+    let elements = null;
+    let personDataBlock = $("#person-data-block");
+    switch (g_currentAddButtonActionType) {
+        case AddButtonActionTypes.AddDataBlock: {
+            elements = personDataBlock.find(".data-blocks .data-blocks__item");
+            break;
+        }
+        case AddButtonActionTypes.AddDataHolder: {
+            elements = personDataBlock.find(".data-holders .data-holders__item");
+            break;
+        }
+        case AddButtonActionTypes.AddImage: {
+            elements = personDataBlock.find(".images .images__item");
+            break;
+        }
+        case AddButtonActionTypes.AddVideo: {
+            elements = personDataBlock.find(".videos .videos__item");
+            break;
+        }
+
+        default:
+            return;
+    }
+
+    return elements;
+}
+
 function CopySelectedDataBlocks() {    
-    g_copyObject = {
-        Ids: GetSelectedDataBlocksIds(),
-        CopyObjectType: CopyObjectTypes.DataBlock
-    };
+    g_copyObject.Ids = GetSelectedDataBlocksIds();
+    g_copyObject.CopyObjectType = CopyObjectTypes.DataBlock;
+    sessionStorage.setItem(CopyObjectSessionStorageKey, JSON.stringify(g_copyObject));
 }
 
 function CopySelectedDataHolders() {
-    g_copyObject = {
-        Ids: GetSelectedDataHoldersIds(),
-        CopyObjectType: CopyObjectTypes.DataHolder
-    };
+    g_copyObject.Ids = GetSelectedDataHoldersIds();
+    g_copyObject.CopyObjectType = CopyObjectTypes.DataHolder;
+    sessionStorage.setItem(CopyObjectSessionStorageKey, JSON.stringify(g_copyObject));
 }
 
 function CopySelectedImages() {
-    g_copyObject = {
-        Ids: GetSelectedImagesIds(),
-        CopyObjectType: CopyObjectTypes.Image
-    };
+    g_copyObject.Ids = GetSelectedImagesIds();
+    g_copyObject.CopyObjectType = CopyObjectTypes.Image;
+    sessionStorage.setItem(CopyObjectSessionStorageKey, JSON.stringify(g_copyObject));
 }
 
 function CopySelectedVideos() {
-    g_copyObject = {
-        Ids: GetSelectedVideosIds(),
-        CopyObjectType: CopyObjectTypes.Video
-    };
+    g_copyObject.Ids = GetSelectedVideosIds();
+    g_copyObject.CopyObjectType = CopyObjectTypes.Video;
+    sessionStorage.setItem(CopyObjectSessionStorageKey, JSON.stringify(g_copyObject));
 }
 
 function PasteDataBlocks() {
+    g_copyObject = JSON.parse(sessionStorage.getItem(CopyObjectSessionStorageKey));
+
     if (g_copyObject == null ||
         g_copyObject.Ids.length == 0)
         return;
@@ -2206,6 +2284,8 @@ function PasteDataBlocks() {
 }
 
 function PasteDataHolders() {
+    g_copyObject = JSON.parse(sessionStorage.getItem(CopyObjectSessionStorageKey));
+
     if (g_copyObject == null ||
         g_copyObject.Ids.length == 0)
         return;
@@ -2226,6 +2306,8 @@ function PasteDataHolders() {
 }
 
 function PasteImages() {
+    g_copyObject = JSON.parse(sessionStorage.getItem(CopyObjectSessionStorageKey));
+
     if (g_copyObject == null ||
         g_copyObject.Ids.length == 0)
         return;
@@ -2246,6 +2328,8 @@ function PasteImages() {
 }
 
 function PasteVideos() {
+    g_copyObject = JSON.parse(sessionStorage.getItem(CopyObjectSessionStorageKey));
+
     if (g_copyObject == null ||
         g_copyObject.Ids.length == 0)
         return;
@@ -2275,6 +2359,20 @@ function SelectVideoModalVideo(videoId) {
     videosListElement
         .find(".videos-list__item[data-id=\"" + videoId + "\"]")
         .addClass("videos-list__item_active");
+}
+
+function SelectAllCheckboxes(elements) {
+    $(elements).find("input[type=\"checkbox\"]").prop("checked", true);
+}
+
+function DeselectAllCheckboxes(elements) {
+    $(elements).find("input[type=\"checkbox\"]").prop("checked", false);
+}
+
+function InverseSelectCheckboxes(elements) {
+    $(elements).find("input[type=\"checkbox\"]").each((i, el) => {
+        $(el).prop("checked", $(el).prop("checked") == true ? false : true);
+    });
 }
 
 async function DeleteSelectedDataBlocks() {

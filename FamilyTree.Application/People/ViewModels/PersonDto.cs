@@ -1,4 +1,4 @@
-﻿using FamilyTree.Application.Media.ViewModels;
+﻿using FamilyTree.Application.Media.Images.ViewModels;
 
 namespace FamilyTree.Application.People.ViewModels
 {

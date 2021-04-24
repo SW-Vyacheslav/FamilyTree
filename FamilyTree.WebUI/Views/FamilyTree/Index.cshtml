@@ -524,6 +524,19 @@
             <div class="col-md-9">
                 <div class="toolbox">
                     <div class="toolbox_buttons">
+                        <div class="btn-group">
+                            <button id="select-all-button" type="button" class="btn btn-default button-select" data-toggle="tooltip" data-placement="top" title="Выделить всё">
+                                <div class="button-select__img"></div>
+                            </button>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <div class="dropdown-toggle__img"></div>
+                            </button>
+                            <div class="dropdown-menu">
+                                <div id="deselect-all-button" class="dropdown-item">Убрать выделение</div>
+                                <div id="invert-selection-button" class="dropdown-item">Инвертировать выделение</div>
+                            </div>
+                        </div>
+                        <div class="toolbox__vertical-separator"></div>
                         <div id="back-to-data-blocks-button" class="btn btn-default button-back" data-toggle="tooltip" data-placement="top" title="Вернуться к блокам данных">
                             <div class="button-back__img"></div>
                         </div>

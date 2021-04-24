@@ -2,7 +2,6 @@
 using FamilyTree.Application.Common.Interfaces;
 using FamilyTree.Application.FamilyTrees.Queries;
 using FamilyTree.Application.FamilyTrees.ViewModels;
-using FamilyTree.Application.Media.ViewModels;
 using FamilyTree.Application.People.Queries;
 using FamilyTree.Application.People.ViewModels;
 using FamilyTree.Domain.Entities.Tree;
@@ -15,6 +14,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FamilyTree.Application.FamilyTrees.Interfaces;
+using FamilyTree.Application.Media.Images.ViewModels;
 
 namespace FamilyTree.Application.FamilyTrees.Services
 {

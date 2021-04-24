@@ -6,6 +6,7 @@
 
 /* Data categories */
 .data-categories__item {
+    position: relative;
     cursor: pointer;
     border: 1px solid #000;
     height: 104px;
@@ -19,6 +20,18 @@
         border-color 0.5s, 
         border-left-width 0.5s,
         color 0.5s;
+}
+
+.data-categories__item .checkbox {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 3px 5px 0 0;
+}
+
+.data-categories__item .checkbox input[type="checkbox"] {
+    width: 25px;
+    height: 25px;
 }
 
 .data-categories__item:first-child {
@@ -456,6 +469,27 @@ input:focus {
     float: left;
 }
 
+.button-select .button-select__img {
+    background-image: url("../lib/bootstrap/icons/check2-square.svg");
+}
+
+.dropdown-toggle .dropdown-toggle__img {
+    background-image: url("../lib/bootstrap/icons/caret-down-fill.svg");
+}
+
+.dropdown-menu .dropdown-item {
+    cursor: pointer;
+    padding: 5px;
+    font-size: 18px;
+    transition: all ease 0.5s;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: #0096FF;
+    color: white;
+    transition: all ease 0.5s;
+}
+
 .button-save .btn__vertical-separator {
     float: left;
     width: auto !important;
@@ -771,7 +805,7 @@ input:focus {
 }
 
 #image-carousel-modal .modal-header .close:hover {
-    color: #676767;
+    color: white;
 }
 
 #image-carousel-modal .modal-footer {
@@ -894,7 +928,7 @@ input:focus {
 }
 
 #video-modal .modal-header .close:hover {
-    color: #676767;
+    color: white;
 }
 
 #video-modal .modal-footer {

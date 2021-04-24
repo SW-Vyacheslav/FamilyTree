@@ -3,6 +3,7 @@ using FamilyTree.Application.Copying.Interfaces;
 using FamilyTree.Domain.Entities.Media;
 using FamilyTree.Domain.Entities.PersonContent;
 using FamilyTree.Domain.Entities.Privacy;
+using FamilyTree.Domain.Entities.Tree;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,31 @@ namespace FamilyTree.Application.Copying.Services
         public CopyingService(IApplicationDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<DataCategory> CopyDataCategoryToPerson(Person person, DataCategory dataCategory, CancellationToken cancellationToken)
+        {
+            var dataCategoriesCount = await _context.DataCategories
+                .CountAsync(dc => dc.PersonId == person.Id,
+                            cancellationToken);
+
+            DataCategory entity = new DataCategory()
+            {
+                Name = dataCategory.Name,
+                DataCategoryType = dataCategory.DataCategoryType,
+                OrderNumber = dataCategoriesCount + 1,
+                Person = person
+            };
+
+            entity.DataBlocks = new List<DataBlock>();
+
+            foreach (var dataBlock in dataCategory.DataBlocks)
+            {
+                entity.DataBlocks
+                    .Add(await CopyDataBlockToDataCategory(entity, dataBlock, cancellationToken));
+            }
+
+            return entity;
         }
 
         public async Task<DataBlock> CopyDataBlockToDataCategory(DataCategory dataCategory, DataBlock dataBlock, CancellationToken cancellationToken)

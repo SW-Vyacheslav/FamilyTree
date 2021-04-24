@@ -273,7 +273,7 @@ function GetFamilyTrees() {
         type: 'GET',
         dataType: 'json',
         contentType: 'application/json',
-        url: '/FamilyTree/GetFamilyTrees',
+        url: '/FamilyTree/GetAll',
         async: false,
         success: function (data) {
             result = data;
@@ -290,7 +290,7 @@ function GetFamilyTree(familyTreeId, mainPersonId) {
         async: false,
         type: 'GET',
         dataType: 'json',
-        url: "/FamilyTree/GetFamilyTreeById?id=" + familyTreeId + "&personId=" + mainPersonId,
+        url: "/FamilyTree/Get?id=" + familyTreeId + "&personId=" + mainPersonId,
         success: function (data) {
             result = data;
         }
@@ -1772,7 +1772,7 @@ function ChangeWifeTree(list) {
             personId: idMainPerson,
             wifeId: idNewWife
         },
-        url: '/FamilyTree/GetFamilyTreeById',
+        url: '/FamilyTree/Get',
         success: function (result) {
             mainTree = result;
             FillTree(result, true);
@@ -1877,7 +1877,7 @@ function DrawBlood(idWife) {
             currentMainId: $("#mainPerson")[0].getAttribute("data-value"),
             wifeId: idWife
         },
-        url: '/FamilyTree/GetBloodTreeById',
+        url: '/FamilyTree/GetBloodTree',
         success: function (result) {
             bloodTree = result;
             DrawConnections(mainTree);
