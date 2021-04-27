@@ -1,9 +1,12 @@
 ﻿using FamilyTree.Application.Common.Interfaces;
 using FamilyTree.Application.Copying.Interfaces;
+using FamilyTree.Application.PersonContent.DataCategories.Extensions;
+using FamilyTree.Application.PersonContent.DataHolders.Extensions;
 using FamilyTree.Domain.Entities.Media;
 using FamilyTree.Domain.Entities.PersonContent;
 using FamilyTree.Domain.Entities.Privacy;
 using FamilyTree.Domain.Entities.Tree;
+using FamilyTree.Domain.Enums.PersonContent;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,17 +37,28 @@ namespace FamilyTree.Application.Copying.Services
             DataCategory entity = new DataCategory()
             {
                 Name = dataCategory.Name,
-                DataCategoryType = dataCategory.DataCategoryType,
                 OrderNumber = dataCategoriesCount + 1,
-                Person = person
+                Person = person,
+                DataBlocks = new List<DataBlock>()
             };
 
-            entity.DataBlocks = new List<DataBlock>();
-
-            foreach (var dataBlock in dataCategory.DataBlocks)
+            if (!dataCategory.DataCategoryType.CanCopy())
             {
-                entity.DataBlocks
-                    .Add(await CopyDataBlockToDataCategory(entity, dataBlock, cancellationToken));
+                if (dataCategory.DataCategoryType == DataCategoryType.PersonInfo)
+                    entity.DataCategoryType = DataCategoryType.InfoBlock;
+                else
+                    entity.DataCategoryType = DataCategoryType.ListBlock;
+            }
+            else
+                entity.DataCategoryType = dataCategory.DataCategoryType;
+
+            var dataBlocks = dataCategory.DataBlocks
+                .OrderBy(db => db.OrderNumber)
+                .ToList();
+
+            foreach (var dataBlock in dataBlocks)
+            {
+                await CopyDataBlockToDataCategory(entity, dataBlock, cancellationToken);
             }
 
             return entity;
@@ -60,10 +74,13 @@ namespace FamilyTree.Application.Copying.Services
                 DataHolders = new List<DataHolder>()
             };
 
-            foreach (var dataHolder in dataBlock.DataHolders)
+            var dataHolders = dataBlock.DataHolders
+                .OrderBy(dh => dh.OrderNumber)
+                .ToList();
+
+            foreach (var dataHolder in dataHolders)
             {
-                _context.DataHolders
-                    .Add(await CopyDataHolderToDataBlock(entity, dataHolder, cancellationToken));
+                await CopyDataHolderToDataBlock(entity, dataHolder, cancellationToken);
             }
 
             var images = await _context.DataBlockImages
@@ -73,8 +90,7 @@ namespace FamilyTree.Application.Copying.Services
 
             foreach (var image in images)
             {
-                _context.Images
-                    .Add(await CopyImageToDataBlock(entity, image, cancellationToken));
+                await CopyImageToDataBlock(entity, image, cancellationToken);
             }
 
             var videos = await _context.DataBlockVideos
@@ -84,8 +100,7 @@ namespace FamilyTree.Application.Copying.Services
 
             foreach (var video in videos)
             {
-                _context.Videos
-                    .Add(await CopyVideoToDataBlock(entity, video, cancellationToken));
+                await CopyVideoToDataBlock(entity, video, cancellationToken);
             }
 
             return entity;
@@ -98,10 +113,14 @@ namespace FamilyTree.Application.Copying.Services
                 DataBlock = dataBlock,
                 Title = dataHolder.Title,
                 Data = dataHolder.Data,
-                DataHolderType = dataHolder.DataHolderType,
                 IsDeletable = true,
                 OrderNumber = dataBlock.DataHolders.Count + 1
             };
+
+            if (!dataHolder.DataHolderType.CanCopy())
+                entity.DataHolderType = DataHolderType.Text;
+            else
+                entity.DataHolderType = dataHolder.DataHolderType;
 
             var privacy = await _context.DataHolderPrivacies
                 .SingleOrDefaultAsync(dhp => dhp.DataHolderId == dataHolder.Id);

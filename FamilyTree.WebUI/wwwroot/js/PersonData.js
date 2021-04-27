@@ -57,6 +57,7 @@ const CopyObjectSessionStorageKey = "COPY_OBJECT";
 const WaitForMilliseconds = (ms) => new Promise(handler => setTimeout(handler, ms));
 
 let g_currentPersonId = null;
+let g_dataCategories = [];
 let g_currentDataCategory = null;
 let g_currentDataBlock = null;
 let g_currentDataBlockImages = null;
@@ -74,39 +75,14 @@ let g_copyObject = {
 let g_isUploadingVideo = false;
 
 function LoadPersonData(personId) {
-    let dataCategories = GetDataCategories(personId);
-
-    if (dataCategories.length === 0)
-        return false;
-
     g_currentPersonId = personId;
 
-    ClearDataCategories();
+    RefreshDataCategories();
 
-    dataCategories.forEach((item) => {
-        AddItemToDataCategories(item);
-    });
+    if (g_dataCategories.length === 0)
+        return false;
 
-    new Sortable($(".person-data-block__data-categories")[0], {
-        handle: ".data-categories__item",
-        animation: 500,
-        onEnd: (event) => {
-            let dataCategory = {
-                id: $(event.item).attr("data-id"),
-                command: {
-                    Id: $(event.item).attr("data-id"),
-                    Order: event.newIndex + 1
-                }
-            };
-
-            UpdateDataCategoryOrder(dataCategory);
-        }
-    });
-
-    $("#person-data-block")
-        .find(".data-categories")
-        .find(".data-categories__item")
-        .click(OnDataCategoryClick);
+    UpdateDataCategories();
 
     $("#person-data-block")
         .find(".data-categories")
@@ -271,7 +247,7 @@ function UpdateDataCategoryName(dataCategory) {
         async: false,
         type: "PUT",
         data: dataCategory,
-        url: "/PersonContent/DataCategory/UpdateName",
+        url: "/PersonContent/DataCategory/UpdateName/" + dataCategory.Id,
         success: function (response) {
             result = true;
         }
@@ -287,7 +263,7 @@ function UpdateDataCategoryOrder(dataCategory) {
         async: false,
         type: "PUT",
         data: dataCategory,
-        url: "/PersonContent/DataCategory/UpdateOrder",
+        url: "/PersonContent/DataCategory/UpdateOrder/" + dataCategory.Id,
         success: function (response) {
             result = true;
         }
@@ -303,7 +279,7 @@ function UpdateDataBlockTitle(dataBlock) {
         async: false,
         type: "PUT",
         data: dataBlock,
-        url: "/PersonContent/DataBlock/UpdateTitle",
+        url: "/PersonContent/DataBlock/UpdateTitle/" + dataBlock.Id,
         success: function (response) {
             result = true;
         }
@@ -319,7 +295,7 @@ function UpdateDataBlockOrder(dataBlock) {
         async: false,
         type: "PUT",
         data: dataBlock,
-        url: "/PersonContent/DataBlock/UpdateOrder",
+        url: "/PersonContent/DataBlock/UpdateOrder/" + dataBlock.Id,
         success: function (response) {
             result = true;
         }
@@ -335,7 +311,7 @@ function UpdateDataHolderTitle(dataHolder) {
         async: false,
         type: "PUT",
         data: dataHolder,
-        url: "/PersonContent/DataHolder/UpdateTitle",
+        url: "/PersonContent/DataHolder/UpdateTitle/" + dataHolder.Id,
         success: function (response) {
             result = true;
         }
@@ -351,7 +327,7 @@ function UpdateDataHolderData(dataHolder) {
         async: false,
         type: "PUT",
         data: dataHolder,
-        url: "/PersonContent/DataHolder/UpdateData",
+        url: "/PersonContent/DataHolder/UpdateData/" + dataHolder.Id,
         success: function (response) {
             result = true;
         }
@@ -367,7 +343,7 @@ function UpdateDataHolderOrder(dataHolder) {
         async: false,
         type: "PUT",
         data: dataHolder,
-        url: "/PersonContent/DataHolder/UpdateOrder",
+        url: "/PersonContent/DataHolder/UpdateOrder/" + dataHolder.Id,
         success: function (response) {
             result = true;
         }
@@ -437,7 +413,7 @@ function SaveDataHolders() {
         let data = "";
 
         if (el.classList.contains("data-holder-gender")) {
-            data = $(el).find("input:checked").val();
+            data = $(el).find("input[type=\"radio\"]:checked").val();
         }
         else if (el.classList.contains("data-holder-textarea")) {
             data = $(el).find("textarea").val();
@@ -447,17 +423,33 @@ function SaveDataHolders() {
         }
 
         let dataHolder = {
-            id: el.getAttribute("data-id"),
-            command: {
-                Id: el.getAttribute("data-id"),
-                Data: data
-            }
+            Id: el.getAttribute("data-id"),
+            Data: data
         };
 
         isSaved.push(UpdateDataHolderData(dataHolder));
     });
 
     return isSaved.find(el => el == false) == null;
+}
+
+function CopyDataCategories(ids, personId) {
+    let result = false;
+
+    $.ajax({
+        async: false,
+        type: "POST",
+        data: {
+            DataCategoriesIds: ids,
+            PersonId: personId
+        },
+        url: "/PersonContent/DataCategory/Copy",
+        success: function (response) {
+            result = true;
+        }
+    });
+
+    return result;
 }
 
 function CopyDataBlocks(ids, dataCategoryId) {
@@ -524,6 +516,15 @@ async function CopyVideos(ids, dataBlockId) {
     return result;
 }
 
+async function DeleteDataCategory(dataCategoryId) {
+    const result = await $.ajax({
+        type: "DELETE",
+        url: "/PersonContent/DataCategory/Delete/" + dataCategoryId
+    });
+
+    return result;
+}
+
 async function DeleteDataBlock(dataBlockId) {
     const result = await $.ajax({
         type: "DELETE",
@@ -571,16 +572,28 @@ function InitPersonDataBlockButtonEvents() {
     $("#add-data-category-button")
         .click(OnAddDataCategoryButtonClick);
 
-    $("#add-data-category-modal")
-        .find("#add-data-category-submit-button")
+    $("#edit-data-category-button")
+        .click(OnEditDataCategoryButtonClick);
+
+    $("#copy-data-category-button")
+        .click(OnCopyDataCategoryButtonClick);
+
+    $("#paste-data-category-button")
+        .click(OnPasteDataCategoryButtonClick);
+
+    $("#delete-data-category-button")
+        .click(OnDeleteDataCategoryButtonClick);
+
+    $("#delete-data-category-submit-button")
+        .click(OnDeleteDataCategorySubmitButtonClick);
+
+    $("#add-data-category-submit-button")
         .click(OnAddDataCategorySubmitButtonClick);
 
-    $("#add-data-block-modal")
-        .find("#add-data-block-submit-button")
+    $("#add-data-block-submit-button")
         .click(OnAddDataBlockSubmitButtonClick);
 
-    $("#add-data-holder-modal")
-        .find("#add-data-holder-submit-button")
+    $("#add-data-holder-submit-button")
         .click(OnAddDataHolderSubmitButtonClick);
 
     $("#back-to-data-blocks-button")
@@ -610,47 +623,37 @@ function InitPersonDataBlockButtonEvents() {
     $("#invert-selection-button")
         .click(OnInvertSelectionButtonClick);
 
-    $("#person-data-block")
-        .find("#save-button")
+    $("#save-elements-button")
         .click(OnSaveButtonClick);
 
     $("#edit-privacy-button")
         .click(OnEditPrivacyButtonClick);
 
-    $("#edit-data-category-modal")
-        .find("#edit-data-category-submit-button")
+    $("#edit-data-category-submit-button")
         .click(OnEditDataCategorySubmitButtonClick);
 
-    $("#edit-data-block-modal")
-        .find("#edit-data-block-submit-button")
+    $("#edit-data-block-submit-button")
         .click(OnEditDataBlockSubmitButtonClick);
 
-    $("#edit-data-holder-modal")
-        .find("#edit-data-holder-submit-button")
+    $("#edit-data-holder-submit-button")
         .click(OnEditDataHolderSubmitButtonClick);
 
-    $("#add-image-modal")
-        .find("#add-image-submit-button")
+    $("#add-image-submit-button")
         .click(OnAddImageSubmitButtonClick);
 
-    $("#image-carousel-modal")
-        .find("#save-image-submit-button")
+    $("#save-image-submit-button")
         .click(OnSaveImageSubmitButtonClick);
 
-    $("#image-carousel-modal")
-        .find("#set-image-as-avatar-button")
+    $("#set-image-as-avatar-button")
         .click(OnSetImageAsAvatarButtonClick);
 
-    $("#add-video-modal")
-        .find("#add-video-submit-button")
+    $("#add-video-submit-button")
         .click(OnAddVideoSubmitButtonClick);
 
-    $("#video-modal")
-        .find("#save-video-submit-button")
+    $("#save-video-submit-button")
         .click(OnSaveVideoSubmitButtonClick);
 
-    $("#delete-modal")
-        .find("#delete-submit-button")
+    $("#delete-submit-button")
         .click(OnDeleteSubmitButtonClick);
 }
 
@@ -799,10 +802,26 @@ function OnAddDataCategoryButtonClick() {
     $('#add-data-category-modal').modal("show");
 }
 
+function OnEditDataCategoryButtonClick() {
+    $('#edit-data-category-modal').modal("show");
+}
+
+function OnCopyDataCategoryButtonClick() {
+    CopySelectedDataCategories();
+}
+
+function OnPasteDataCategoryButtonClick() {
+    PasteDataCategories();
+}
+
+function OnDeleteDataCategoryButtonClick() {
+    $('#delete-data-category-modal').modal("show");
+}
+
 function OnAddDataCategorySubmitButtonClick() {
     let dataCategory = {
-        DataCategoryType: $("#add-data-category-modal").find("#data-category-type").val(),
-        Name: $("#add-data-category-modal").find("#data-category-name").val(),
+        DataCategoryType: $("#add-data-category-type").val(),
+        Name: $("#add-data-category-name").val(),
         PersonId: g_currentPersonId
     };
 
@@ -813,6 +832,13 @@ function OnAddDataCategorySubmitButtonClick() {
         $("#add-data-category-modal").modal("hide");
         LoadPersonData(g_currentPersonId);
     }
+}
+
+function OnDeleteDataCategorySubmitButtonClick() {
+    DeleteSelectedDataCategories().then((val) => {
+        LoadPersonData(g_currentPersonId);
+        $("#delete-data-category-modal").modal("hide");
+    });
 }
 
 function OnAddElementButtonClick() {
@@ -841,7 +867,7 @@ function OnAddElementButtonClick() {
 
 function OnAddDataBlockSubmitButtonClick() {
     let dataBlock = {
-        Title: $("#add-data-block-modal").find("#data-block-title").val(),
+        Title: $("#add-data-block-title").val(),
         DataCategoryId: g_currentDataCategory.Id
     };
 
@@ -851,13 +877,14 @@ function OnAddDataBlockSubmitButtonClick() {
     else {
         $("#add-data-block-modal").modal("hide");
         RefreshDataBlocks();
+        UpdateDataBlocks();
     }
 }
 
 function OnAddDataHolderSubmitButtonClick() {
     let dataHolder = {
-        DataHolderType: $("#add-data-holder-modal").find("#data-holder-type").val(),
-        Title: $("#add-data-holder-modal").find("#data-holder-title").val(),
+        DataHolderType: $("#add-data-holder-type").val(),
+        Title: $("#add-data-holder-title").val(),
         Data: "",
         DataBlockId: g_currentDataBlock.Id
     };
@@ -868,6 +895,7 @@ function OnAddDataHolderSubmitButtonClick() {
     else {
         $("#add-data-holder-modal").modal("hide");
         RefreshDataHolders();
+        UpdateDataHolders();
     }
 }
 
@@ -949,8 +977,7 @@ function OnEditElementButtonClick() {
                 selectedDataBlocks.length > 1) return;
 
             g_editElementId = selectedDataBlocks.attr("data-id");
-            $("#edit-data-block-modal")
-                .find("#data-block-title")
+            $("#edit-data-block-title")
                 .val(selectedDataBlocks
                         .first()
                         .find(".data-block__value")[0]
@@ -984,19 +1011,10 @@ function OnEditElementButtonClick() {
                     .first()
                     .find(".data-holder-textarea__title div")[0];
 
-            $("#edit-data-holder-modal")
-                .find("#data-holder-title")
+            $("#edit-data-holder-title")
                 .val(titleEl.innerHTML);
 
             $("#edit-data-holder-modal").modal("show");
-            break;
-        }
-        case AddButtonActionTypes.AddImage: {
-            alert("Edit image modal");
-            break;
-        }
-        case AddButtonActionTypes.AddVideo: {
-            alert("Edit video modal");
             break;
         }
 
@@ -1051,11 +1069,6 @@ function OnPasteButtonClick() {
         default:
             break;
     }
-}
-
-//TODO:
-function OnDeleteDataCategoryButtonClick() {
-
 }
 
 function OnDeleteButtonClick() {
@@ -1113,7 +1126,7 @@ function OnSaveButtonClick() {
 }
 
 async function SaveData() {
-    let saveButton = $("#person-data-block #save-button");
+    let saveButton = $("#save-elements-button");
     saveButton.find(".loader").css("display", "block");
     saveButton.find(".btn__text")[0].innerHTML = "Сохранение";
 
@@ -1190,13 +1203,8 @@ function OnEditPrivacyButtonClick() {
 
 function OnEditDataCategorySubmitButtonClick() {
     let dataCategory = {
-        id: g_editElementId,
-        command: {
-            Id: g_editElementId,
-            Name: $("#edit-data-category-modal")
-                      .find("#data-category-name")
-                      .val()
-        }
+        Id: g_editElementId,
+        Name: $("#edit-data-category-name").val()
     };
 
     if (!UpdateDataCategoryName(dataCategory)) {
@@ -1210,13 +1218,8 @@ function OnEditDataCategorySubmitButtonClick() {
 
 function OnEditDataBlockSubmitButtonClick() {
     let dataBlock = {
-        id: g_editElementId,
-        command: {
-            Id: g_editElementId,
-            Title: $("#edit-data-block-modal")
-                      .find("#data-block-title")
-                      .val()
-        }
+        Id: g_editElementId,
+        Title: $("#edit-data-block-title").val()
     };
 
     if (!UpdateDataBlockTitle(dataBlock)) {
@@ -1225,18 +1228,14 @@ function OnEditDataBlockSubmitButtonClick() {
     else {
         $("#edit-data-block-modal").modal("hide");
         RefreshDataBlocks();
+        UpdateDataBlocks();
     }
 }
 
 function OnEditDataHolderSubmitButtonClick() {
     let dataHolder = {
-        id: g_editElementId,
-        command: {
-            Id: g_editElementId,
-            Title: $("#edit-data-holder-modal")
-                      .find("#data-holder-title")
-                      .val()
-        }
+        Id: g_editElementId,
+        Title: $("#edit-data-holder-title").val()
     };
 
     if (!UpdateDataHolderTitle(dataHolder)) {
@@ -1245,6 +1244,7 @@ function OnEditDataHolderSubmitButtonClick() {
     else {
         $("#edit-data-holder-modal").modal("hide");
         RefreshDataHolders();
+        UpdateDataHolders();
     }
 }
 
@@ -1329,6 +1329,32 @@ function OnInvertSelectionButtonClick() {
 }
 
 //UI
+function UpdateDataCategories() {
+    ClearDataCategories();
+
+    g_dataCategories.forEach((item) => {
+        AddItemToDataCategories(item);
+    });
+
+    new Sortable($(".person-data-block__data-categories")[0], {
+        handle: ".data-categories__item",
+        animation: 500,
+        onEnd: (event) => {
+            let dataCategory = {
+                Id: $(event.item).attr("data-id"),
+                Order: event.newIndex + 1
+            };
+
+            UpdateDataCategoryOrder(dataCategory);
+        }
+    });
+
+    $("#person-data-block")
+        .find(".data-categories")
+        .find(".data-categories__item")
+        .click(OnDataCategoryClick);
+}
+
 function UpdateDataBlocks() {
     ClearDataBlocks();
 
@@ -1343,11 +1369,8 @@ function UpdateDataBlocks() {
         animation: 500,
         onEnd: (event) => {
             let dataBlock = {
-                id: $(event.item).attr("data-id"),
-                command: {
-                    Id: $(event.item).attr("data-id"),
-                    Order: event.newIndex + 1
-                }
+                Id: $(event.item).attr("data-id"),
+                Order: event.newIndex + 1
             };
 
             UpdateDataBlockOrder(dataBlock);
@@ -1377,11 +1400,8 @@ function UpdateDataHolders() {
         animation: 500,
         onEnd: (event) => {
             let dataHolder = {
-                id: $(event.item).attr("data-id"),
-                command: {
-                    Id: $(event.item).attr("data-id"),
-                    Order: event.newIndex + 1
-                }
+                Id: $(event.item).attr("data-id"),
+                Order: event.newIndex + 1
             };
 
             UpdateDataHolderOrder(dataHolder);
@@ -1516,22 +1536,22 @@ function UpdateVideoModalVideos() {
         .click(OnVideoModalVideoClick);
 }
 
+function RefreshDataCategory() {
+    g_currentDataCategory = GetDataCategory(g_currentDataCategory.Id);
+}
+
+function RefreshDataCategories() {
+    g_dataCategories = GetDataCategories(g_currentPersonId);
+}
+
 function RefreshDataBlocks() {
-    $("#person-data-block")
-        .find(".data-categories")
-        .find(".data-categories__item[data-id=\"" + g_currentDataCategory.Id + "\"]")
-        .click();
+    RefreshDataCategory();
 }
 
 function RefreshDataHolders() {
-    $("#person-data-block")
-        .find(".data-categories")
-        .find(".data-categories__item[data-id=\"" + g_currentDataCategory.Id + "\"]")
-        .click();
-    $("#person-data-block")
-        .find(".data-blocks")
-        .find(".data-blocks__item[data-id=\"" + g_currentDataBlock.Id + "\"]")
-        .click();
+    RefreshDataCategory();
+    g_currentDataBlock = g_currentDataCategory.DataBlocks
+        .find(item => item.Id == g_currentDataBlock.Id);
 }
 
 async function RefreshImages() {
@@ -1597,8 +1617,7 @@ function ShowDataBlockContentTab(dataBlockContentTab) {
 }
 
 function ShowSaveButton(isShow = true) {
-    $("#person-data-block")
-        .find("#save-button")
+    $("#save-elements-button")
         .css("display", isShow ? "block" : "none");
 }
 
@@ -1766,6 +1785,26 @@ function AddItemToDataHolders(dataHolder) {
     $("#person-data-block")
         .find(".data-holders")[0]
         .appendChild(dataHolderElement);
+
+    if (dataHolder.DataHolderType == DataHolderTypes.Gender) {    
+        switch (dataHolder.Data) {
+            case GenderTypes.Male: {
+                $(dataHolderElement).find("input[type=\"radio\"][value=\"Male\"]").prop("checked", true);
+                break;
+            }
+            case GenderTypes.Female: {
+                $(dataHolderElement).find("input[type=\"radio\"][value=\"Female\"]").prop("checked", true);
+                break;
+            }
+            case GenderTypes.Unknown: {
+                $(dataHolderElement).find("input[type=\"radio\"][value=\"Unknown\"]").prop("checked", true);
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
 }
 
 function AddItemToImages(image) {
@@ -2120,17 +2159,14 @@ function CreateGenderDataHolderElement(dataHolder) {
 
     switch (dataHolder.Data) {
         case GenderTypes.Male: {
-            inputElements[0].setAttribute("checked", "");
             labelsElements[0].classList.add("active");
             break;
         }
         case GenderTypes.Female: {
-            inputElements[1].setAttribute("checked", "");
             labelsElements[1].classList.add("active");
             break;
         }
         case GenderTypes.Unknown: {
-            inputElements[2].setAttribute("checked", "");
             labelsElements[2].classList.add("active");
             break;
         }
@@ -2140,6 +2176,20 @@ function CreateGenderDataHolderElement(dataHolder) {
     }
 
     return dataHolderElement;
+}
+
+function GetSelectedDataCategoriesIds() {
+    let result = [];
+
+    $("#person-data-block")
+        .find(".data-categories .data-categories__item")
+        .each((i, el) => {
+            if ($(el).find("input[type=\"checkbox\"]").is(":checked")) {
+                result.push(el.getAttribute("data-id"));
+            }
+        });
+
+    return result;
 }
 
 function GetSelectedDataBlocksIds() {
@@ -2237,6 +2287,12 @@ function GetCurrentActionTypeElements() {
     return elements;
 }
 
+function CopySelectedDataCategories() {
+    g_copyObject.Ids = GetSelectedDataCategoriesIds();
+    g_copyObject.CopyObjectType = CopyObjectTypes.DataCategory;
+    sessionStorage.setItem(CopyObjectSessionStorageKey, JSON.stringify(g_copyObject));
+}
+
 function CopySelectedDataBlocks() {    
     g_copyObject.Ids = GetSelectedDataBlocksIds();
     g_copyObject.CopyObjectType = CopyObjectTypes.DataBlock;
@@ -2259,6 +2315,27 @@ function CopySelectedVideos() {
     g_copyObject.Ids = GetSelectedVideosIds();
     g_copyObject.CopyObjectType = CopyObjectTypes.Video;
     sessionStorage.setItem(CopyObjectSessionStorageKey, JSON.stringify(g_copyObject));
+}
+
+function PasteDataCategories() {
+    g_copyObject = JSON.parse(sessionStorage.getItem(CopyObjectSessionStorageKey));
+
+    if (g_copyObject == null ||
+        g_copyObject.Ids.length == 0)
+        return;
+
+    if (g_copyObject.CopyObjectType == null ||
+        g_copyObject.CopyObjectType != CopyObjectTypes.DataCategory) {
+        alert("Ошибка при вставке из буфера (неверный тип объектов)");
+        return;
+    }
+
+    if (!CopyDataCategories(g_copyObject.Ids, g_currentPersonId)) {
+        alert("Ошибка при вставке из буфера");
+        return;
+    }
+
+    LoadPersonData(g_currentPersonId);
 }
 
 function PasteDataBlocks() {
@@ -2375,15 +2452,26 @@ function InverseSelectCheckboxes(elements) {
     });
 }
 
+async function DeleteSelectedDataCategories() {
+    let dataCategeoriesIds = GetSelectedDataCategoriesIds();
+
+    if (dataCategeoriesIds.length == 0)
+        return;
+
+    for (let i = 0; i < dataCategeoriesIds.length; i++) {
+        await DeleteDataCategory(dataCategeoriesIds[i]);
+    }
+}
+
 async function DeleteSelectedDataBlocks() {
     let dataBlocksIds = GetSelectedDataBlocksIds();
 
     if (dataBlocksIds.length == 0)
         return;
 
-    const promises = dataBlocksIds.map(DeleteDataBlock);
-
-    await Promise.all(promises);
+    for (let i = 0; i < dataBlocksIds.length; i++) {
+        await DeleteDataBlock(dataBlocksIds[i]);
+    }
 }
 
 async function DeleteSelectedDataHolders() {
@@ -2392,9 +2480,9 @@ async function DeleteSelectedDataHolders() {
     if (dataHoldersIds.length == 0)
         return;
 
-    const promises = dataHoldersIds.map(DeleteDataHolder);
-
-    await Promise.all(promises);
+    for (let i = 0; i < dataHoldersIds.length; i++) {
+        await DeleteDataHolder(dataHoldersIds[i]);
+    }
 }
 
 async function DeleteSelectedImages() {

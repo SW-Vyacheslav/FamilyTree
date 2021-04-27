@@ -1,6 +1,67 @@
 ﻿$(window).load(() => {
     InitPrivacyModalButonEvents();
+    InitPrivacyNotifications();
 });
+
+let g_privacyNotificationsConnection = null;
+
+//Notifications
+function InitPrivacyNotifications() {
+    g_privacyNotificationsConnection = new signalR.HubConnectionBuilder()
+        .withUrl("/Privacy/Notifications")
+        .build();
+
+    g_privacyNotificationsConnection.on("ReceiveDataHolderPrivacyNotification", (dataHolder) => {
+        if (g_currentAddButtonActionType == AddButtonActionTypes.AddDataHolder) {
+             let dataHolderIndex = g_currentDataBlock.DataHolders
+                .findIndex(item => item.Id == dataHolder.Id);
+
+            g_currentDataBlock.DataHolders[dataHolderIndex] = dataHolder;
+
+            UpdateDataHolders();
+        }
+    });
+
+    g_privacyNotificationsConnection.start()
+        .catch(error => console.error(error.Message));
+}
+
+// Requests
+//TODO:
+function GetImagePrivacy(imageId) {
+
+}
+
+//TODO:
+function GetVideoPrivacy(videoId) {
+
+}
+
+function UpdateDataHolderPrivacy(dataHolderPrivacy) {
+    let result = false;
+
+    $.ajax({
+        async: false,
+        type: "PUT",
+        data: dataHolderPrivacy,
+        url: "/Privacy/UpdateDataHolderPrivacy/" + dataHolderPrivacy.Id,
+        success: function (response) {
+            result = true;
+        }
+    });
+
+    return result;
+}
+
+//TODO:
+function UpdateImagePrivacy(imagePrivacy) {
+
+}
+
+//TODO:
+function UpdateVideoPrivacy(videoPrivacy) {
+
+}
 
 //Events
 function InitPrivacyModalButonEvents() {
@@ -74,6 +135,7 @@ function OnEditPrivacyLevelSubmitButtonClick(event) {
                 return;
             }
             RefreshDataHolders();
+            UpdateDataHolders();
             break;
         }
 
@@ -82,6 +144,7 @@ function OnEditPrivacyLevelSubmitButtonClick(event) {
                 alert("Ошибка при изменении приватности изображения.");
                 return;
             }
+            RefreshImages();
             break;
         }
 
@@ -90,6 +153,7 @@ function OnEditPrivacyLevelSubmitButtonClick(event) {
                 alert("Ошибка при изменении приватности видео.");
                 return;
             }
+            RefreshVideos();
             break;
         }
 
@@ -100,17 +164,7 @@ function OnEditPrivacyLevelSubmitButtonClick(event) {
     editPrivacyModal.modal("hide");
 }
 
-// Requests
-//TODO:
-function GetImagePrivacy(imageId) {
-
-}
-
-//TODO:
-function GetVideoPrivacy(videoId) {
-
-}
-
+//UI
 function LoadDataHolderPrivacyData(dataHolderId) {
     let dataHolderPrivacy = g_currentDataBlock
         .DataHolders
@@ -135,21 +189,33 @@ function LoadDataHolderPrivacyData(dataHolderId) {
             .parent()
             .click();
 
+        privacyModal
+            .find("input[name=\"privacy-level\"][value=\"" + dataHolderPrivacy.PrivacyLevel + "\"]")
+            .prop("checked", true);
+
         if (dataHolderPrivacy.IsAlways) {
             privacyModal
                 .find("input[name=\"limit-type\"][value=\"0\"]")
                 .parent()
                 .click();
+
+            privacyModal
+                .find("input[name=\"limit-type\"][value=\"0\"]")
+                .prop("checked", true);
         }
         else {
             privacyModal
                 .find("input[name=\"limit-type\"][value=\"1\"]")
                 .parent()
-                .click();            
-        }      
+                .click();
 
-        let beginDate = dataHolderPrivacy.BeginDate.substr(0, dataHolderPrivacy.BeginDate.lastIndexOf(":"));
-        let endDate = dataHolderPrivacy.EndDate.substr(0, dataHolderPrivacy.EndDate.lastIndexOf(":"));
+            privacyModal
+                .find("input[name=\"limit-type\"][value=\"1\"]")
+                .prop("checked", true);
+        }
+
+        let beginDate = UTCDateToLocaleString(new Date(dataHolderPrivacy.BeginDate.replace("T", " ") + " UTC"));               
+        let endDate = UTCDateToLocaleString(new Date(dataHolderPrivacy.EndDate.replace("T", " ") + " UTC"));
 
         privacyModal
             .find("#privacy-level-begin-date")
@@ -171,28 +237,16 @@ function LoadVideoPrivacyData(videoId) {
 
 }
 
-function UpdateDataHolderPrivacy(dataHolderPrivacy) {
-    let result = false;
+function UTCDateToLocaleString(date) {
+    var newDate = new Date(
+        Date.UTC(date.getFullYear(),
+            date.getMonth(),
+            date.getDate(),
+            date.getHours(),
+            date.getMinutes(),
+            date.getSeconds()));
 
-    $.ajax({
-        async: false,
-        type: "PUT",
-        data: dataHolderPrivacy,
-        url: "/Privacy/UpdateDataHolderPrivacy/" + dataHolderPrivacy.Id,
-        success: function (response) {
-            result = true;
-        }
-    });
+    let newDateISOStr = newDate.toISOString();
 
-    return result;
-}
-
-//TODO:
-function UpdateImagePrivacy(imagePrivacy) {
-
-}
-
-//TODO:
-function UpdateVideoPrivacy(videoPrivacy) {
-
+    return newDateISOStr.substring(0, newDateISOStr.lastIndexOf(":"));
 }

@@ -7,15 +7,15 @@
             <div class="modal-body">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        <label for="data-category-name" class="col-sm-2 control-label">Имя</label>
+                        <label for="add-data-category-name" class="col-sm-2 control-label">Имя</label>
                         <div class="col-sm-10">
-                            <input id="data-category-name" class="form-control" type="text" />
+                            <input id="add-data-category-name" class="form-control" type="text" />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="data-category-type" class="col-sm-2 control-label">Тип</label>
+                        <label for="add-data-category-type" class="col-sm-2 control-label">Тип</label>
                         <div class="col-sm-10">
-                            <select id="data-category-type" class="form-control">
+                            <select id="add-data-category-type" class="form-control">
                                 <option value="InfoBlock" selected>Блок</option>
                                 <option value="ListBlock">Список</option>
                             </select>
@@ -40,9 +40,9 @@
             <div class="modal-body">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        <label for="data-block-title" class="col-sm-2 control-label">Заголовок</label>
+                        <label for="add-data-block-title" class="col-sm-2 control-label">Заголовок</label>
                         <div class="col-sm-10">
-                            <input id="data-block-title" class="form-control" type="text" />
+                            <input id="add-data-block-title" class="form-control" type="text" />
                         </div>
                     </div>
                 </div>
@@ -64,15 +64,15 @@
             <div class="modal-body">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        <label for="data-holder-title" class="col-sm-2 control-label">Заголовок</label>
+                        <label for="add-data-holder-title" class="col-sm-2 control-label">Заголовок</label>
                         <div class="col-sm-10">
-                            <input id="data-holder-title" class="form-control" type="text" />
+                            <input id="add-data-holder-title" class="form-control" type="text" />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="data-holder-type" class="col-sm-2 control-label">Тип</label>
+                        <label for="add-data-holder-type" class="col-sm-2 control-label">Тип</label>
                         <div class="col-sm-10">
-                            <select id="data-holder-type" class="form-control">
+                            <select id="add-data-holder-type" class="form-control">
                                 <option value="Text" selected>Текст</option>
                                 <option value="TextArea">Большой текст</option>
                                 <option value="Date">Дата</option>
@@ -100,9 +100,9 @@
             <div class="modal-body">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        <label for="data-category-name" class="col-sm-2 control-label">Имя</label>
+                        <label for="edit-data-category-name" class="col-sm-2 control-label">Имя</label>
                         <div class="col-sm-10">
-                            <input id="data-category-name" class="form-control" type="text" />
+                            <input id="edit-data-category-name" class="form-control" type="text" />
                         </div>
                     </div>
                 </div>
@@ -124,9 +124,9 @@
             <div class="modal-body">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        <label for="data-block-title" class="col-sm-2 control-label">Заголовок</label>
+                        <label for="edit-data-block-title" class="col-sm-2 control-label">Заголовок</label>
                         <div class="col-sm-10">
-                            <input id="data-block-title" class="form-control" type="text" />
+                            <input id="edit-data-block-title" class="form-control" type="text" />
                         </div>
                     </div>
                 </div>
@@ -148,9 +148,9 @@
             <div class="modal-body">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        <label for="data-holder-title" class="col-sm-2 control-label">Заголовок</label>
+                        <label for="edit-data-holder-title" class="col-sm-2 control-label">Заголовок</label>
                         <div class="col-sm-10">
-                            <input id="data-holder-title" class="form-control" type="text" />
+                            <input id="edit-data-holder-title" class="form-control" type="text" />
                         </div>
                     </div>
                 </div>
@@ -333,6 +333,23 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-my-dark" data-dismiss="modal">Отмена</button>
                 <button id="delete-submit-button" type="button" class="btn btn-my-danger">Удалить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="delete-data-category-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Удаление</h3>
+            </div>
+            <div class="modal-body">
+                <span>Вы уверенны, что хотите удалить выбранные категории данных?</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-my-dark" data-dismiss="modal">Отмена</button>
+                <button id="delete-data-category-submit-button" type="button" class="btn btn-my-danger">Удалить</button>
             </div>
         </div>
     </div>

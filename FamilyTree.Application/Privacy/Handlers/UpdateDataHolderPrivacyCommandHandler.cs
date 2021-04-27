@@ -28,14 +28,14 @@ namespace FamilyTree.Application.Privacy.Handlers
             if (privacy == null)
                 throw new NotFoundException(nameof(DataHolderPrivacy), request.Id);
 
-            if (!request.IsAlways)
+            if (!request.IsAlways.Value)
             {
-                privacy.BeginDate = request.BeginDate;
-                privacy.EndDate = request.EndDate;
+                privacy.BeginDate = request.BeginDate.Value.ToUniversalTime();
+                privacy.EndDate = request.EndDate.Value.ToUniversalTime();
             }
 
             privacy.IsAlways = request.IsAlways;
-            privacy.PrivacyLevel = request.PrivacyLevel;
+            privacy.PrivacyLevel = request.PrivacyLevel.Value;
 
             await _context.SaveChangesAsync(cancellationToken);
 

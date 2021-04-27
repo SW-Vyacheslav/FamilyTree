@@ -17,11 +17,16 @@ namespace FamilyTree.Application.PersonContent.DataCategories.Handlers
 {
     public class GetDataCategoryQueryHandler : IRequestHandler<GetDataCategoryQuery, DataCategoryVm>
     {
+        private const string DataHolderPrivacyFiller = "#####################";
+
         private readonly IApplicationDbContext _context;
 
-        public GetDataCategoryQueryHandler(IApplicationDbContext context)
+        private readonly IDateTimeService _dateTimeService;
+
+        public GetDataCategoryQueryHandler(IApplicationDbContext context, IDateTimeService dateTimeService)
         {
             _context = context;
+            _dateTimeService = dateTimeService;
         }
 
         public async Task<DataCategoryVm> Handle(GetDataCategoryQuery request, CancellationToken cancellationToken)
@@ -87,6 +92,17 @@ namespace FamilyTree.Application.PersonContent.DataCategories.Handlers
                             IsAlways = privacy.IsAlways.Value,
                             PrivacyLevel = privacy.PrivacyLevel
                         };
+
+                        if (!privacy.IsAlways.Value)
+                        {
+                            var nowTime = _dateTimeService.Now;
+
+                            if (nowTime >= privacy.BeginDate &&
+                                nowTime <= privacy.EndDate)
+                            {
+                                dataHolderDto.Data = DataHolderPrivacyFiller;
+                            }
+                        }
                     }
 
                     dataBlockDto.DataHolders.Add(dataHolderDto);

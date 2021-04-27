@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace FamilyTree.Application.FamilyTrees.Handlers
 {
-    public class GetFamilyTreeByIdQueryHandler : IRequestHandler<GetFamilyTreeByIdQuery, FamilyTreeVm>
+    public class GetBloodTreeQueryHandler : IRequestHandler<GetBloodTreeByIdQuery, BloodTreeVm>
     {
         private readonly IFamilyTreeService _service;
 
-        public GetFamilyTreeByIdQueryHandler(IFamilyTreeService service)
+        public GetBloodTreeQueryHandler(IFamilyTreeService service)
         {
             _service = service;
         }
 
-        public async Task<FamilyTreeVm> Handle(GetFamilyTreeByIdQuery request, CancellationToken cancellationToken)
+        public async Task<BloodTreeVm> Handle(GetBloodTreeByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _service.GetFamilyTreeById(request, cancellationToken);
+            return await _service.GetBloodTreeById(request, cancellationToken);
         }
     }
 }

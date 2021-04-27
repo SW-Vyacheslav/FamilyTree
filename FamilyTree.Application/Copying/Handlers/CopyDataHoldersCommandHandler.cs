@@ -41,8 +41,7 @@ namespace FamilyTree.Application.Copying.Handlers
 
             foreach (var dataHolder in dataHolders)
             {         
-                _context.DataHolders
-                    .Add(await _copying.CopyDataHolderToDataBlock(dataBlock, dataHolder, cancellationToken));
+                await _copying.CopyDataHolderToDataBlock(dataBlock, dataHolder, cancellationToken);
             }
 
             await _context.SaveChangesAsync(cancellationToken);

@@ -212,7 +212,7 @@ function InitFamilyTreeEvents() {
         ShowCreatePersonForm();
     });
 
-    $("#create-person-block").find("#cancel-button").click(() => {
+    $("#cancel-person-button").click(() => {
         ShowCreatePersonForm(false);
         if (_familyTrees.length == 0)
             ShowStartTree();
@@ -222,12 +222,12 @@ function InitFamilyTreeEvents() {
         ClearInputs();
     });
 
-    $("#create-person-block").find("#save-button").click(() => {
-        _createPersonData.Name = $("#create-person-block").find("input[name=\"person-name\"]").val();
-        _createPersonData.Surname = $("#create-person-block").find("input[name=\"person-surname\"]").val();
-        _createPersonData.Middlename = $("#create-person-block").find("input[name=\"person-middlename\"]").val();
-        _createPersonData.Birthday = $("#create-person-block").find("input[name=\"person-birthday\"]").val();
-        _createPersonData.Gender = $("#create-person-block").find("input[name=\"person-gender\"]:checked").val();
+    $("#save-person-button").click(() => {
+        _createPersonData.Name = $("#create-person-name").val();
+        _createPersonData.Surname = $("#create-person-surname").val();
+        _createPersonData.Middlename = $("#create-person-middlename").val();
+        _createPersonData.Birthday = $("#create-person-birthday").val();
+        _createPersonData.Gender = $("input[name=\"person-gender\"]:checked").val();
         _createPersonData.TreeId = _currentFamilyTree.Id;
 
         $.ajax({
@@ -252,17 +252,15 @@ function InitFamilyTreeEvents() {
         });
     });
 
-    $("#person-data-block").find("#back-to-tree-button").click(() => {
+    $("#back-to-tree-button").click(() => {
         ShowPersonData(false);
         ShowMainTree();
     });
 
-    $("#has-no-trees-block")
-        .find("#create-family-tree-button")
+    $("#create-family-tree-button")
         .click(() => $("#create-family-tree-modal").modal("show"));
 
-    $("#create-family-tree-modal")
-        .find("#create-family-tree-submit-button")
+    $("#create-family-tree-submit-button")
         .click(OnCreateFamilyTreeSubmitButtonClick);
 }
 
@@ -316,10 +314,10 @@ function CreateFamilyTree(name) {
 }
 
 function ClearInputs() {
-    $("#create-person-block").find("input[name=\"person-name\"]").val("");
-    $("#create-person-block").find("input[name=\"person-surname\"]").val("");
-    $("#create-person-block").find("input[name=\"person-middlename\"]").val("");
-    $("#create-person-block").find("input[name=\"person-birthday\"]").val("");
+    $("#create-person-name").val("");
+    $("#create-person-surname").val("");
+    $("#create-person-middlename").val("");
+    $("#create-person-birthday").val("");
     $("#create-person-block").find("input[name=\"person-gender\"][value=\"Unknown\"]").parent().click();
 }
 
@@ -596,12 +594,12 @@ function FillWifes(tree, listSlider, itemMarginPerson, NumWifes) {
         var main = "wifeOne-LittleTree";
         var LittleTree = true;
     } else {
-        var Prev = $("#wifes .PrevItem")[0];
-        var Next = $("#wifes .NextItem")[0];
-        var Add = $("#wifes .AddPerson-Tree")[0];
-        var wife = $("#wifeOne")[0];
-        var main = "wifeOne";
-        var LittleTree = false;
+        Prev = $("#wifes .PrevItem")[0];
+        Next = $("#wifes .NextItem")[0];
+        Add = $("#wifes .AddPerson-Tree")[0];
+        wife = $("#wifeOne")[0];
+        main = "wifeOne";
+        LittleTree = false;
     }
 
     wife.parentElement.style.left = "0px";

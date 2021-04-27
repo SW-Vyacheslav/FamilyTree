@@ -35,14 +35,14 @@ namespace FamilyTree.Application.Copying.Handlers
 
             var dataCategories = await _context.DataCategories
                 .Include(dc => dc.DataBlocks)
+                .ThenInclude(db => db.DataHolders)
                 .Where(dc => dc.CreatedBy.Equals(request.UserId) &&
                              request.DataCategoriesIds.Contains(dc.Id))
                 .ToListAsync(cancellationToken);
 
             foreach (var dataCategory in dataCategories)
             {
-                _context.DataCategories
-                    .Add(await _copying.CopyDataCategoryToPerson(person, dataCategory, cancellationToken));
+                await _copying.CopyDataCategoryToPerson(person, dataCategory, cancellationToken);
             }
 
             await _context.SaveChangesAsync(cancellationToken);

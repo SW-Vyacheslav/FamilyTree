@@ -40,8 +40,7 @@ namespace FamilyTree.Application.Copying.Handlers
 
             foreach (var image in images)
             {
-                _context.Images
-                    .Add(await _copying.CopyImageToDataBlock(dataBlock, image, cancellationToken));
+                await _copying.CopyImageToDataBlock(dataBlock, image, cancellationToken);
             }
 
             await _context.SaveChangesAsync(cancellationToken);

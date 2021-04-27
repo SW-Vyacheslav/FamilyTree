@@ -48,8 +48,7 @@ namespace FamilyTree.Application.Copying.Handlers
 
             foreach (var dataBlock in dataBlocks)
             {            
-                _context.DataBlocks
-                    .Add(await _copying.CopyDataBlockToDataCategory(dataCategory, dataBlock, cancellationToken));
+                await _copying.CopyDataBlockToDataCategory(dataCategory, dataBlock, cancellationToken);
             }
 
             await _context.SaveChangesAsync(cancellationToken);

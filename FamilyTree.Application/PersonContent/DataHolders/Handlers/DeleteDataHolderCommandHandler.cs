@@ -5,6 +5,7 @@ using FamilyTree.Domain.Entities.PersonContent;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,6 +32,16 @@ namespace FamilyTree.Application.PersonContent.DataHolders.Handlers
 
             if (!dataHolder.IsDeletable.Value)
                 throw new Exception("Can\'t delete DataHolder. This DataHolder isn\'t deletable");
+
+            var dataHolders = await _context.DataHolders
+                .Where(dh => dh.DataBlockId == dataHolder.DataBlockId)
+                .OrderBy(dh => dh.OrderNumber)
+                .ToListAsync(cancellationToken);
+
+            for (int i = dataHolder.OrderNumber; i < dataHolders.Count; i++)
+            {
+                dataHolders[i].OrderNumber = i;
+            }
 
             _context.DataHolders.Remove(dataHolder);
 

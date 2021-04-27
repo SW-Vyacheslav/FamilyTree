@@ -40,8 +40,7 @@ namespace FamilyTree.Application.Copying.Handlers
 
             foreach (var video in videos)
             {
-                _context.Videos
-                    .Add(await _copying.CopyVideoToDataBlock(dataBlock, video, cancellationToken));
+                await _copying.CopyVideoToDataBlock(dataBlock, video, cancellationToken);
             }
 
             await _context.SaveChangesAsync(cancellationToken);

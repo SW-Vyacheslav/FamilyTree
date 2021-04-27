@@ -473,7 +473,7 @@ input:focus {
     background-image: url("../lib/bootstrap/icons/check2-square.svg");
 }
 
-.dropdown-toggle .dropdown-toggle__img {
+.button-caret-down .button-caret-down__img {
     background-image: url("../lib/bootstrap/icons/caret-down-fill.svg");
 }
 
@@ -529,15 +529,15 @@ input:focus {
     height: 80%;
 }
 
-#add-data-category-button {
+.data-category-dropdown-buttons {
     float: right;
 }
 
-#person-data-block #save-button {
+#save-elements-button {
     float: right;
 }
 
-#person-data-block #save-button .loader {
+#save-elements-button .loader {
     display: none;
     float: left;
 }

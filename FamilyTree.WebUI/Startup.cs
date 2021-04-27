@@ -8,7 +8,8 @@ using FamilyTree.Infrastructure;
 using FamilyTree.WebUI.Services;
 using FamilyTree.Application;
 using System.IO;
-using System;
+using FamilyTree.WebUI.Hubs;
+using FamilyTree.Application.Privacy.Interfaces;
 
 namespace FamilyTree.WebUI
 {
@@ -27,11 +28,19 @@ namespace FamilyTree.WebUI
             services.AddInfrastructure(Configuration);
             services.AddApplication();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<IPrivacyNotificationsService, PrivacyNotificationsService>();
+
             services.AddControllersWithViews()
                 .AddJsonOptions(options =>
                 {
                     // Use the default property (Pascal) casing.
                     options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                });
+
+            services.AddSignalR()
+                .AddJsonProtocol(configure =>
+                {
+                    configure.PayloadSerializerOptions.PropertyNamingPolicy = null;
                 });
 
             services.AddRazorPages();
@@ -47,10 +56,10 @@ namespace FamilyTree.WebUI
             }
             else
             {
-                //app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
 
+            app.UseExceptionHandler("/Error/Index");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -68,6 +77,7 @@ namespace FamilyTree.WebUI
                     name: "default",
                     pattern: "{controller=FamilyTree}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
+                endpoints.MapHub<PrivacyHub>("/Privacy/Notifications");
             });
         }
 
