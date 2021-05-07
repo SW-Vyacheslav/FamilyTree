@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using FamilyTree.Domain.Entities.Identity;
 
 namespace FamilyTree.Infrastructure
 {
@@ -17,7 +18,7 @@ namespace FamilyTree.Infrastructure
 
             services.AddScoped<IApplicationDbContext>(services => services.GetService<ApplicationDbContext>());
 
-            services.AddDefaultIdentity<IdentityUser>(options =>
+            services.AddDefaultIdentity<ApplicationUser>(options =>
             {
                 options.Password = new PasswordOptions()
                 {

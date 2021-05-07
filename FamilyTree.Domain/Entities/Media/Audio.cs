@@ -2,13 +2,13 @@
 
 namespace FamilyTree.Domain.Entities.Media
 {
-    public class Image : AuditableEntity
+    public class Audio : AuditableEntity
     {
         public int Id { get; set; }
 
-        public byte[] ImageData { get; set; }
+        public string FilePath { get; set; }
 
-        public string ImageType { get; set; }
+        public string FileType { get; set; }
 
         public string Title { get; set; }
 

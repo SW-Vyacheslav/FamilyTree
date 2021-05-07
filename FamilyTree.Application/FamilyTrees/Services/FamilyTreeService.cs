@@ -61,9 +61,9 @@ namespace FamilyTree.Application.FamilyTrees.Services
 
         public async Task<string> GetRelationsByPeopleIds(GetRelationsByPeopleIdsQuery request, CancellationToken cancellationToken)
         {
-            await LoadPeople(request.FamilyTreeId, request.UserId, cancellationToken);
+            await LoadPeople(request.FamilyTreeId.Value, request.UserId, cancellationToken);
 
-            return await FindRelation(request.TargetPersonId, request.PersonId, cancellationToken);
+            return await FindRelation(request.TargetPersonId.Value, request.PersonId.Value, cancellationToken);
         }
 
         public async Task<BloodTreeVm> GetBloodTreeById(GetBloodTreeByIdQuery request, CancellationToken cancellationToken)
@@ -477,18 +477,7 @@ namespace FamilyTree.Application.FamilyTrees.Services
                 result.Name = dataHolders.FirstOrDefault(dh => dh.DataHolderType == DataHolderType.Name).Data;
                 result.Surname = dataHolders.FirstOrDefault(dh => dh.DataHolderType == DataHolderType.Surname).Data;
                 result.Middlename = dataHolders.FirstOrDefault(dh => dh.DataHolderType == DataHolderType.MiddleName).Data;
-
-                if (person.AvatarImage != null)
-                {
-                    result.AvatarImage = new ImageDto()
-                    {
-                        Id = person.AvatarImage.Id,
-                        Title = person.AvatarImage.Title,
-                        Description = person.AvatarImage.Description,
-                        ImageData = Convert.ToBase64String(person.AvatarImage.ImageData),
-                        ImageFormat = person.AvatarImage.ImageFormat
-                    };
-                }
+                result.AvatarImageId = person.AvatarImageId;
             }
 
             return result;
@@ -538,6 +527,17 @@ namespace FamilyTree.Application.FamilyTrees.Services
             return (wifes != null) && (wifes.Count > 1);
         }
 
+        private async Task<bool> HaveChildren(int personId, CancellationToken cancellationToken)
+        {
+            List<int?> sons_2 = await _context.FamilyTies
+                .Where(p => p.PersonId == personId &&
+                            p.ChildId != null)
+                .Select(t => t.ChildId)
+                .ToListAsync(cancellationToken);
+
+            return (sons_2?.Count ?? 0) > 0;
+        }
+
         private async Task<int> CountBrothers(int treeId, int personId, int? parent_1, int? parent_2, string userId, CancellationToken cancellationToken)
         {
             List<PersonDto> bro = await GetBrothers(treeId, parent_1, parent_2, userId, cancellationToken);
@@ -551,17 +551,6 @@ namespace FamilyTree.Application.FamilyTrees.Services
             var children = await GetChildren(treeId, personId, idWife, userId, cancellationToken);
 
             return children?.Count() ?? 0;
-        }
-
-        private async Task<bool> HaveChildren(int personId, CancellationToken cancellationToken)
-        {
-            List<int?> sons_2 = await _context.FamilyTies
-                .Where(p => p.PersonId == personId &&
-                            p.ChildId != null)
-                .Select(t => t.ChildId)
-                .ToListAsync(cancellationToken);
-
-            return (sons_2?.Count ?? 0) > 0;
         }
 
         private List<bool> CheckListOnBloodRelation(List<PersonDto> list, int bloodMainId)
@@ -762,7 +751,7 @@ namespace FamilyTree.Application.FamilyTrees.Services
             return dataHolders.FirstOrDefault(dh => dh.DataHolderType == DataHolderType.Gender).Data;
         }
 
-        public async Task<string> GetPersonName(int personId, CancellationToken cancellationToken)
+        private async Task<string> GetPersonName(int personId, CancellationToken cancellationToken)
         {
             List<DataCategory> dataCategories = await _context
                     .DataCategories

@@ -32,6 +32,16 @@ namespace FamilyTree.WebUI.Controllers.Media
             });
         }
 
+        [HttpGet]
+        public async Task<ActionResult<ImageDto>> Get(int id)
+        {
+            return await Mediator.Send(new GetImageQuery()
+            {
+                UserId = _currentUserService.UserId,
+                Id = id
+            });
+        }
+
         [HttpPost]
         public async Task<ActionResult<int>> Create(CreateImageCommand command)
         {

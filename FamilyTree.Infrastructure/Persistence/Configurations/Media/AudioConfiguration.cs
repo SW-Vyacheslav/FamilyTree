@@ -4,25 +4,25 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FamilyTree.Infrastructure.Persistence.Configurations.Media
 {
-    public class ImageConfiguration : IEntityTypeConfiguration<Image>
+    public class AudioConfiguration : IEntityTypeConfiguration<Audio>
     {
-        public void Configure(EntityTypeBuilder<Image> builder)
+        public void Configure(EntityTypeBuilder<Audio> builder)
         {
-            builder.HasKey(i => i.Id);
+            builder.HasKey(a => a.Id);
 
-            builder.Property(i => i.ImageData)
-                .HasColumnType("image")
+            builder.Property(a => a.FilePath)
+                .HasColumnType("nvarchar(260)")
                 .IsRequired();
 
-            builder.Property(i => i.ImageType)
+            builder.Property(a => a.FileType)
                 .HasColumnType("nvarchar(10)")
                 .IsRequired();
 
-            builder.Property(i => i.Title)
+            builder.Property(a => a.Title)
                 .HasColumnType("nvarchar(50)")
                 .IsRequired();
 
-            builder.Property(i => i.Description)
+            builder.Property(a => a.Description)
                 .HasColumnType("nvarchar(1000)");
         }
     }

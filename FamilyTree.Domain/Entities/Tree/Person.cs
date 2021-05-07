@@ -1,5 +1,7 @@
 ﻿using FamilyTree.Domain.Common;
 using FamilyTree.Domain.Entities.Media;
+using FamilyTree.Domain.Entities.PersonContent;
+using System.Collections.Generic;
 
 namespace FamilyTree.Domain.Entities.Tree
 {
@@ -14,5 +16,7 @@ namespace FamilyTree.Domain.Entities.Tree
         public int? AvatarImageId { get; set; }
 
         public Image AvatarImage { get; set; }
+
+        public ICollection<DataCategory> DataCategories { get; set; }
     }
 }

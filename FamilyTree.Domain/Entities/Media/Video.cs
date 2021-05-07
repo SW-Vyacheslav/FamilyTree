@@ -8,9 +8,11 @@ namespace FamilyTree.Domain.Entities.Media
 
         public string FilePath { get; set; }
 
+        public string FileType { get; set; }
+
         public byte[] PreviewImageData { get; set; }
 
-        public string PreviewImageFormat { get; set; }
+        public string PreviewImageType { get; set; }
 
         public string Title { get; set; }
 

@@ -28,6 +28,7 @@ namespace FamilyTree.WebUI
             services.AddInfrastructure(Configuration);
             services.AddApplication();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddHostedService<PrivacyNotificationsBackgroundService>();
             services.AddScoped<IPrivacyNotificationsService, PrivacyNotificationsService>();
 
             services.AddControllersWithViews()
@@ -60,6 +61,7 @@ namespace FamilyTree.WebUI
             }
 
             app.UseExceptionHandler("/Error/Index");
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -84,7 +86,7 @@ namespace FamilyTree.WebUI
         private void CheckUploadsFolderPath()
         {
             string dir = Path.Combine(Configuration["FilesStorageFolderPath"],
-                Configuration["VideosUploadsFolderPath"]);
+                Configuration["UploadsFolderPath"]);
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
         }

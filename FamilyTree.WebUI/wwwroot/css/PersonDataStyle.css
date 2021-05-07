@@ -559,9 +559,14 @@ input:focus {
     content: "Нажмите на + чтобы добавить видео";
 }
 
+.tab-container.audios:empty::after {
+    content: "Нажмите на + чтобы добавить аудио";
+}
+
 .tabs-buttons .tabs-buttons__button {
     height: 75px;
     border: 1px solid lightgray;
+    border-bottom: none;
     text-align: center;
     padding-top: 25px;
     cursor: pointer;
@@ -576,12 +581,8 @@ input:focus {
     border: none;
 }
 
-.tabs-buttons .tabs-buttons__button:first-child {
-    border-bottom: none;
-}
-
 .tabs-buttons .tabs-buttons__button:last-child {
-    border-top: none;
+    border-bottom: 1px solid lightgray;
 }
 
 .tabs-buttons .tabs-buttons__button.tabs-buttons__button_active {

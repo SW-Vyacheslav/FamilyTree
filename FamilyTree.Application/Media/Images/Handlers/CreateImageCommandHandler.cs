@@ -36,7 +36,7 @@ namespace FamilyTree.Application.Media.Images.Handlers
             Image entity = new Image();
             entity.Title = request.Title;
             entity.Description = request.Description;
-            entity.ImageFormat = request.ImageFile.ContentType.Split('/')[1];
+            entity.ImageType = request.ImageFile.ContentType.Split('/')[1];
 
             using (var streamReader = new BinaryReader(request.ImageFile.OpenReadStream()))
                 entity.ImageData = streamReader.ReadBytes(Convert.ToInt32(request.ImageFile.Length));

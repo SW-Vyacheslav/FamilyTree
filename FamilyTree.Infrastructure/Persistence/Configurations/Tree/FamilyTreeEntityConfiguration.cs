@@ -13,7 +13,15 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Tree
             builder.Property(t => t.Name)
                 .HasColumnType("nvarchar(50)")
                 .IsRequired();
-            
+
+            builder.Property(t => t.UserId)
+                .HasColumnType("nvarchar(450)")
+                .IsRequired();
+
+            builder.HasOne(ft => ft.User)
+                .WithMany(u => u.FamilyTrees)
+                .HasForeignKey(ft => ft.UserId);
+
             builder.ToTable("FamilyTrees");
         }
     }

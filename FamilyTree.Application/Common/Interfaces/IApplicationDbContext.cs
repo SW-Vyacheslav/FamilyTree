@@ -5,11 +5,14 @@ using FamilyTree.Domain.Entities.PersonContent;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
+using FamilyTree.Domain.Entities.Identity;
 
 namespace FamilyTree.Application.Common.Interfaces
 {
     public interface IApplicationDbContext
     {
+        DbSet<Profile> Profiles { get; set; }
+
         DbSet<Person> People { get; set; }
 
         DbSet<FamilyTie> FamilyTies { get; set; }

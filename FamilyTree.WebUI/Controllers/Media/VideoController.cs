@@ -41,7 +41,7 @@ namespace FamilyTree.WebUI.Controllers.Media
                 Id = id
             });
 
-            return File(fileVm.FileStream, $"video/{fileVm.FileFormat}", true);
+            return File(fileVm.FileStream, $"video/{fileVm.FileType}", true);
         }
 
         [HttpPost]

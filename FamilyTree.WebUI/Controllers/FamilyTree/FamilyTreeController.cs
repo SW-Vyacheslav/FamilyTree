@@ -29,6 +29,8 @@ namespace FamilyTree.WebUI.Controllers.FamilyTree
         [HttpPost]
         public async Task<ActionResult<int>> Create(CreateFamilyTreeCommand command)
         {
+            command.UserId = _currentUserService.UserId;
+
             return await Mediator.Send(command);
         }
 

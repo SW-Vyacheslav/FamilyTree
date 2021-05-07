@@ -6,7 +6,7 @@
 
         public string ImageData { get; set; }
 
-        public string ImageFormat { get; set; }
+        public string ImageType { get; set; }
 
         public string Title { get; set; }
 

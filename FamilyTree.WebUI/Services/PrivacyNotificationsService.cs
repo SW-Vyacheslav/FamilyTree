@@ -29,7 +29,7 @@ namespace FamilyTree.WebUI.Services
             _dateTimeService = dateTimeService;
         }
 
-        public async Task NotifyUsersIfPrivacyTimeExpired(CancellationToken cancellationToken = default)
+        public async Task NotifyUsersIfDataHolderPrivacyTimeExpired(CancellationToken cancellationToken = default)
         {
             var nowDateTime = _dateTimeService.Now;
             var dataHoldersPrivacies = await _context.DataHolderPrivacies
@@ -37,6 +37,9 @@ namespace FamilyTree.WebUI.Services
                 .Where(dhp => !dhp.IsAlways.Value &&
                               nowDateTime > dhp.EndDate)
                 .ToListAsync(cancellationToken);
+
+            if (dataHoldersPrivacies.Count == 0)
+                return;
 
             dataHoldersPrivacies.ForEach(item => 
             {
@@ -69,6 +72,16 @@ namespace FamilyTree.WebUI.Services
                     .User(item.CreatedBy)
                     .SendAsync("ReceiveDataHolderPrivacyNotification", dataHolder);
             });
+        }
+
+        public Task NotifyUsersIfImagePrivacyTimeExpired(CancellationToken cancellationToken = default)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task NotifyUsersIfVideoPrivacyTimeExpired(CancellationToken cancellationToken = default)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

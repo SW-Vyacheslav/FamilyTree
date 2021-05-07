@@ -6,6 +6,6 @@ namespace FamilyTree.Application.Media.Videos.ViewModels
     {
         public FileStream FileStream { get; set; }
 
-        public string FileFormat { get; set; }
+        public string FileType { get; set; }
     }
 }

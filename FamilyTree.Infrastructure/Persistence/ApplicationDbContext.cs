@@ -10,10 +10,11 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using FamilyTree.Domain.Entities.Identity;
 
 namespace FamilyTree.Infrastructure.Persistence
 {
-    public class ApplicationDbContext : IdentityDbContext, IApplicationDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
     {
         private readonly ICurrentUserService _currentUserService;
 
@@ -26,6 +27,8 @@ namespace FamilyTree.Infrastructure.Persistence
             _currentUserService = currentUserService;
             _dateTimeService = dateTimeService;
         }
+
+        public DbSet<Profile> Profiles { get; set; }
 
         public DbSet<Person> People { get; set; }
 

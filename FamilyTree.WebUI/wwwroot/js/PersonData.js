@@ -26,7 +26,8 @@ const DataHolderTypes = {
 const DataBlockContentTabs = {
     Data: 0,
     Images: 1,
-    Videos: 2
+    Videos: 2,
+    Audios: 3
 };
 const GenderTypes = {
     Unknown: "Unknown",
@@ -37,7 +38,8 @@ const AddButtonActionTypes = {
     AddDataBlock: 0,
     AddDataHolder: 1,
     AddImage: 2,
-    AddVideo: 3
+    AddVideo: 3,
+    AddAudio: 4
 };
 const PrivacyLevels = {
     TopSecret: 0,
@@ -118,6 +120,16 @@ function GetDataCategory(dataCategoryId) {
             result = data;
         }
     });
+    return result;
+}
+
+async function GetImage(imageId) {
+    const result = await $.ajax({
+        type: "GET",
+        dataType: "json",
+        url: "/Media/Image/Get?id=" + imageId
+    });
+
     return result;
 }
 
@@ -320,17 +332,11 @@ function UpdateDataHolderTitle(dataHolder) {
     return result;
 }
 
-function UpdateDataHolderData(dataHolder) {
-    let result = false;
-
-    $.ajax({
-        async: false,
+async function UpdateDataHolderData(dataHolder) {
+    let result = await $.ajax({
         type: "PUT",
         data: dataHolder,
-        url: "/PersonContent/DataHolder/UpdateData/" + dataHolder.Id,
-        success: function (response) {
-            result = true;
-        }
+        url: "/PersonContent/DataHolder/UpdateData/" + dataHolder.Id
     });
 
     return result;
@@ -403,13 +409,11 @@ function UpdatePersonAvatarImage(personId, imageId) {
     return result;
 }
 
-function SaveDataHolders() {
-    let isSaved = [];
-
+async function SaveDataHolders() {
     let dataHolders = $("#person-data-block")
         .find(".data-holders .data-holders__item");
 
-    dataHolders.each((i, el) => {
+    dataHolders.each(async (i, el) => {
         let data = "";
 
         if (el.classList.contains("data-holder-gender")) {
@@ -427,10 +431,10 @@ function SaveDataHolders() {
             Data: data
         };
 
-        isSaved.push(UpdateDataHolderData(dataHolder));
+        await UpdateDataHolderData(dataHolder).catch((r) => {
+            console.error(r);
+        })
     });
-
-    return isSaved.find(el => el == false) == null;
 }
 
 function CopyDataCategories(ids, personId) {
@@ -693,6 +697,13 @@ function OnTabButtonClick(event) {
         ShowEditButton(false);
         ShowPrivacyButton(false);
     }
+    else if (targetElement.hasClass("tab-button-audios")) {
+        ShowDataBlockContentTab(DataBlockContentTabs.Audios);
+        g_currentAddButtonActionType = AddButtonActionTypes.AddAudio;
+        ShowSaveButton(false);
+        ShowEditButton(false);
+        ShowPrivacyButton(false);
+    }
     else {
         return;
     }
@@ -721,6 +732,9 @@ function OnDataCategoryClick(event) {
         g_currentDataBlock = g_currentDataCategory.DataBlocks[0];
 
         UpdateDataHolders();
+
+        ClearImages();
+        ClearVideos();
         RefreshImages().then((val) => UpdateImages());
         RefreshVideos().then((val) => UpdateVideos());
 
@@ -830,13 +844,15 @@ function OnAddDataCategorySubmitButtonClick() {
     }
     else {
         $("#add-data-category-modal").modal("hide");
-        LoadPersonData(g_currentPersonId);
+        RefreshDataCategories()
+        UpdateDataCategories();
     }
 }
 
 function OnDeleteDataCategorySubmitButtonClick() {
     DeleteSelectedDataCategories().then((val) => {
-        LoadPersonData(g_currentPersonId);
+        RefreshDataCategories()
+        UpdateDataCategories();
         $("#delete-data-category-modal").modal("hide");
     });
 }
@@ -1130,21 +1146,21 @@ async function SaveData() {
     saveButton.find(".loader").css("display", "block");
     saveButton.find(".btn__text")[0].innerHTML = "Сохранение";
 
-    if (SaveDataHolders()) {
+    await SaveDataHolders().then(async (data) => {
+        g_currentDataCategory = GetDataCategory(g_currentDataCategory.Id);
+
+        if (g_currentDataCategory.DataCategoryType == DataCategoryTypes.PersonInfo)
+            ReloadTree($("#mainPerson")[0].getAttribute("data-value"));
+
         saveButton.find(".loader").css("display", "none");
         saveButton.find(".btn__text")[0].innerHTML = "Сохранено";
         saveButton.removeClass("btn-default");
         saveButton.addClass("btn-success");
         await WaitForMilliseconds(1500);
-
-        g_currentDataCategory = GetDataCategory(g_currentDataCategory.Id);
-
-        if (g_currentDataCategory.DataCategoryType == DataCategoryTypes.PersonInfo)
-            ReloadTree($("#mainPerson")[0].getAttribute("data-value"));
-    }
-    else {
+    },
+    (r) => {
         alert("Произошла ошибка во время сохранения.");
-    }
+    });
 
     saveButton.find(".btn__text")[0].innerHTML = "Сохранить";
     saveButton.removeClass("btn-success");
@@ -1212,7 +1228,8 @@ function OnEditDataCategorySubmitButtonClick() {
     }
     else {
         $("#edit-data-category-modal").modal("hide");
-        LoadPersonData(g_currentPersonId);
+        RefreshDataCategories()
+        UpdateDataCategories();
     }
 }
 
@@ -1515,7 +1532,7 @@ function UpdateVideoModal(videoId) {
     videoModal.find("#current-video-title").val(currentVideo.Title);
     videoModal.find("#current-video-desc").val(currentVideo.Description);
 
-    currentVideoElement.poster = "data:image/" + currentVideo.PreviewImageFormat + ";base64," + currentVideo.PreviewImageData;
+    currentVideoElement.poster = "data:image/" + currentVideo.PreviewImageType + ";base64," + currentVideo.PreviewImageData;
     currentVideoElement.src = "Media/Video/GetFile/" + videoId;
     currentVideoElement.volume = 0.5;
     currentVideoElement.load();
@@ -1607,6 +1624,12 @@ function ShowDataBlockContentTab(dataBlockContentTab) {
         case DataBlockContentTabs.Videos: {
             dataBlockContentTabsContainersElement
                 .find(".videos")
+                .css("display", "block");
+            break;
+        }
+        case DataBlockContentTabs.Audios: {
+            dataBlockContentTabsContainersElement
+                .find(".audios")
                 .css("display", "block");
             break;
         }
@@ -1826,7 +1849,7 @@ function AddItemToImages(image) {
     selectorElement.appendChild(checkboxElement);
 
     let imgElement = document.createElement("img");
-    imgElement.src = "data:image/" + image.ImageFormat + ";base64," + image.ImageData;
+    imgElement.src = "data:image/" + image.ImageType + ";base64," + image.ImageData;
 
     imageElement.appendChild(selectorElement);
     imageElement.appendChild(imgElement);
@@ -1855,7 +1878,7 @@ function AddItemToVideos(video) {
     selectorElement.appendChild(checkboxElement);
 
     let imgElement = document.createElement("img");
-    imgElement.src = "data:image/" + video.PreviewImageFormat + ";base64," + video.PreviewImageData;
+    imgElement.src = "data:image/" + video.PreviewImageType + ";base64," + video.PreviewImageData;
 
     videoElement.appendChild(selectorElement);
     videoElement.appendChild(imgElement);
@@ -1870,7 +1893,7 @@ function AddImageToSlider(image) {
         .find(".slider")[0];
 
     let imgElement = document.createElement("img");
-    imgElement.src = "data:image/" + image.ImageFormat + ";base64," + image.ImageData;
+    imgElement.src = "data:image/" + image.ImageType + ";base64," + image.ImageData;
     imgElement.setAttribute("data-id", image.Id);
 
     slider.appendChild(imgElement);
@@ -1888,7 +1911,7 @@ function AddVideoToVideoModal(video) {
     videoPreviewImage.addClass("video-info__preview-image");
 
     let imgElement = document.createElement("img");
-    imgElement.src = "data:image/" + video.PreviewImageFormat + ";base64," + video.PreviewImageData;
+    imgElement.src = "data:image/" + video.PreviewImageType + ";base64," + video.PreviewImageData;
 
     videoPreviewImage.append(imgElement);
 
@@ -2335,7 +2358,8 @@ function PasteDataCategories() {
         return;
     }
 
-    LoadPersonData(g_currentPersonId);
+    RefreshDataCategories()
+    UpdateDataCategories();
 }
 
 function PasteDataBlocks() {

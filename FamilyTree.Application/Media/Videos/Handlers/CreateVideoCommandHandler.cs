@@ -48,15 +48,20 @@ namespace FamilyTree.Application.Media.Videos.Handlers
             Video entity = new Video();
             entity.Title = request.Title;
             entity.Description = request.Description;
-
-            string rootPath = Path.Combine(_configuration["FilesStorageFolderPath"], 
-                _configuration["VideosUploadsFolderPath"]);
+            
             int treeId = dataBlock.DataCategory.Person.FamilyTreeId;
             int personId = dataBlock.DataCategory.PersonId;
             int dataCategoryId = dataBlock.DataCategoryId;
-            string subDirectoriesPath = $"{treeId}_tree\\{personId}_person\\{dataCategoryId}_datacategory\\{dataBlock.Id}_datablock";
-            string directoryPath = Path.Combine(rootPath, subDirectoriesPath);
-            string fileName = $"{Guid.NewGuid()}.{request.VideoFile.ContentType.Split('/')[1]}";
+
+            string rootPath = Path.Combine(_configuration["FilesStorageFolderPath"],
+                _configuration["UploadsFolderPath"]);
+
+            string subDirectoryPath = $"{treeId}_tree\\{personId}_person\\" +
+                $"{dataCategoryId}_datacategory\\{dataBlock.Id}_datablock\\Videos";
+
+            string directoryPath = Path.Combine(rootPath, subDirectoryPath);
+            string fileType = request.VideoFile.ContentType.Split('/')[1];
+            string fileName = $"{Guid.NewGuid()}.{fileType}";
             string filePath = Path.Combine(directoryPath, fileName);
 
             Directory.CreateDirectory(directoryPath);
@@ -67,8 +72,9 @@ namespace FamilyTree.Application.Media.Videos.Handlers
             }
 
             entity.FilePath = filePath;
+            entity.FileType = fileType;
             entity.PreviewImageData = _thumbnailService.GetVideoThumbnailBytes(filePath);
-            entity.PreviewImageFormat = "jpeg";
+            entity.PreviewImageType = "jpeg";
 
             DataBlockVideo dataBlockVideo = new DataBlockVideo();
             dataBlockVideo.DataBlock = dataBlock;

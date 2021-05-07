@@ -19,6 +19,7 @@ namespace FamilyTree.Application.FamilyTrees.Handlers
         {
             FamilyTreeEntity entity = new FamilyTreeEntity();
             entity.Name = request.Name;
+            entity.UserId = request.UserId;
 
             FamilyTreeMainPerson mainPerson = new FamilyTreeMainPerson();
             mainPerson.FamilyTree = entity;

@@ -146,7 +146,7 @@ namespace FamilyTree.Application.Copying.Services
                 Title = image.Title,
                 Description = image.Description,
                 ImageData = image.ImageData,
-                ImageFormat = image.ImageFormat
+                ImageType = image.ImageType
             };
 
             DataBlockImage dataBlockImage = new DataBlockImage()
@@ -181,7 +181,7 @@ namespace FamilyTree.Application.Copying.Services
                 Title = video.Title,
                 Description = video.Description,
                 PreviewImageData = video.PreviewImageData,
-                PreviewImageFormat = video.PreviewImageFormat,
+                PreviewImageType = video.PreviewImageType,
                 FilePath = video.FilePath
             };
 

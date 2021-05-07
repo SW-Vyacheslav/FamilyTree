@@ -1,4 +1,5 @@
 ﻿using FamilyTree.Domain.Common;
+using FamilyTree.Domain.Entities.Identity;
 using System.Collections.Generic;
 
 namespace FamilyTree.Domain.Entities.Tree
@@ -9,6 +10,10 @@ namespace FamilyTree.Domain.Entities.Tree
 
         public string Name { get; set; }
 
-        public List<Person> People { get; set; }
+        public ICollection<Person> People { get; set; }
+
+        public string UserId { get; set; }
+
+        public ApplicationUser User { get; set; }
     }
 }

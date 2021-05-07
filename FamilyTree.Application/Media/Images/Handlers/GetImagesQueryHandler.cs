@@ -41,7 +41,7 @@ namespace FamilyTree.Application.Media.Images.Handlers
                     Title = dbi.Image.Title,
                     Description = dbi.Image.Description,
                     ImageData = Convert.ToBase64String(dbi.Image.ImageData),
-                    ImageFormat = dbi.Image.ImageFormat
+                    ImageType = dbi.Image.ImageType
                 })
                 .ToListAsync(cancellationToken);
 

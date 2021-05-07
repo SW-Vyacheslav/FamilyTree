@@ -41,7 +41,7 @@ namespace FamilyTree.Application.Media.Videos.Handlers
                     Title = dbv.Video.Title,
                     Description = dbv.Video.Description,
                     PreviewImageData = Convert.ToBase64String(dbv.Video.PreviewImageData),
-                    PreviewImageFormat = dbv.Video.PreviewImageFormat
+                    PreviewImageType = dbv.Video.PreviewImageType
                 })
                 .ToListAsync(cancellationToken);
 

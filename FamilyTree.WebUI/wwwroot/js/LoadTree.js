@@ -42,7 +42,21 @@ function LoadFamilyTree() {
         return;
     }
     else {
-        _currentFamilyTree = _familyTrees[0];            
+        let startTree = _familyTrees[0];
+
+        if (sessionStorage.getItem("StartFamilyTree") === null) {
+            sessionStorage.setItem("StartFamilyTree", JSON.stringify(startTree));
+            _currentFamilyTree = startTree;
+        }
+        else {
+            _currentFamilyTree = JSON.parse(sessionStorage.StartFamilyTree);
+
+            let tree = _familyTrees.find((item) => item.Id == _currentFamilyTree.Id);
+
+            if (_currentFamilyTree.MainPersonId == null && tree.MainPersonId != null) {
+                _currentFamilyTree.MainPersonId = tree.MainPersonId;
+            }
+        }                                
 
         if (_currentFamilyTree.MainPersonId == null) {
             ShowHasNoTreesBlock(false);
@@ -50,31 +64,33 @@ function LoadFamilyTree() {
             ShowStartTree();
         }
         else {
-            let result = GetFamilyTree(_currentFamilyTree.Id, _currentFamilyTree.MainPersonId);
+            GetFamilyTree(_currentFamilyTree.Id, _currentFamilyTree.MainPersonId).then((result) => {
+                mainTree = result;
+                $("#mainPerson")[0].setAttribute("data-value", _currentFamilyTree.MainPersonId);
+                FillTree(result, false);
+                DrawConnections(result);
+                DrawConntecionsLittleTree(result);
+                $("#BlockFullTree")[0].style.display = "block";
+                setTimeout(function () { ImageAlign(); }, 200);
 
-            if (result == null) {
+                ShowStartTree(false);
+                ShowHasNoTreesBlock(false);
+                ShowMainTree();
+            }, (r) => {
                 alert("Ошибка при получении дерева.");
-                return;
-            }
-
-            mainTree = result;
-            $("#mainPerson")[0].setAttribute("data-value", _currentFamilyTree.MainPersonId);
-            FillTree(result, false);
-            DrawConnections(result);
-            DrawConntecionsLittleTree(result);
-            $("#BlockFullTree")[0].style.display = "block";
-            setTimeout(function () { ImageAlign(); }, 200);
-
-            ShowStartTree(false);
-            ShowHasNoTreesBlock(false);
-            ShowMainTree();
+            });
         }
     }
 }
 
 function InitFamilyTreeEvents() {
     $(".person").dblclick(function (event) {
-        ReloadTree($(event.currentTarget)[0].getAttribute("data-value"));
+        //ReloadTree($(event.currentTarget)[0].getAttribute("data-value"));
+
+        _currentFamilyTree.MainPersonId = $(event.currentTarget)[0].getAttribute("data-value");
+        sessionStorage.setItem("StartFamilyTree", JSON.stringify(_currentFamilyTree));
+
+        document.location.reload();
     });
     $(".person").hover(function (event) {
         ShowModalPerson(event);
@@ -86,7 +102,12 @@ function InitFamilyTreeEvents() {
         }, 10);
     });
     $(".LittleTreePerson").dblclick(function (event) {
-        ReloadTree($(event.currentTarget)[0].getAttribute("data-value"));
+        //ReloadTree($(event.currentTarget)[0].getAttribute("data-value"));
+
+        _currentFamilyTree.MainPersonId = $(event.currentTarget)[0].getAttribute("data-value");
+        sessionStorage.setItem("StartFamilyTree", JSON.stringify(_currentFamilyTree));
+
+        document.location.reload();
     });
     $(".LittleTreePerson").hover(function (event) {
         ShowModalPerson(event);
@@ -236,12 +257,16 @@ function InitFamilyTreeEvents() {
             url: '/People/Create',
             data: _createPersonData,
             success: function (data) {
+                /*
                 if (_currentFamilyTree.MainPersonId == null) {
                     $("#mainPerson")[0].setAttribute("data-value", data);
                     _currentFamilyTree = GetFamilyTrees().find(ft => ft.Id == _currentFamilyTree.Id);
-                }                    
+                }           
+                */         
 
-                ReloadTree($("#mainPerson")[0].getAttribute("data-value"));
+                //ReloadTree($("#mainPerson")[0].getAttribute("data-value"));
+                document.location.reload();
+
                 ShowCreatePersonForm(false);
                 ShowMainTree();
                 ClearInputs();
@@ -281,17 +306,11 @@ function GetFamilyTrees() {
     return result;
 }
 
-function GetFamilyTree(familyTreeId, mainPersonId) {
-    let result = null;
-
-    $.ajax({
-        async: false,
+async function GetFamilyTree(familyTreeId, mainPersonId) {
+    let result = await $.ajax({
         type: 'GET',
         dataType: 'json',
-        url: "/FamilyTree/Get?id=" + familyTreeId + "&personId=" + mainPersonId,
-        success: function (data) {
-            result = data;
-        }
+        url: "/FamilyTree/Get?id=" + familyTreeId + "&personId=" + mainPersonId
     });
 
     return result;
@@ -974,8 +993,10 @@ function FillPerson(person, data) {
     $(person).find(".middlename")[0].innerText = data.Middlename;
 
     // Текстовое представление изображения
-    if (data.AvatarImage != null) {
-        person.firstElementChild.firstElementChild.src = "data:image/" + data.AvatarImage.ImageFormat + ";base64," + data.AvatarImage.ImageData;
+    if (data.AvatarImageId != null) {
+        GetImage(data.AvatarImageId).then((image) => {
+            person.firstElementChild.firstElementChild.src = "data:image/" + image.ImageType + ";base64," + image.ImageData;
+        });        
     } else {
         person.firstElementChild.firstElementChild.src = "/images/person.png";
     }
@@ -1076,7 +1097,12 @@ function GetPerson(person, LittleTree) {
 
 function AddFuncs(pers) {
     $(pers.firstElementChild).dblclick(function (event) {
-        ReloadTree($(event.currentTarget)[0].getAttribute("data-value"));
+        //ReloadTree($(event.currentTarget)[0].getAttribute("data-value"));
+
+        _currentFamilyTree.MainPersonId = $(event.currentTarget)[0].getAttribute("data-value");
+        sessionStorage.setItem("StartFamilyTree", JSON.stringify(_currentFamilyTree));
+
+        document.location.reload();
     });
 
     $(pers.firstElementChild).hover(function (event) {
@@ -1685,27 +1711,25 @@ function DrawConntecionsLittleTree(tree, blood) {
 }
 
 function ReloadTree(personId) {
-    let result = GetFamilyTree(_currentFamilyTree.Id, personId);
+    GetFamilyTree(_currentFamilyTree.Id, personId).then((result) => {
+        $("#mainPerson")[0].setAttribute("data-value", personId);
+        mainTree = result;
+        FillTree(result, false);
 
-    if (result == null) {
+        if (bloodFlag) {
+            DrawBlood(0);
+        }
+        else {
+            DrawConnections(result);
+            DrawConntecionsLittleTree(result);
+        }
+
+        setTimeout(function () { ImageAlign(); }, 50);
+        $("#modalBlockPerson")[0].style.visibility = "hidden";
+    },
+    (r) => {
         alert("Ошибка при обновлении дерева.");
-        return;
-    }
-
-    $("#mainPerson")[0].setAttribute("data-value", personId);
-    mainTree = result;
-    FillTree(result, false);
-
-    if (bloodFlag) {
-        DrawBlood(0);
-    }
-    else {
-        DrawConnections(result);
-        DrawConntecionsLittleTree(result);
-    }
-
-    setTimeout(function () { ImageAlign(); }, 50);
-    $("#modalBlockPerson")[0].style.visibility = "hidden";
+    });
 }
 
 function ShowModalPerson(event) {

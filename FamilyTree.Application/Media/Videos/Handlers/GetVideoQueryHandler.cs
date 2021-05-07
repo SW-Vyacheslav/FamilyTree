@@ -32,7 +32,7 @@ namespace FamilyTree.Application.Media.Videos.Handlers
 
             VideoVm result = new VideoVm();
             result.FileStream = new FileStream(video.FilePath, FileMode.Open, FileAccess.Read);
-            result.FileFormat = video.FilePath.Substring(video.FilePath.LastIndexOf('.') + 1);
+            result.FileType = video.FileType;
 
             return result;
         }

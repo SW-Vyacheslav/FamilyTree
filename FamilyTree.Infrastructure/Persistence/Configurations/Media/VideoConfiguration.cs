@@ -11,7 +11,12 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Media
             builder.HasKey(v => v.Id);
 
             builder.Property(v => v.FilePath)
-                .HasColumnType("nvarchar(260)");
+                .HasColumnType("nvarchar(260)")
+                .IsRequired();
+
+            builder.Property(v => v.FileType)
+                .HasColumnType("nvarchar(10)")
+                .IsRequired();
 
             builder.Property(v => v.Title)
                 .HasColumnType("nvarchar(50)")
@@ -24,7 +29,7 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Media
                 .HasColumnType("image")
                 .IsRequired();
 
-            builder.Property(v => v.PreviewImageFormat)
+            builder.Property(v => v.PreviewImageType)
                 .HasColumnType("nvarchar(10)")
                 .IsRequired();
         }

@@ -1,6 +1,4 @@
-﻿using FamilyTree.Application.Media.Images.ViewModels;
-
-namespace FamilyTree.Application.People.ViewModels
+﻿namespace FamilyTree.Application.People.ViewModels
 {
     public class PersonDto
     {
@@ -12,6 +10,6 @@ namespace FamilyTree.Application.People.ViewModels
 
         public string Middlename { get; set; }
 
-        public ImageDto AvatarImage { get; set; }
+        public int? AvatarImageId { get; set; }
     }
 }

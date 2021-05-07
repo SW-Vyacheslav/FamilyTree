@@ -149,19 +149,19 @@ namespace FamilyTree.Application.People.Handlers
             });
 
             var namePrivacy = CreateDefaultDataHolderPrivacy();
-            namePrivacy.DataHolder = dataBlock.DataHolders[0];
+            namePrivacy.DataHolder = dataBlock.DataHolders.ElementAt(0);
 
             var surnamePrivacy = CreateDefaultDataHolderPrivacy();
-            surnamePrivacy.DataHolder = dataBlock.DataHolders[1];
+            surnamePrivacy.DataHolder = dataBlock.DataHolders.ElementAt(1);
 
             var middlenamePrivacy = CreateDefaultDataHolderPrivacy();
-            middlenamePrivacy.DataHolder = dataBlock.DataHolders[2];
+            middlenamePrivacy.DataHolder = dataBlock.DataHolders.ElementAt(2);
 
             var birthdayPrivacy = CreateDefaultDataHolderPrivacy();
-            birthdayPrivacy.DataHolder = dataBlock.DataHolders[3];
+            birthdayPrivacy.DataHolder = dataBlock.DataHolders.ElementAt(3);
 
             var genderPrivacy = CreateDefaultDataHolderPrivacy();
-            genderPrivacy.DataHolder = dataBlock.DataHolders[4];
+            genderPrivacy.DataHolder = dataBlock.DataHolders.ElementAt(4);
 
             _context.DataHolderPrivacies.Add(namePrivacy);
             _context.DataHolderPrivacies.Add(surnamePrivacy);

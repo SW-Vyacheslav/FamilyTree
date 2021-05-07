@@ -21,6 +21,6 @@ namespace FamilyTree.Domain.Entities.PersonContent
 
         public Person Person { get; set; }
 
-        public List<DataBlock> DataBlocks { get; set; }
+        public ICollection<DataBlock> DataBlocks { get; set; }
     }
 }
