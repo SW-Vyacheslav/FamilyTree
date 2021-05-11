@@ -31,29 +31,30 @@ namespace FamilyTree.Application.Media.Images.Handlers
                                       cancellationToken);
 
             if (dataBlock == null)
-                throw new NotFoundException(nameof(DataBlock), request.DataBlockId);            
+                throw new NotFoundException(nameof(DataBlock), request.DataBlockId);
 
-            Image entity = new Image();
-            entity.Title = request.Title;
-            entity.Description = request.Description;
-            entity.ImageType = request.ImageFile.ContentType.Split('/')[1];
+            Image entity = new Image()
+            {
+                Title = request.Title,
+                Description = request.Description,
+                ImageType = request.ImageFile.ContentType.Split('/')[1],
+                Privacy = new PrivacyEntity()
+                {
+                    PrivacyLevel = PrivacyLevel.Confidential,
+                    IsAlways = true
+                }
+            };
 
             using (var streamReader = new BinaryReader(request.ImageFile.OpenReadStream()))
                 entity.ImageData = streamReader.ReadBytes(Convert.ToInt32(request.ImageFile.Length));
 
-            DataBlockImage dataBlockImage = new DataBlockImage();
-            dataBlockImage.DataBlock = dataBlock;
-            dataBlockImage.Image = entity;
-
-            ImagePrivacy privacy = new ImagePrivacy()
+            DataBlockImage dataBlockImage = new DataBlockImage() 
             {
-                Image = entity,
-                PrivacyLevel = PrivacyLevel.Confidential,                
-                IsAlways = true
+                DataBlock = dataBlock,
+                Image = entity
             };
 
             _context.Images.Add(entity);
-            _context.ImagePrivacies.Add(privacy);
             _context.DataBlockImages.Add(dataBlockImage);
 
             await _context.SaveChangesAsync(cancellationToken);

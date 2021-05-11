@@ -2,6 +2,7 @@
 using FamilyTree.Application.Common.Interfaces;
 using FamilyTree.Application.Media.Images.Queries;
 using FamilyTree.Application.Media.Images.ViewModels;
+using FamilyTree.Application.Privacy.ViewModels;
 using FamilyTree.Domain.Entities.PersonContent;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,7 @@ namespace FamilyTree.Application.Media.Images.Handlers
 
             var images = await _context.DataBlockImages
                 .Include(dbi => dbi.Image)
+                .ThenInclude(i => i.Privacy)
                 .Where(dbi => dbi.DataBlockId == dataBlock.Id)
                 .Select(dbi => new ImageDto()
                 {
@@ -41,7 +43,15 @@ namespace FamilyTree.Application.Media.Images.Handlers
                     Title = dbi.Image.Title,
                     Description = dbi.Image.Description,
                     ImageData = Convert.ToBase64String(dbi.Image.ImageData),
-                    ImageType = dbi.Image.ImageType
+                    ImageType = dbi.Image.ImageType,
+                    Privacy = new PrivacyEntityDto()
+                    {
+                        Id = dbi.Image.Privacy.Id,
+                        BeginDate = dbi.Image.Privacy.BeginDate,
+                        EndDate = dbi.Image.Privacy.EndDate,
+                        IsAlways = dbi.Image.Privacy.IsAlways.Value,
+                        PrivacyLevel = dbi.Image.Privacy.PrivacyLevel
+                    }
                 })
                 .ToListAsync(cancellationToken);
 

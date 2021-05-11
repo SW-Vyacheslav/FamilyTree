@@ -38,7 +38,7 @@ namespace FamilyTree.WebUI.Services
                             .GetRequiredService<IPrivacyNotificationsService>();
 
                         await notificationsService
-                            .NotifyUsersIfDataHolderPrivacyTimeExpired(stoppingToken);
+                            .NotifyUsersIfPrivacyTimeExpired(stoppingToken);
                     }
                 }
                 catch(Exception ex)

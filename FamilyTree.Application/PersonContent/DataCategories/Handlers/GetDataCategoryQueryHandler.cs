@@ -34,6 +34,7 @@ namespace FamilyTree.Application.PersonContent.DataCategories.Handlers
             DataCategory dataCategory = await _context.DataCategories
                 .Include(dc => dc.DataBlocks)
                 .ThenInclude(db => db.DataHolders)
+                .ThenInclude(dh => dh.Privacy)
                 .SingleOrDefaultAsync(dc => dc.CreatedBy.Equals(request.UserId) &&
                                             dc.Id == request.DataCategoryId,
                                       cancellationToken);
@@ -69,39 +70,31 @@ namespace FamilyTree.Application.PersonContent.DataCategories.Handlers
 
                 foreach (DataHolder dataHolder in dataHolders)
                 {
-                    var privacy = await _context.DataHolderPrivacies
-                        .SingleOrDefaultAsync(p => p.DataHolderId == dataHolder.Id,
-                                              cancellationToken);
-
                     DataHolderDto dataHolderDto = new DataHolderDto()
                     {
                         Id = dataHolder.Id,
                         Title = dataHolder.Title,
                         DataHolderType = dataHolder.DataHolderType,
                         Data = dataHolder.Data,
-                        IsDeletable = dataHolder.IsDeletable.Value                        
+                        IsDeletable = dataHolder.IsDeletable.Value,
+                        Privacy = new PrivacyEntityDto()
+                        {
+                            Id = dataHolder.Privacy.Id,
+                            BeginDate = dataHolder.Privacy.BeginDate,
+                            EndDate = dataHolder.Privacy.EndDate,
+                            IsAlways = dataHolder.Privacy.IsAlways.Value,
+                            PrivacyLevel = dataHolder.Privacy.PrivacyLevel
+                        }
                     };
 
-                    if (privacy != null)
+                    if (!dataHolderDto.Privacy.IsAlways)
                     {
-                        dataHolderDto.Privacy = new DataHolderPrivacyDto()
-                        {
-                            Id = privacy.Id,
-                            BeginDate = privacy.BeginDate,
-                            EndDate = privacy.EndDate,
-                            IsAlways = privacy.IsAlways.Value,
-                            PrivacyLevel = privacy.PrivacyLevel
-                        };
+                        var nowTime = _dateTimeService.Now;
 
-                        if (!privacy.IsAlways.Value)
+                        if (nowTime >= dataHolderDto.Privacy.BeginDate &&
+                            nowTime <= dataHolderDto.Privacy.EndDate)
                         {
-                            var nowTime = _dateTimeService.Now;
-
-                            if (nowTime >= privacy.BeginDate &&
-                                nowTime <= privacy.EndDate)
-                            {
-                                dataHolderDto.Data = DataHolderPrivacyFiller;
-                            }
+                            dataHolderDto.Data = DataHolderPrivacyFiller;
                         }
                     }
 

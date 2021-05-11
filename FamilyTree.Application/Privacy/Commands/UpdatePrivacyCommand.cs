@@ -1,9 +1,10 @@
 ﻿using FamilyTree.Domain.Enums.Privacy;
+using MediatR;
 using System;
 
 namespace FamilyTree.Application.Privacy.Commands
 {
-    public abstract class UpdatePrivacyCommandBase
+    public class UpdatePrivacyCommand : IRequest 
     {
         public int Id { get; set; }
 

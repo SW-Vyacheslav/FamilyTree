@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyTree.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210506234513_InitialMigration")]
+    [Migration("20210510225527_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -135,13 +135,18 @@ namespace FamilyTree.Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("PrivacyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Audio");
+                    b.HasIndex("PrivacyId");
+
+                    b.ToTable("Audios");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.Media.Image", b =>
@@ -174,11 +179,16 @@ namespace FamilyTree.Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("PrivacyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PrivacyId");
 
                     b.ToTable("Images");
                 });
@@ -221,11 +231,16 @@ namespace FamilyTree.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(10)");
 
+                    b.Property<int>("PrivacyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PrivacyId");
 
                     b.ToTable("Videos");
                 });
@@ -319,7 +334,7 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasIndex("DataBlockId");
 
-                    b.ToTable("DataBlockAudio");
+                    b.ToTable("DataBlockAudios");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.PersonContent.DataBlockImage", b =>
@@ -446,6 +461,9 @@ namespace FamilyTree.Infrastructure.Migrations
                     b.Property<int>("OrderNumber")
                         .HasColumnType("int");
 
+                    b.Property<int>("PrivacyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)");
@@ -454,145 +472,12 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasIndex("DataBlockId");
 
+                    b.HasIndex("PrivacyId");
+
                     b.ToTable("DataHolders");
                 });
 
-            modelBuilder.Entity("FamilyTree.Domain.Entities.Privacy.AudioPrivacy", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AudioId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("BeginDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool?>("IsAlways")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValueSql("1");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PrivacyLevel")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AudioId");
-
-                    b.ToTable("AudioPrivacy");
-                });
-
-            modelBuilder.Entity("FamilyTree.Domain.Entities.Privacy.DataHolderPrivacy", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("BeginDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DataHolderId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool?>("IsAlways")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValueSql("1");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PrivacyLevel")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DataHolderId");
-
-                    b.ToTable("DataHolderPrivacies");
-                });
-
-            modelBuilder.Entity("FamilyTree.Domain.Entities.Privacy.ImagePrivacy", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("BeginDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ImageId")
-                        .HasColumnType("int");
-
-                    b.Property<bool?>("IsAlways")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValueSql("1");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PrivacyLevel")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ImageId");
-
-                    b.ToTable("ImagePrivacies");
-                });
-
-            modelBuilder.Entity("FamilyTree.Domain.Entities.Privacy.VideoPrivacy", b =>
+            modelBuilder.Entity("FamilyTree.Domain.Entities.Privacy.PrivacyEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -627,14 +512,9 @@ namespace FamilyTree.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(1);
 
-                    b.Property<int>("VideoId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("VideoId");
-
-                    b.ToTable("VideoPrivacies");
+                    b.ToTable("Privacies");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.Tree.FamilyTie", b =>
@@ -705,6 +585,9 @@ namespace FamilyTree.Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("MainPersonId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)");
@@ -715,31 +598,11 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("MainPersonId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("FamilyTrees");
-                });
-
-            modelBuilder.Entity("FamilyTree.Domain.Entities.Tree.FamilyTreeMainPerson", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("FamilyTreeId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MainPersonId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FamilyTreeId");
-
-                    b.HasIndex("MainPersonId");
-
-                    b.ToTable("FamilyTreesMainPeople");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.Tree.Person", b =>
@@ -920,6 +783,33 @@ namespace FamilyTree.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("FamilyTree.Domain.Entities.Media.Audio", b =>
+                {
+                    b.HasOne("FamilyTree.Domain.Entities.Privacy.PrivacyEntity", "Privacy")
+                        .WithMany()
+                        .HasForeignKey("PrivacyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FamilyTree.Domain.Entities.Media.Image", b =>
+                {
+                    b.HasOne("FamilyTree.Domain.Entities.Privacy.PrivacyEntity", "Privacy")
+                        .WithMany()
+                        .HasForeignKey("PrivacyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FamilyTree.Domain.Entities.Media.Video", b =>
+                {
+                    b.HasOne("FamilyTree.Domain.Entities.Privacy.PrivacyEntity", "Privacy")
+                        .WithMany()
+                        .HasForeignKey("PrivacyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("FamilyTree.Domain.Entities.PersonContent.CommonDataBlock", b =>
                 {
                     b.HasOne("FamilyTree.Domain.Entities.PersonContent.DataBlock", "DataBlock")
@@ -1003,40 +893,10 @@ namespace FamilyTree.Infrastructure.Migrations
                         .HasForeignKey("DataBlockId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
 
-            modelBuilder.Entity("FamilyTree.Domain.Entities.Privacy.AudioPrivacy", b =>
-                {
-                    b.HasOne("FamilyTree.Domain.Entities.Media.Audio", "Audio")
+                    b.HasOne("FamilyTree.Domain.Entities.Privacy.PrivacyEntity", "Privacy")
                         .WithMany()
-                        .HasForeignKey("AudioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("FamilyTree.Domain.Entities.Privacy.DataHolderPrivacy", b =>
-                {
-                    b.HasOne("FamilyTree.Domain.Entities.PersonContent.DataHolder", "DataHolder")
-                        .WithMany()
-                        .HasForeignKey("DataHolderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("FamilyTree.Domain.Entities.Privacy.ImagePrivacy", b =>
-                {
-                    b.HasOne("FamilyTree.Domain.Entities.Media.Image", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("FamilyTree.Domain.Entities.Privacy.VideoPrivacy", b =>
-                {
-                    b.HasOne("FamilyTree.Domain.Entities.Media.Video", "Video")
-                        .WithMany()
-                        .HasForeignKey("VideoId")
+                        .HasForeignKey("PrivacyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -1068,24 +928,15 @@ namespace FamilyTree.Infrastructure.Migrations
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.Tree.FamilyTreeEntity", b =>
                 {
+                    b.HasOne("FamilyTree.Domain.Entities.Tree.Person", "MainPerson")
+                        .WithMany()
+                        .HasForeignKey("MainPersonId");
+
                     b.HasOne("FamilyTree.Domain.Entities.Identity.ApplicationUser", "User")
                         .WithMany("FamilyTrees")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("FamilyTree.Domain.Entities.Tree.FamilyTreeMainPerson", b =>
-                {
-                    b.HasOne("FamilyTree.Domain.Entities.Tree.FamilyTreeEntity", "FamilyTree")
-                        .WithMany()
-                        .HasForeignKey("FamilyTreeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FamilyTree.Domain.Entities.Tree.Person", "MainPerson")
-                        .WithMany()
-                        .HasForeignKey("MainPersonId");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.Tree.Person", b =>

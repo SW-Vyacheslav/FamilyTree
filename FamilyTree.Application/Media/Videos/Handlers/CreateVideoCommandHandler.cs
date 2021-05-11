@@ -44,10 +44,6 @@ namespace FamilyTree.Application.Media.Videos.Handlers
 
             if (dataBlock == null)
                 throw new NotFoundException(nameof(DataBlock), request.DataBlockId);
-
-            Video entity = new Video();
-            entity.Title = request.Title;
-            entity.Description = request.Description;
             
             int treeId = dataBlock.DataCategory.Person.FamilyTreeId;
             int personId = dataBlock.DataCategory.PersonId;
@@ -71,24 +67,28 @@ namespace FamilyTree.Application.Media.Videos.Handlers
                 await request.VideoFile.CopyToAsync(stream);
             }
 
-            entity.FilePath = filePath;
-            entity.FileType = fileType;
-            entity.PreviewImageData = _thumbnailService.GetVideoThumbnailBytes(filePath);
-            entity.PreviewImageType = "jpeg";
-
-            DataBlockVideo dataBlockVideo = new DataBlockVideo();
-            dataBlockVideo.DataBlock = dataBlock;
-            dataBlockVideo.Video = entity;
-
-            VideoPrivacy privacy = new VideoPrivacy()
+            Video entity = new Video()
             {
-                Video = entity,
-                PrivacyLevel = PrivacyLevel.Confidential,
-                IsAlways = true
+                Title = request.Title,
+                Description = request.Description,
+                FilePath = filePath,
+                FileType = fileType,
+                PreviewImageData = _thumbnailService.GetVideoThumbnailBytes(filePath),
+                PreviewImageType = "jpeg",
+                Privacy = new PrivacyEntity()
+                {
+                    PrivacyLevel = PrivacyLevel.Confidential,
+                    IsAlways = true
+                }
+            };
+
+            DataBlockVideo dataBlockVideo = new DataBlockVideo() 
+            {
+                DataBlock = dataBlock,
+                Video = entity
             };
 
             _context.Videos.Add(entity);
-            _context.VideoPrivacies.Add(privacy);
             _context.DataBlockVideos.Add(dataBlockVideo);
 
             await _context.SaveChangesAsync(cancellationToken);

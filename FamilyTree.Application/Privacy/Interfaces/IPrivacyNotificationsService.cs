@@ -5,11 +5,6 @@ namespace FamilyTree.Application.Privacy.Interfaces
 {
     public interface IPrivacyNotificationsService
     {
-        Task NotifyUsersIfDataHolderPrivacyTimeExpired(CancellationToken cancellationToken = default);
-
-        Task NotifyUsersIfImagePrivacyTimeExpired(CancellationToken cancellationToken = default);
-
-        Task NotifyUsersIfVideoPrivacyTimeExpired(CancellationToken cancellationToken = default);
-
+        Task NotifyUsersIfPrivacyTimeExpired(CancellationToken cancellationToken = default);
     }
 }

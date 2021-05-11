@@ -748,19 +748,20 @@ input:focus {
     margin-top: 0;
 }
 
-/*Edit, add data category, data block, data holder, image modal */
+/*Edit, add data category, data block, data holder, image, video, audio modal */
 #add-data-category-modal .form-horizontal, #edit-data-category-modal .form-horizontal,
 #add-data-block-modal .form-horizontal, #edit-data-block-modal .form-horizontal,
 #add-data-holder-modal .form-horizontal, #edit-data-holder-modal .form-horizontal,
 #add-image-modal .form-horizontal, #add-video-modal .form-horizontal,
-#privacy-level-modal .form-horizontal {
+#privacy-level-modal .form-horizontal, #add-audio-modal .form-horizontal {
     min-height: 0px;
 }
 
 #add-data-category-modal .form-control, #edit-data-category-modal .form-control,
 #add-data-block-modal .form-control, #edit-data-block-modal .form-control,
 #add-data-holder-modal .form-control, #edit-data-holder-modal .form-control,
-#add-image-modal .form-control, #add-video-modal .form-control {
+#add-image-modal .form-control, #add-video-modal .form-control,
+#add-audio-modal .form-control {
     font-size: 18px;
 }
 
@@ -1070,4 +1071,83 @@ input:focus {
     color: #fff;
     border-color:#fff;
     transition: all ease 0.5s;
+}
+
+/* Audio */
+
+.audio {
+    display: flex;
+}
+
+.audios__item {
+    border: 1px solid lightgrey;
+    margin-bottom: 5px;
+    margin-right: 5px;
+    width: 98%;
+    padding: 5px 0px;
+    align-items: center;
+}
+
+.audio .audio__selector {
+    width: 10%;
+    display: flex;
+    justify-content: center;
+}
+
+.audio .audio__selector .checkbox {
+    margin: 0;
+}
+
+.audio .audio__selector .checkbox input[type="checkbox"] {
+    width: 25px;
+    height: 25px;
+    margin-top: 0;
+}
+
+.audio .audio__play {
+    width: 10%;
+}
+
+.audio .audio__title {
+    width: 80%;
+    padding: 0px 10px;
+}
+
+.audio-container {
+    padding-bottom: 5px;
+}
+
+.audio-container audio {
+    width: 100%;
+}
+
+#audio-modal .modal-header {
+    position: relative;
+    padding: 25px;
+    border-bottom-color: #676767;
+}
+
+#audio-modal .modal-body .row {
+    display: flex;
+}
+
+#audio-modal .modal-content {
+    background-color: #454545;
+}
+
+#audio-modal .modal-header .close {
+    position: absolute;
+    right: 25px;
+    float: none;
+    margin-top: -13px;
+    color: white;
+    font-size: 30px;
+}
+
+#audio-modal .modal-header .close:hover {
+    color: white;
+}
+
+#audio-modal .modal-footer {
+    border-top-color: #676767;
 }

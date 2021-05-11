@@ -21,11 +21,7 @@ namespace FamilyTree.Application.FamilyTrees.Handlers
             entity.Name = request.Name;
             entity.UserId = request.UserId;
 
-            FamilyTreeMainPerson mainPerson = new FamilyTreeMainPerson();
-            mainPerson.FamilyTree = entity;
-
             _context.FamilyTrees.Add(entity);
-            _context.FamilyTreesMainPeople.Add(mainPerson);
             await _context.SaveChangesAsync(cancellationToken);
 
             return entity.Id;

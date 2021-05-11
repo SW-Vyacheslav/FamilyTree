@@ -3,7 +3,7 @@ using System;
 
 namespace FamilyTree.Application.Privacy.ViewModels
 {
-    public class DataHolderPrivacyDto
+    public class PrivacyEntityDto
     {
         public int Id { get; set; }
 

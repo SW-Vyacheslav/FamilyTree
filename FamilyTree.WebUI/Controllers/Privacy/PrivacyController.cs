@@ -18,33 +18,7 @@ namespace FamilyTree.WebUI.Controllers.Privacy
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateDataHolderPrivacy(int id, UpdateDataHolderPrivacyCommand command)
-        {
-            if (command.Id != id)
-                return BadRequest();
-
-            command.UserId = _currentUserService.UserId;
-
-            await Mediator.Send(command);
-
-            return NoContent();
-        }
-
-        [HttpPut]
-        public async Task<ActionResult> UpdateImagePrivacy(int id, UpdateImagePrivacyCommand command)
-        {
-            if (command.Id != id)
-                return BadRequest();
-
-            command.UserId = _currentUserService.UserId;
-
-            await Mediator.Send(command);
-
-            return NoContent();
-        }
-
-        [HttpPut]
-        public async Task<ActionResult> UpdateVideoPrivacy(int id, UpdateVideoPrivacyCommand command)
+        public async Task<ActionResult> Update(int id, UpdatePrivacyCommand command)
         {
             if (command.Id != id)
                 return BadRequest();

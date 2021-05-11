@@ -456,7 +456,6 @@ namespace FamilyTree.Application.FamilyTrees.Services
                 .Where(p => p.CreatedBy.Equals(userId) &&
                             p.FamilyTreeId == treeId &&
                             p.Id == personId)
-                .Include(p => p.AvatarImage)
                 .SingleOrDefaultAsync(cancellationToken);
 
             if (person != null)

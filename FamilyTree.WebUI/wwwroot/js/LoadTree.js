@@ -76,6 +76,7 @@ function LoadFamilyTree() {
                 ShowStartTree(false);
                 ShowHasNoTreesBlock(false);
                 ShowMainTree();
+                ShowStarButtons();
             }, (r) => {
                 alert("Ошибка при получении дерева.");
             });
@@ -85,7 +86,7 @@ function LoadFamilyTree() {
 
 function InitFamilyTreeEvents() {
     $(".person").dblclick(function (event) {
-        //ReloadTree($(event.currentTarget)[0].getAttribute("data-value"));
+        if (event.target.parentElement.classList.contains("star-button")) return;
 
         _currentFamilyTree.MainPersonId = $(event.currentTarget)[0].getAttribute("data-value");
         sessionStorage.setItem("StartFamilyTree", JSON.stringify(_currentFamilyTree));
@@ -287,6 +288,68 @@ function InitFamilyTreeEvents() {
 
     $("#create-family-tree-submit-button")
         .click(OnCreateFamilyTreeSubmitButtonClick);
+
+    $(".star-button")
+        .click(OnUpdateMainPersonButtonClick);
+
+    $("#show-main-person-button")
+        .click(OnShowMainPersonButtonClick);
+}
+
+function OnShowMainPersonButtonClick() {
+    sessionStorage.removeItem("StartFamilyTree");
+    document.location.reload();
+}
+
+function OnUpdateMainPersonButtonClick(target) {
+    let personId = $(target.currentTarget).parent().attr("data-value");
+
+    UpdateMainPerson(personId).then((result) => {
+        _familyTrees = GetFamilyTrees();
+        ShowStarButtons();
+    }, (r) => console.error(r));
+}
+
+async function UpdateMainPerson(personId) {
+    let result = await $.ajax({
+        method: "PUT",
+        data: {
+            Id: _currentFamilyTree.Id,
+            PersonId: personId
+        },
+        url: "/FamilyTree/UpdateMainPerson/" + _currentFamilyTree.Id
+    });
+
+    return result;
+}
+
+function ShowStarButtons() {
+    let peopleElements = $(".person, .LittleTreePerson");
+
+    let visiblePeopleElements = peopleElements
+        .filter((i, el) => $(el).css("visibility") === "visible");
+
+    let hiddenPeopleElements = peopleElements
+        .filter((i, el) => $(el).css("visibility") === "hidden");
+
+    visiblePeopleElements.children(".star-button")
+        .css("visibility", "visible");
+
+    hiddenPeopleElements.children(".star-button")
+        .css("visibility", "hidden");
+
+    let tree = _familyTrees
+        .find((item) => item.Id == _currentFamilyTree.Id);
+
+    $(".person[data-value=\"" + tree.MainPersonId + "\"]")
+        .children(".star-button")
+        .first()
+        .css("visibility", "hidden");
+
+    $(".LittleTreePerson[data-value=\"" + tree.MainPersonId + "\"]")
+        .children(".star-button")
+        .first()
+        .css("visibility", "hidden");
 }
 
 function GetFamilyTrees() {
@@ -1088,8 +1151,23 @@ function GetPerson(person, LittleTree) {
     Block.appendChild(Name);
     Block.appendChild(MiddleName);
 
+    let starButtonElement = document.createElement('div');
+    starButtonElement.classList.add("star-button");
+    starButtonElement.classList.add("btn");
+    starButtonElement.classList.add("btn-default");
+
+    let starImgElement = document.createElement('img');
+    starImgElement.src = "/images/star.svg";
+
+    starButtonElement.appendChild(starImgElement);
+
     newBlockId.appendChild(newImgBlock);
     newBlockId.appendChild(Block);
+    newBlockId.appendChild(starButtonElement);
+
+    $(starButtonElement)
+        .click(OnUpdateMainPersonButtonClick);
+
     LiElem.appendChild(newBlockId);
 
     return LiElem;
@@ -1097,7 +1175,7 @@ function GetPerson(person, LittleTree) {
 
 function AddFuncs(pers) {
     $(pers.firstElementChild).dblclick(function (event) {
-        //ReloadTree($(event.currentTarget)[0].getAttribute("data-value"));
+        if (event.target.parentElement.classList.contains("star-button")) return;
 
         _currentFamilyTree.MainPersonId = $(event.currentTarget)[0].getAttribute("data-value");
         sessionStorage.setItem("StartFamilyTree", JSON.stringify(_currentFamilyTree));

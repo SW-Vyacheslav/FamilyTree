@@ -5,24 +5,26 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FamilyTree.Infrastructure.Persistence.Configurations.Privacy
 {
-    public class ImagePrivacyConfiguration : IEntityTypeConfiguration<ImagePrivacy>
+    public class PrivacyEntityConfiguration : IEntityTypeConfiguration<PrivacyEntity>
     {
-        public void Configure(EntityTypeBuilder<ImagePrivacy> builder)
+        public void Configure(EntityTypeBuilder<PrivacyEntity> builder)
         {
-            builder.HasKey(ip => ip.Id);
+            builder.HasKey(p => p.Id);
 
-            builder.Property(ip => ip.PrivacyLevel)
+            builder.Property(p => p.PrivacyLevel)
                 .HasDefaultValue(PrivacyLevel.Confidential);
 
-            builder.Property(ip => ip.BeginDate)
+            builder.Property(p => p.BeginDate)
                 .HasColumnType("datetime2");
 
-            builder.Property(ip => ip.EndDate)
+            builder.Property(p => p.EndDate)
                 .HasColumnType("datetime2");
 
-            builder.Property(ip => ip.IsAlways)
+            builder.Property(p => p.IsAlways)
                 .HasColumnType("bit")
                 .HasDefaultValueSql("1");
+
+            builder.ToTable("Privacies");
         }
     }
 }

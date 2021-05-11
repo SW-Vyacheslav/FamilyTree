@@ -39,20 +39,21 @@ namespace FamilyTree.Application.PersonContent.DataHolders.Handlers
                     $"DataHolder with DataHolderType = \"{request.DataHolderType}\" is not allowed to create.", 
                     nameof(request.DataHolderType));
 
-            DataHolder entity = new DataHolder();
-            entity.Data = request.Data;
-            entity.Title = request.Title;
-            entity.DataHolderType = request.DataHolderType;
-            entity.DataBlockId = dataBlock.Id;
-            entity.OrderNumber = dataBlock.DataHolders.Count() + 1;
-
-            DataHolderPrivacy privacy = new DataHolderPrivacy();
-            privacy.IsAlways = true;
-            privacy.PrivacyLevel = PrivacyLevel.Confidential;
-            privacy.DataHolder = entity;
+            DataHolder entity = new DataHolder() 
+            {
+                Data = request.Data,
+                Title = request.Title,
+                DataHolderType = request.DataHolderType,
+                DataBlockId = dataBlock.Id,
+                OrderNumber = dataBlock.DataHolders.Count() + 1,
+                Privacy = new PrivacyEntity()
+                {
+                    IsAlways = true,
+                    PrivacyLevel = PrivacyLevel.Confidential
+                }
+            };
 
             _context.DataHolders.Add(entity);
-            _context.DataHolderPrivacies.Add(privacy);
             await _context.SaveChangesAsync(cancellationToken);
 
             return entity.Id;

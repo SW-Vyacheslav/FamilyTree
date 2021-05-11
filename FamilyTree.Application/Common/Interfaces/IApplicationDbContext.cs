@@ -19,8 +19,6 @@ namespace FamilyTree.Application.Common.Interfaces
 
         DbSet<FamilyTreeEntity> FamilyTrees { get; set; }
 
-        DbSet<FamilyTreeMainPerson> FamilyTreesMainPeople { get; set; }
-
         DbSet<DataCategory> DataCategories { get; set; }
 
         DbSet<DataBlock> DataBlocks { get; set; }
@@ -29,11 +27,7 @@ namespace FamilyTree.Application.Common.Interfaces
 
         DbSet<CommonDataBlock> CommonDataBlocks { get; set; }
 
-        DbSet<DataHolderPrivacy> DataHolderPrivacies { get; set; }
-
-        DbSet<ImagePrivacy> ImagePrivacies { get; set; }
-
-        DbSet<VideoPrivacy> VideoPrivacies { get; set; }
+        DbSet<PrivacyEntity> Privacies { get; set; }
 
         DbSet<Image> Images { get; set; }
 
@@ -42,6 +36,10 @@ namespace FamilyTree.Application.Common.Interfaces
         DbSet<Video> Videos { get; set; }
 
         DbSet<DataBlockVideo> DataBlockVideos { get; set; }
+
+        DbSet<Audio> Audios { get; set; }
+
+        DbSet<DataBlockAudio> DataBlockAudios { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

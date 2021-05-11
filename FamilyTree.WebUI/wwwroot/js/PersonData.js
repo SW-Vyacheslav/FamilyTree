@@ -52,7 +52,8 @@ const CopyObjectTypes = {
     DataBlock: 1,
     DataHolder: 2,
     Image: 3,
-    Video: 4
+    Video: 4,
+    Audio: 5
 };
 const CopyObjectSessionStorageKey = "COPY_OBJECT";
 
@@ -64,17 +65,19 @@ let g_currentDataCategory = null;
 let g_currentDataBlock = null;
 let g_currentDataBlockImages = null;
 let g_currentDataBlockVideos = null;
+let g_currentDataBlockAudios = null;
+let g_openedAudioId = null;
 let g_currentAddButtonActionType = null;
 let g_editElementId = null;
 let g_editPrivacyElementId = null;
 let g_isSaving = false;
 let g_copyObject = {
     Ids: [0],
-    ImagesIds: [0],
-    VideosIds: [0],
     CopyObjectType: 0
 };
+let g_isUploadingImage = false;
 let g_isUploadingVideo = false;
+let g_isUploadingAudio = false;
 
 function LoadPersonData(personId) {
     g_currentPersonId = personId;
@@ -115,11 +118,21 @@ function GetDataCategory(dataCategoryId) {
         async: false,
         type: "GET",
         dataType: "json",
-        url: "/PersonContent/DataCategory/Get?dataCategoryId=" + dataCategoryId,
+        url: "/PersonContent/DataCategory/Get?id=" + dataCategoryId,
         success: function (data) {
             result = data;
         }
     });
+    return result;
+}
+
+async function GetDataHolder(dataHolderId) {
+    const result = await $.ajax({
+        type: "GET",
+        dataType: "json",
+        url: "/PersonContent/DataHolder/Get?id=" + dataHolderId
+    });
+
     return result;
 }
 
@@ -148,6 +161,16 @@ async function GetVideos(dataBlockId) {
         type: "GET",
         dataType: "json",
         url: "/Media/Video/GetAll?dataBlockId=" + dataBlockId
+    });
+
+    return result;
+}
+
+async function GetAudios(dataBlockId) {
+    const result = await $.ajax({
+        type: "GET",
+        dataType: "json",
+        url: "/Media/Audio/GetAll?dataBlockId=" + dataBlockId
     });
 
     return result;
@@ -206,18 +229,27 @@ function CreateDataHolder(dataHolder) {
     return result;
 }
 
-function CreateImage(image) {
-    let result = -1;
-
-    $.ajax({
-        async: false,
+async function CreateImage(image) {
+    let result = await $.ajax({
         type: "POST",
         data: image,
         contentType: false,
         processData: false,
         url: "/Media/Image/Create",
-        success: function (response) {
-            result = response;
+        xhr: function () {
+            var myXhr = $.ajaxSettings.xhr();
+            if (myXhr.upload) {
+                myXhr.upload.addEventListener("progress", function (e) {
+                    if (e.lengthComputable) {
+                        $("#add-image-modal #image-upload-progress")
+                            .attr({
+                                value: e.loaded,
+                                max: e.total
+                            });
+                    }
+                }, false);
+            }
+            return myXhr;
         }
     });
 
@@ -238,6 +270,34 @@ async function CreateVideo(video) {
                 myXhr.upload.addEventListener("progress", function (e) {
                     if (e.lengthComputable) {
                         $("#add-video-modal #video-upload-progress")
+                            .attr({
+                                value: e.loaded,
+                                max: e.total
+                            });
+                    }
+                }, false);
+            }
+            return myXhr;
+        }
+    });
+
+    return result;
+}
+
+async function CreateAudio(audio) {
+    const result = await $.ajax({
+        type: "POST",
+        data: audio,
+        cache: false,
+        contentType: false,
+        processData: false,
+        url: "/Media/Audio/Create",
+        xhr: function () {
+            var myXhr = $.ajaxSettings.xhr();
+            if (myXhr.upload) {
+                myXhr.upload.addEventListener("progress", function (e) {
+                    if (e.lengthComputable) {
+                        $("#add-audio-modal #audio-upload-progress")
                             .attr({
                                 value: e.loaded,
                                 max: e.total
@@ -390,6 +450,16 @@ function UpdateVideoDetails(video) {
     return result;
 }
 
+async function UpdateAudioDetails(audio) {
+    let result = await $.ajax({
+        type: "PUT",
+        data: audio,
+        url: "/Media/Audio/UpdateDetails/" + audio.Id
+    });
+
+    return result;
+}
+
 function UpdatePersonAvatarImage(personId, imageId) {
     let result = false;
 
@@ -520,6 +590,19 @@ async function CopyVideos(ids, dataBlockId) {
     return result;
 }
 
+async function CopyAudios(ids, dataBlockId) {
+    const result = await $.ajax({
+        type: "POST",
+        data: {
+            AudiosIds: ids,
+            DataBlockId: dataBlockId
+        },
+        url: "/Media/Audio/Copy"
+    });
+
+    return result;
+}
+
 async function DeleteDataCategory(dataCategoryId) {
     const result = await $.ajax({
         type: "DELETE",
@@ -560,6 +643,15 @@ async function DeleteVideo(videoId) {
     let result = await $.ajax({
         type: "DELETE",
         url: "/Media/Video/Delete/" + videoId
+    });
+
+    return result;
+}
+
+async function DeleteAudio(audioId) {
+    let result = await $.ajax({
+        type: "DELETE",
+        url: "/Media/Audio/Delete/" + audioId
     });
 
     return result;
@@ -659,6 +751,20 @@ function InitPersonDataBlockButtonEvents() {
 
     $("#delete-submit-button")
         .click(OnDeleteSubmitButtonClick);
+
+    $("#add-audio-submit-button")
+        .click(OnAddAudioSubmitButtonClick);
+
+    $("#save-audio-submit-button")
+        .click(OnSaveAudioSubmitButtonClick);
+
+    $("#video-modal").on("hidden.bs.modal", (e) => {
+        $("#video-modal #current-video")[0].pause();
+    });
+
+    $("#audio-modal").on("hidden.bs.modal", (e) => {
+        $("#audio-modal #current-audio")[0].pause();
+    });
 }
 
 function OnBackToDataBlocksButtonClick() {
@@ -735,8 +841,10 @@ function OnDataCategoryClick(event) {
 
         ClearImages();
         ClearVideos();
+        ClearAudios();
         RefreshImages().then((val) => UpdateImages());
         RefreshVideos().then((val) => UpdateVideos());
+        RefreshAudios().then((val) => UpdateAudios());
 
         OpenDefaultDataBlockTab();
     }
@@ -780,8 +888,13 @@ function OnDataBlockClick(event) {
     g_currentAddButtonActionType = AddButtonActionTypes.AddDataHolder;
 
     UpdateDataHolders();
+
+    ClearImages();
+    ClearVideos();
+    ClearAudios();
     RefreshImages().then((val) => UpdateImages());
     RefreshVideos().then((val) => UpdateVideos());
+    RefreshAudios().then((val) => UpdateAudios());
 
     ShowBackToDataBlocksButton();
     ShowDataBlocks(false);
@@ -810,6 +923,18 @@ function OnVideoClick(event) {
         .click();
 
     $("#video-modal").modal("show");
+}
+
+function OnPlayAudioButtonClick(event) {
+    let audioId = $(event.currentTarget).parent().attr("data-id");
+
+    g_openedAudioId = audioId;
+
+    UpdateAudioModal(audioId);
+
+    $("#audio-modal").modal("show");
+
+    $("#audio-modal #current-audio")[0].play();
 }
 
 function OnAddDataCategoryButtonClick() {
@@ -875,6 +1000,10 @@ function OnAddElementButtonClick() {
             $("#add-video-modal").modal("show");
             break;
         }
+        case AddButtonActionTypes.AddAudio: {
+            $("#add-audio-modal").modal("show");
+            break;
+        }
 
         default:
             break;
@@ -916,6 +1045,8 @@ function OnAddDataHolderSubmitButtonClick() {
 }
 
 function OnAddImageSubmitButtonClick() {
+    if (g_isUploadingImage) return;
+
     let imageModal = $("#add-image-modal");
 
     let files = imageModal.find("#image-file")[0].files;
@@ -925,19 +1056,31 @@ function OnAddImageSubmitButtonClick() {
         return;
     }
 
+    //File must be smaller than 20MB
+    if (files[0].size > 20971520) {
+        alert("Размер файла превышает лимит в 20МБ");
+        return;
+    }
+
     let formData = new FormData();
     formData.append("DataBlockId", g_currentDataBlock.Id);
     formData.append("Title", imageModal.find("#image-title").val());
     formData.append("Description", imageModal.find("#image-desc").val());
     formData.append("ImageFile", files[0]);
 
-    if (CreateImage(formData) == -1) {
-        alert("Ошибка при создании изображения.");
-    }
-    else {
+    g_isUploadingImage = true;
+    imageModal.find("#image-file").attr("disabled", "");
+
+    CreateImage(formData).then((result) => {
         imageModal.modal("hide");
         RefreshImages().then((val) => UpdateImages());
-    }
+        g_isUploadingImage = false;
+        imageModal.find("#image-file").removeAttr("disabled");
+    }, (r) => {
+        alert("Ошибка при создании изображения.");
+        g_isUploadingImage = false;
+        imageModal.find("#image-file").removeAttr("disabled");
+    });
 }
 
 function OnAddVideoSubmitButtonClick() {
@@ -979,6 +1122,45 @@ function OnAddVideoSubmitButtonClick() {
             g_isUploadingVideo = false;
             videoModal.find("#video-file").removeAttr("disabled");
         });
+}
+
+function OnAddAudioSubmitButtonClick() {
+    if (g_isUploadingAudio) return;
+
+    let audioModal = $("#add-audio-modal");
+
+    let files = audioModal.find("#audio-file")[0].files;
+
+    if (files.length == 0) {
+        alert("Пожалуйста выберите файл.");
+        return;
+    }
+
+    //File must be smaller than 20MB
+    if (files[0].size > 20971520) {
+        alert("Размер файла превышает лимит в 20МБ");
+        return;
+    }
+
+    let formData = new FormData();
+    formData.append("DataBlockId", g_currentDataBlock.Id);
+    formData.append("Title", audioModal.find("#audio-title").val());
+    formData.append("Description", audioModal.find("#audio-desc").val());
+    formData.append("AudioFile", files[0]);
+
+    g_isUploadingAudio = true;
+    audioModal.find("#audio-file").attr("disabled", "");
+
+    CreateAudio(formData).then((result) => {
+        audioModal.modal("hide");
+        RefreshAudios().then((val) => UpdateAudios());
+        g_isUploadingAudio = false;
+        audioModal.find("#audio-file").removeAttr("disabled");
+    }, (r) => {
+        alert("Ошибка при создании аудио.");
+        g_isUploadingAudio = false;
+        audioModal.find("#audio-file").removeAttr("disabled");
+    });
 }
 
 function OnEditElementButtonClick() {
@@ -1057,6 +1239,10 @@ function OnCopyButtonClick() {
             CopySelectedVideos();
             break;
         }
+        case AddButtonActionTypes.AddAudio: {
+            CopySelectedAudios();
+            break;
+        }
 
         default:
             break;
@@ -1079,6 +1265,10 @@ function OnPasteButtonClick() {
         }
         case AddButtonActionTypes.AddVideo: {
             PasteVideos();
+            break;
+        }
+        case AddButtonActionTypes.AddAudio: {
+            PasteAudios();
             break;
         }
 
@@ -1124,6 +1314,15 @@ function OnDeleteSubmitButtonClick() {
                     UpdateVideos();
                     $("#delete-modal").modal("hide");
                 });                
+            });
+            break;
+        }
+        case AddButtonActionTypes.AddAudio: {
+            DeleteSelectedAudios().then((val) => {
+                RefreshAudios().then((val) => {
+                    UpdateAudios();
+                    $("#delete-modal").modal("hide");
+                });
             });
             break;
         }
@@ -1333,6 +1532,24 @@ function OnSaveVideoSubmitButtonClick() {
     }
 }
 
+function OnSaveAudioSubmitButtonClick() {
+    let audioModal = $("#audio-modal");
+
+    let audio = {
+        Id: g_openedAudioId,
+        Title: audioModal.find("#current-audio-title").val(),
+        Description: audioModal.find("#current-audio-desc").val()
+    };
+
+    UpdateAudioDetails(audio).then((result) => {
+        RefreshAudios().then((result) => {
+            UpdateAudios();
+        });
+    }, (r) => {
+        alert("Ошибка при сохранении информации аудио.");
+    });
+}
+
 function OnSelectAllButtonClick() {   
     SelectAllCheckboxes(GetCurrentActionTypeElements());
 }
@@ -1522,6 +1739,22 @@ function UpdateVideos() {
         .click(OnVideoClick);
 }
 
+function UpdateAudios() {
+    ClearAudios();
+
+    if (g_currentDataBlockAudios == null)
+        return;
+
+    g_currentDataBlockAudios
+        .forEach((item) => {
+            AddItemToAudios(item);
+        });
+
+    $("#person-data-block")
+        .find(".audios .audios__item .audio__play")
+        .click(OnPlayAudioButtonClick);
+}
+
 function UpdateVideoModal(videoId) {
     let videoModal = $("#video-modal");
     let currentVideoElement = videoModal.find("#current-video")[0];
@@ -1534,8 +1767,7 @@ function UpdateVideoModal(videoId) {
 
     currentVideoElement.poster = "data:image/" + currentVideo.PreviewImageType + ";base64," + currentVideo.PreviewImageData;
     currentVideoElement.src = "Media/Video/GetFile/" + videoId;
-    currentVideoElement.volume = 0.5;
-    currentVideoElement.load();
+    currentVideoElement.volume = 0.1;
 }
 
 function UpdateVideoModalVideos() {
@@ -1551,6 +1783,20 @@ function UpdateVideoModalVideos() {
 
     $("#video-modal .videos-list .videos-list__item")
         .click(OnVideoModalVideoClick);
+}
+
+function UpdateAudioModal(audioId) {
+    let audioModal = $("#audio-modal");
+    let currentAudioElement = audioModal.find("#current-audio")[0];
+
+    let currentAudio = g_currentDataBlockAudios
+        .find((item) => item.Id == audioId);
+
+    audioModal.find("#current-audio-title").val(currentAudio.Title);
+    audioModal.find("#current-audio-desc").val(currentAudio.Description);
+
+    currentAudioElement.src = "Media/Audio/GetFile/" + audioId;
+    currentAudioElement.volume = 0.1;
 }
 
 function RefreshDataCategory() {
@@ -1577,6 +1823,10 @@ async function RefreshImages() {
 
 async function RefreshVideos() {
     g_currentDataBlockVideos = await GetVideos(g_currentDataBlock.Id);
+}
+
+async function RefreshAudios() {
+    g_currentDataBlockAudios = await GetAudios(g_currentDataBlock.Id);
 }
 
 function OpenDefaultDataBlockTab() {
@@ -1672,6 +1922,10 @@ function ClearImages() {
 
 function ClearVideos() {
     $("#person-data-block").find(".videos").empty();
+}
+
+function ClearAudios() {
+    $("#person-data-block").find(".audios").empty();
 }
 
 function ClearSliderImages() {
@@ -1850,6 +2104,7 @@ function AddItemToImages(image) {
 
     let imgElement = document.createElement("img");
     imgElement.src = "data:image/" + image.ImageType + ";base64," + image.ImageData;
+    imageElement.decoding = "async";
 
     imageElement.appendChild(selectorElement);
     imageElement.appendChild(imgElement);
@@ -1886,6 +2141,47 @@ function AddItemToVideos(video) {
     $("#person-data-block")
         .find(".videos")[0]
         .appendChild(videoElement);
+}
+
+function AddItemToAudios(audio) {
+    let audioElement = document.createElement("div");
+    audioElement.classList.add("audio");
+    audioElement.classList.add("audios__item");
+    audioElement.setAttribute("data-id", audio.Id);
+
+    let selectorElement = document.createElement("div");
+    selectorElement.classList.add("audio__selector");
+
+    let checkboxElement = document.createElement("div");
+    checkboxElement.classList.add("checkbox");
+
+    let inputElement = document.createElement("input");
+    inputElement.type = "checkbox";
+
+    checkboxElement.appendChild(inputElement);
+    selectorElement.appendChild(checkboxElement);
+
+    let playButtonElement = document.createElement("div");
+    playButtonElement.classList.add("audio__play");
+    playButtonElement.classList.add("btn");
+    playButtonElement.classList.add("btn-default");
+
+    let playButtonImgElement = document.createElement("img");
+    playButtonImgElement.src = "/images/play.svg";
+
+    playButtonElement.appendChild(playButtonImgElement);
+
+    let titleElement = document.createElement("div");
+    titleElement.classList.add("audio__title");
+    titleElement.innerHTML = audio.Title;
+
+    audioElement.appendChild(selectorElement);
+    audioElement.appendChild(playButtonElement);
+    audioElement.appendChild(titleElement);
+
+    $("#person-data-block")
+        .find(".audios")[0]
+        .appendChild(audioElement);
 }
 
 function AddImageToSlider(image) {
@@ -2271,6 +2567,20 @@ function GetSelectedVideosIds() {
     return result;
 }
 
+function GetSelectedAudiosIds() {
+    let result = [];
+
+    $("#person-data-block")
+        .find(".audios .audios__item")
+        .each((i, el) => {
+            if ($(el).find("input[type=\"checkbox\"]").is(":checked")) {
+                result.push(el.getAttribute("data-id"));
+            }
+        });
+
+    return result;
+}
+
 function GetImageSliderCurrentImageId() {
     return $("#image-carousel-modal")
         .find(".slider .slick-current")
@@ -2300,6 +2610,10 @@ function GetCurrentActionTypeElements() {
         }
         case AddButtonActionTypes.AddVideo: {
             elements = personDataBlock.find(".videos .videos__item");
+            break;
+        }
+        case AddButtonActionTypes.AddAudio: {
+            elements = personDataBlock.find(".audios .audios__item");
             break;
         }
 
@@ -2337,6 +2651,12 @@ function CopySelectedImages() {
 function CopySelectedVideos() {
     g_copyObject.Ids = GetSelectedVideosIds();
     g_copyObject.CopyObjectType = CopyObjectTypes.Video;
+    sessionStorage.setItem(CopyObjectSessionStorageKey, JSON.stringify(g_copyObject));
+}
+
+function CopySelectedAudios() {
+    g_copyObject.Ids = GetSelectedAudiosIds();
+    g_copyObject.CopyObjectType = CopyObjectTypes.Audio;
     sessionStorage.setItem(CopyObjectSessionStorageKey, JSON.stringify(g_copyObject));
 }
 
@@ -2450,6 +2770,28 @@ function PasteVideos() {
         });  
 }
 
+function PasteAudios() {
+    g_copyObject = JSON.parse(sessionStorage.getItem(CopyObjectSessionStorageKey));
+
+    if (g_copyObject == null ||
+        g_copyObject.Ids.length == 0)
+        return;
+
+    if (g_copyObject.CopyObjectType == null ||
+        g_copyObject.CopyObjectType != CopyObjectTypes.Audio) {
+        alert("Ошибка при вставке из буфера (неверный тип объектов)");
+        return;
+    }
+
+    CopyAudios(g_copyObject.Ids, g_currentDataBlock.Id)
+        .then((data) => {
+            RefreshAudios().then((val) => UpdateAudios());
+        },
+        (r) => {
+            alert("Ошибка при вставке из буфера");
+        });
+}
+
 function SelectVideoModalVideo(videoId) {
     let videosListElement = $("#video-modal .videos-list");
 
@@ -2527,6 +2869,17 @@ async function DeleteSelectedVideos() {
         return;
     
     const promises = videosIds.map(DeleteVideo);
+
+    await Promise.all(promises);
+}
+
+async function DeleteSelectedAudios() {
+    let audiosIds = GetSelectedAudiosIds();
+
+    if (audiosIds.length == 0)
+        return;
+
+    const promises = audiosIds.map(DeleteAudio);
 
     await Promise.all(promises);
 }

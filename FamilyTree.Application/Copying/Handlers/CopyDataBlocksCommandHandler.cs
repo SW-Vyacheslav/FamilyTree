@@ -42,6 +42,7 @@ namespace FamilyTree.Application.Copying.Handlers
 
             var dataBlocks = await _context.DataBlocks
                 .Include(db => db.DataHolders)
+                .ThenInclude(dh => dh.Privacy)
                 .Where(db => db.CreatedBy.Equals(request.UserId) &&
                              request.DataBlocksIds.Contains(db.Id))
                 .ToListAsync(cancellationToken);
@@ -50,8 +51,6 @@ namespace FamilyTree.Application.Copying.Handlers
             {            
                 await _copying.CopyDataBlockToDataCategory(dataCategory, dataBlock, cancellationToken);
             }
-
-            await _context.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

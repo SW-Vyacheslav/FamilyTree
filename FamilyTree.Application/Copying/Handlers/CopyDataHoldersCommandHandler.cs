@@ -35,6 +35,7 @@ namespace FamilyTree.Application.Copying.Handlers
                 throw new NotFoundException(nameof(DataBlock), request.DataBlockId);
 
             var dataHolders = await _context.DataHolders
+                .Include(dh => dh.Privacy)
                 .Where(dh => dh.CreatedBy.Equals(request.UserId) &&
                              request.DataHoldersIds.Contains(dh.Id))
                 .ToListAsync(cancellationToken);
@@ -43,8 +44,6 @@ namespace FamilyTree.Application.Copying.Handlers
             {         
                 await _copying.CopyDataHolderToDataBlock(dataBlock, dataHolder, cancellationToken);
             }
-
-            await _context.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

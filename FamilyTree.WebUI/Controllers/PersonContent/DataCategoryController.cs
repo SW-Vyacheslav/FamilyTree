@@ -33,11 +33,11 @@ namespace FamilyTree.WebUI.Controllers.PersonContent
         }
 
         [HttpGet]
-        public async Task<ActionResult<DataCategoryVm>> Get(int dataCategoryId)
+        public async Task<ActionResult<DataCategoryVm>> Get(int id)
         {
             return await Mediator.Send(new GetDataCategoryQuery()
             {
-                DataCategoryId = dataCategoryId,
+                DataCategoryId = id,
                 UserId = _currentUserService.UserId
             });
         }

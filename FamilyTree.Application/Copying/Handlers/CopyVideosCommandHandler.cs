@@ -34,6 +34,7 @@ namespace FamilyTree.Application.Copying.Handlers
                 throw new NotFoundException(nameof(DataBlock), request.DataBlockId);
 
             var videos = await _context.Videos
+                .Include(v => v.Privacy)
                 .Where(v => v.CreatedBy.Equals(request.UserId) &&
                             request.VideosIds.Contains(v.Id))
                 .ToListAsync(cancellationToken);
@@ -42,8 +43,6 @@ namespace FamilyTree.Application.Copying.Handlers
             {
                 await _copying.CopyVideoToDataBlock(dataBlock, video, cancellationToken);
             }
-
-            await _context.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

@@ -1,4 +1,5 @@
 ﻿using FamilyTree.Domain.Common;
+using FamilyTree.Domain.Entities.Privacy;
 using FamilyTree.Domain.Enums.PersonContent;
 
 namespace FamilyTree.Domain.Entities.PersonContent
@@ -20,5 +21,9 @@ namespace FamilyTree.Domain.Entities.PersonContent
         public int DataBlockId { get; set; }
 
         public DataBlock DataBlock { get; set; }
+
+        public int PrivacyId { get; set; }
+
+        public PrivacyEntity Privacy { get; set; }
     }
 }

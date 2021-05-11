@@ -2,6 +2,7 @@
 using FamilyTree.Application.Common.Interfaces;
 using FamilyTree.Application.Media.Videos.Queries;
 using FamilyTree.Application.Media.Videos.ViewModels;
+using FamilyTree.Application.Privacy.ViewModels;
 using FamilyTree.Domain.Entities.PersonContent;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -41,7 +42,15 @@ namespace FamilyTree.Application.Media.Videos.Handlers
                     Title = dbv.Video.Title,
                     Description = dbv.Video.Description,
                     PreviewImageData = Convert.ToBase64String(dbv.Video.PreviewImageData),
-                    PreviewImageType = dbv.Video.PreviewImageType
+                    PreviewImageType = dbv.Video.PreviewImageType,
+                    Privacy = new PrivacyEntityDto()
+                    {
+                        Id = dbv.Video.Privacy.Id,
+                        BeginDate = dbv.Video.Privacy.BeginDate,
+                        EndDate = dbv.Video.Privacy.EndDate,
+                        IsAlways = dbv.Video.Privacy.IsAlways.Value,
+                        PrivacyLevel = dbv.Video.Privacy.PrivacyLevel
+                    }
                 })
                 .ToListAsync(cancellationToken);
 

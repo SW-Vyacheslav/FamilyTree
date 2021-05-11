@@ -15,6 +15,6 @@ namespace FamilyTree.Application.PersonContent.DataHolders.ViewModels
 
         public bool IsDeletable { get; set; }
 
-        public DataHolderPrivacyDto Privacy { get; set; }
+        public PrivacyEntityDto Privacy { get; set; }
     }
 }

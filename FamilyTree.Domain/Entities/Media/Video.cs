@@ -1,4 +1,5 @@
 ﻿using FamilyTree.Domain.Common;
+using FamilyTree.Domain.Entities.Privacy;
 
 namespace FamilyTree.Domain.Entities.Media
 {
@@ -17,5 +18,9 @@ namespace FamilyTree.Domain.Entities.Media
         public string Title { get; set; }
 
         public string Description { get; set; }
+
+        public int PrivacyId { get; set; }
+
+        public PrivacyEntity Privacy { get; set; }
     }
 }

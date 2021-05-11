@@ -9,24 +9,24 @@ using System.Threading.Tasks;
 
 namespace FamilyTree.Application.Privacy.Handlers
 {
-    public class UpdateDataHolderPrivacyCommandHandler : IRequestHandler<UpdateDataHolderPrivacyCommand>
+    public class UpdatePrivacyCommandHandler : IRequestHandler<UpdatePrivacyCommand>
     {
         private readonly IApplicationDbContext _context;
 
-        public UpdateDataHolderPrivacyCommandHandler(IApplicationDbContext context)
+        public UpdatePrivacyCommandHandler(IApplicationDbContext context)
         {
             _context = context;
         }
 
-        public async Task<Unit> Handle(UpdateDataHolderPrivacyCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UpdatePrivacyCommand request, CancellationToken cancellationToken)
         {
-            DataHolderPrivacy privacy = await _context.DataHolderPrivacies
+            PrivacyEntity privacy = await _context.Privacies
                 .SingleOrDefaultAsync(p => p.CreatedBy.Equals(request.UserId) &&
-                                           p.DataHolderId == request.Id,
+                                           p.Id == request.Id,
                                       cancellationToken);
 
             if (privacy == null)
-                throw new NotFoundException(nameof(DataHolderPrivacy), request.Id);
+                throw new NotFoundException(nameof(PrivacyEntity), request.Id);
 
             if (!request.IsAlways.Value)
             {

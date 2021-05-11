@@ -21,9 +21,6 @@
 
   <ItemGroup>
     <Folder Include="Common\Mappings\" />
-    <Folder Include="Media\Audios\Handlers\" />
-    <Folder Include="Media\Audios\ViewModels\" />
-    <Folder Include="Media\Videos\Validators\" />
     <Folder Include="Privacy\Queries\" />
   </ItemGroup>
 

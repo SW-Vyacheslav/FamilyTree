@@ -41,8 +41,16 @@
 }
 
 #Buttons {
-    width: 458px;
-    margin: 25px auto;   
+    width: 100%;
+    margin: 25px auto;
+    display: flex;
+    justify-content: center;
+}
+
+#show-main-person-button {
+    font-size: 18px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-right: 50px;
 }
 
 #ScaleTree {
@@ -70,7 +78,18 @@
     min-height: 500px;
 }
 
+.star-button {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top: 0;
+    right: 0;
+    margin: 5px;
+    padding: 3px;
+}
+
 .person {
+    position: relative;
     width: 100px;
     height: 152px;
     float: left;
@@ -235,6 +254,7 @@
     border: 1px solid #003050;
     background-color: #003050;
     cursor: pointer;
+    position: relative;
 }
 
 #BlockPartTree .newPerson {

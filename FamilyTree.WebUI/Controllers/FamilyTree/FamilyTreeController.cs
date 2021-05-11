@@ -66,7 +66,20 @@ namespace FamilyTree.WebUI.Controllers.FamilyTree
         }        
 
         [HttpPut]
-        public async Task<ActionResult> Update(int id, UpdateFamilyTreeNameCommand command)
+        public async Task<ActionResult> UpdateName(int id, UpdateFamilyTreeNameCommand command)
+        {
+            if (id != command.Id)
+                return BadRequest();
+
+            command.UserId = _currentUserService.UserId;
+
+            await Mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateMainPerson(int id, UpdateFamilyTreeMainPersonCommand command)
         {
             if (id != command.Id)
                 return BadRequest();

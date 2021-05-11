@@ -11,14 +11,19 @@ function InitPrivacyNotifications() {
         .withUrl("/Privacy/Notifications")
         .build();
 
-    g_privacyNotificationsConnection.on("ReceiveDataHolderPrivacyNotification", (dataHolder) => {
+    g_privacyNotificationsConnection.on("ReceivePrivacyChangedNotification", (privacyId) => {
         if (g_currentAddButtonActionType == AddButtonActionTypes.AddDataHolder) {
-             let dataHolderIndex = g_currentDataBlock.DataHolders
-                .findIndex(item => item.Id == dataHolder.Id);
+            let dataHolderIndex = g_currentDataBlock.DataHolders
+                .findIndex((item) => item.Privacy.Id == privacyId);
 
-            g_currentDataBlock.DataHolders[dataHolderIndex] = dataHolder;
+            if (dataHolderIndex !== -1) {
+                let dataHolderId = g_currentDataBlock.DataHolders[dataHolderIndex].Id;
 
-            UpdateDataHolders();
+                GetDataHolder(dataHolderId).then((result) => {
+                    g_currentDataBlock.DataHolders[dataHolderIndex] = result;
+                    UpdateDataHolders();
+                }, (r) => console.error(r));
+            }
         }
     });
 
@@ -27,40 +32,14 @@ function InitPrivacyNotifications() {
 }
 
 // Requests
-//TODO:
-function GetImagePrivacy(imageId) {
-
-}
-
-//TODO:
-function GetVideoPrivacy(videoId) {
-
-}
-
-function UpdateDataHolderPrivacy(dataHolderPrivacy) {
-    let result = false;
-
-    $.ajax({
-        async: false,
+async function UpdatePrivacy(privacy) {
+    let result = await $.ajax({
         type: "PUT",
-        data: dataHolderPrivacy,
-        url: "/Privacy/UpdateDataHolderPrivacy/" + dataHolderPrivacy.Id,
-        success: function (response) {
-            result = true;
-        }
+        data: privacy,
+        url: "/Privacy/Update/" + privacy.Id
     });
 
     return result;
-}
-
-//TODO:
-function UpdateImagePrivacy(imagePrivacy) {
-
-}
-
-//TODO:
-function UpdateVideoPrivacy(videoPrivacy) {
-
 }
 
 //Events
@@ -121,7 +100,7 @@ function OnEditPrivacyLevelSubmitButtonClick(event) {
     let privacyLevel = editPrivacyModal.find("input[name=\"privacy-level\"]:checked").val();
 
     let privacy = {
-        Id: g_editPrivacyElementId,
+        Id: 0,
         PrivacyLevel: privacyLevel,
         BeginDate: beginDate,
         EndDate: endDate,
@@ -130,38 +109,57 @@ function OnEditPrivacyLevelSubmitButtonClick(event) {
 
     switch (g_currentAddButtonActionType) {
         case AddButtonActionTypes.AddDataHolder: {
-            if (!UpdateDataHolderPrivacy(privacy)) {
+            let dataHolder = g_currentDataBlock.DataHolders
+                .find((item) => item.Id == g_editPrivacyElementId);
+
+            privacy.Id = dataHolder.Privacy.Id;
+
+            UpdatePrivacy(privacy).then((result) => {
+                RefreshDataHolders();
+                UpdateDataHolders();
+                editPrivacyModal.modal("hide");
+            }, (r) => {
                 alert("Ошибка при изменении приватности ячейки данных.");
-                return;
-            }
-            RefreshDataHolders();
-            UpdateDataHolders();
+            });
+            
             break;
         }
 
         case AddButtonActionTypes.AddImage: {
-            if (!UpdateImagePrivacy(privacy)) {
+            let image = g_currentDataBlockImages
+                .find((item) => item.Id == g_editPrivacyElementId);
+
+            privacy.Id = image.Privacy.Id;
+
+            UpdatePrivacy(privacy).then((result) => {
+                RefreshImages();
+                editPrivacyModal.modal("hide");
+            }, (r) => {
                 alert("Ошибка при изменении приватности изображения.");
-                return;
-            }
-            RefreshImages();
+            });
+            
             break;
         }
 
         case AddButtonActionTypes.AddVideo: {
-            if (!UpdateVideoPrivacy(privacy)) {
+            let video = g_currentDataBlockVideos
+                .find((item) => item.Id == g_editPrivacyElementId);
+
+            privacy.Id = video.Privacy.Id;
+
+            UpdatePrivacy(privacy).then((result) => {
+                RefreshVideos();
+                editPrivacyModal.modal("hide");
+            }, (r) => {
                 alert("Ошибка при изменении приватности видео.");
-                return;
-            }
-            RefreshVideos();
+            });
+            
             break;
         }
 
         default:
             break;
     }
-
-    editPrivacyModal.modal("hide");
 }
 
 //UI

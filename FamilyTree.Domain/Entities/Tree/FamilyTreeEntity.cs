@@ -10,10 +10,14 @@ namespace FamilyTree.Domain.Entities.Tree
 
         public string Name { get; set; }
 
-        public ICollection<Person> People { get; set; }
+        public int? MainPersonId { get; set; }
+
+        public Person MainPerson { get; set; }
 
         public string UserId { get; set; }
 
         public ApplicationUser User { get; set; }
+
+        public ICollection<Person> People { get; set; }
     }
 }

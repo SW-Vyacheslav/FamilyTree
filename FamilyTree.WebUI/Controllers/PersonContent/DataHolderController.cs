@@ -1,6 +1,8 @@
 ﻿using FamilyTree.Application.Common.Interfaces;
 using FamilyTree.Application.Copying.Commands;
 using FamilyTree.Application.PersonContent.DataHolders.Commands;
+using FamilyTree.Application.PersonContent.DataHolders.Queries;
+using FamilyTree.Application.PersonContent.DataHolders.ViewModels;
 using FamilyTree.WebUI.Controllers.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +19,16 @@ namespace FamilyTree.WebUI.Controllers.PersonContent
         public DataHolderController(ICurrentUserService currentUserService)
         {
             _currentUserService = currentUserService;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<DataHolderDto>> Get(int id)
+        {
+            return await Mediator.Send(new GetDataHolderQuery() 
+            {
+                Id = id,
+                UserId = _currentUserService.UserId
+            });
         }
 
         [HttpPost]

@@ -8,14 +8,16 @@ namespace FamilyTree.Application.Copying.Interfaces
 {
     public interface ICopyingService
     {
-        Task<DataCategory> CopyDataCategoryToPerson(Person person, DataCategory dataCategory, CancellationToken cancellationToken);
+        Task CopyDataCategoryToPerson(Person person, DataCategory dataCategory, CancellationToken cancellationToken);
 
-        Task<DataBlock> CopyDataBlockToDataCategory(DataCategory dataCategory, DataBlock dataBlock, CancellationToken cancellationToken);
+        Task CopyDataBlockToDataCategory(DataCategory dataCategory, DataBlock dataBlock, CancellationToken cancellationToken);
 
-        Task<DataHolder> CopyDataHolderToDataBlock(DataBlock dataBlock, DataHolder dataHolder, CancellationToken cancellationToken);
+        Task CopyDataHolderToDataBlock(DataBlock dataBlock, DataHolder dataHolder, CancellationToken cancellationToken);
 
-        Task<Image> CopyImageToDataBlock(DataBlock dataBlock, Image image, CancellationToken cancellationToken);
+        Task CopyImageToDataBlock(DataBlock dataBlock, Image image, CancellationToken cancellationToken);
 
-        Task<Video> CopyVideoToDataBlock(DataBlock dataBlock, Video video, CancellationToken cancellationToken);
+        Task CopyVideoToDataBlock(DataBlock dataBlock, Video video, CancellationToken cancellationToken);
+
+        Task CopyAudioToDataBlock(DataBlock dataBlock, Audio audio, CancellationToken cancellationToken);
     }
 }

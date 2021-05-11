@@ -67,8 +67,12 @@ namespace FamilyTree.Application.PersonContent.DataBlocks.Handlers
             }
 
             if (entity.DataHolders != null)
-                _context.DataHolderPrivacies.AddRange(entity.DataHolders
-                    .Select(dh => CreateDefaultDataHolderPrivacy(dh)));
+            {
+                foreach (var dataHolder in entity.DataHolders)
+                {
+                    dataHolder.Privacy = CreateDefaultPrivacy();
+                }
+            }                
 
             _context.DataBlocks.Add(entity);
             await _context.SaveChangesAsync(cancellationToken);
@@ -266,14 +270,13 @@ namespace FamilyTree.Application.PersonContent.DataBlocks.Handlers
             };
         }
 
-        private DataHolderPrivacy CreateDefaultDataHolderPrivacy(DataHolder dataHolder)
+        private PrivacyEntity CreateDefaultPrivacy()
         {
-            DataHolderPrivacy privacy = new DataHolderPrivacy();
-            privacy.IsAlways = true;
-            privacy.PrivacyLevel = PrivacyLevel.Confidential;
-            privacy.DataHolder = dataHolder;
-
-            return privacy;
+            return new PrivacyEntity() 
+            {
+                IsAlways = true,
+                PrivacyLevel = PrivacyLevel.Confidential
+            };
         }
     }
 }

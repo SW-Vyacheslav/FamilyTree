@@ -44,11 +44,7 @@ namespace FamilyTree.Application.People.Handlers
                 FamilyTie tie = new FamilyTie();
                 tie.Person = person;
 
-                FamilyTreeMainPerson mainPerson = await _context.FamilyTreesMainPeople
-                    .SingleOrDefaultAsync(mp => mp.FamilyTreeId == familyTree.Id,
-                                          cancellationToken);
-
-                mainPerson.MainPerson = person;
+                familyTree.MainPerson = person;
 
                 _context.FamilyTies.Add(tie);
             }
@@ -88,6 +84,7 @@ namespace FamilyTree.Application.People.Handlers
             familyTree.People.Add(person);
 
             CreateDefaults(request, person);
+
             _context.People.Add(person);
             await _context.SaveChangesAsync(cancellationToken);            
 
@@ -113,7 +110,8 @@ namespace FamilyTree.Application.People.Handlers
                 Data = request.Name, 
                 DataHolderType = DataHolderType.Name, 
                 OrderNumber = 1,
-                IsDeletable = false
+                IsDeletable = false,
+                Privacy = CreateDefaultPrivacy()
             });
             dataBlock.DataHolders.Add(new DataHolder() 
             { 
@@ -121,7 +119,8 @@ namespace FamilyTree.Application.People.Handlers
                 Data = request.Surname, 
                 DataHolderType = DataHolderType.Surname, 
                 OrderNumber = 2,
-                IsDeletable = false
+                IsDeletable = false,
+                Privacy = CreateDefaultPrivacy()
             });
             dataBlock.DataHolders.Add(new DataHolder() 
             { 
@@ -129,7 +128,8 @@ namespace FamilyTree.Application.People.Handlers
                 Data = request.Middlename, 
                 DataHolderType = DataHolderType.MiddleName, 
                 OrderNumber = 3,
-                IsDeletable = false
+                IsDeletable = false,
+                Privacy = CreateDefaultPrivacy()
             });
             dataBlock.DataHolders.Add(new DataHolder() 
             { 
@@ -137,7 +137,8 @@ namespace FamilyTree.Application.People.Handlers
                 Data = request.Birthday.ToString(), 
                 DataHolderType = DataHolderType.Birthday, 
                 OrderNumber = 4,
-                IsDeletable = false
+                IsDeletable = false,
+                Privacy = CreateDefaultPrivacy()
             });
             dataBlock.DataHolders.Add(new DataHolder() 
             { 
@@ -145,29 +146,9 @@ namespace FamilyTree.Application.People.Handlers
                 Data = request.Gender.ToString(), 
                 DataHolderType = DataHolderType.Gender, 
                 OrderNumber = 5,
-                IsDeletable = false
+                IsDeletable = false,
+                Privacy = CreateDefaultPrivacy()
             });
-
-            var namePrivacy = CreateDefaultDataHolderPrivacy();
-            namePrivacy.DataHolder = dataBlock.DataHolders.ElementAt(0);
-
-            var surnamePrivacy = CreateDefaultDataHolderPrivacy();
-            surnamePrivacy.DataHolder = dataBlock.DataHolders.ElementAt(1);
-
-            var middlenamePrivacy = CreateDefaultDataHolderPrivacy();
-            middlenamePrivacy.DataHolder = dataBlock.DataHolders.ElementAt(2);
-
-            var birthdayPrivacy = CreateDefaultDataHolderPrivacy();
-            birthdayPrivacy.DataHolder = dataBlock.DataHolders.ElementAt(3);
-
-            var genderPrivacy = CreateDefaultDataHolderPrivacy();
-            genderPrivacy.DataHolder = dataBlock.DataHolders.ElementAt(4);
-
-            _context.DataHolderPrivacies.Add(namePrivacy);
-            _context.DataHolderPrivacies.Add(surnamePrivacy);
-            _context.DataHolderPrivacies.Add(middlenamePrivacy);
-            _context.DataHolderPrivacies.Add(birthdayPrivacy);
-            _context.DataHolderPrivacies.Add(genderPrivacy);
 
             personInfoDataCategory.DataBlocks = new List<DataBlock>();
             personInfoDataCategory.DataBlocks.Add(dataBlock);
@@ -215,9 +196,9 @@ namespace FamilyTree.Application.People.Handlers
             _context.DataCategories.Add(importantEventsDataCategory);
         }
 
-        private DataHolderPrivacy CreateDefaultDataHolderPrivacy()
+        private PrivacyEntity CreateDefaultPrivacy()
         {
-            return new DataHolderPrivacy() 
+            return new PrivacyEntity() 
             {
                 PrivacyLevel = PrivacyLevel.Confidential,
                 IsAlways = true

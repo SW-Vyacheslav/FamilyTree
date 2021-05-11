@@ -1,7 +1,5 @@
 ﻿using FamilyTree.Application.Common.Interfaces;
-using FamilyTree.Application.PersonContent.DataHolders.ViewModels;
 using FamilyTree.Application.Privacy.Interfaces;
-using FamilyTree.Application.Privacy.ViewModels;
 using FamilyTree.Domain.Enums.Privacy;
 using FamilyTree.WebUI.Hubs;
 using Microsoft.AspNetCore.SignalR;
@@ -29,19 +27,18 @@ namespace FamilyTree.WebUI.Services
             _dateTimeService = dateTimeService;
         }
 
-        public async Task NotifyUsersIfDataHolderPrivacyTimeExpired(CancellationToken cancellationToken = default)
+        public async Task NotifyUsersIfPrivacyTimeExpired(CancellationToken cancellationToken = default)
         {
             var nowDateTime = _dateTimeService.Now;
-            var dataHoldersPrivacies = await _context.DataHolderPrivacies
-                .Include(dhp => dhp.DataHolder)
+            var privacies = await _context.Privacies
                 .Where(dhp => !dhp.IsAlways.Value &&
                               nowDateTime > dhp.EndDate)
                 .ToListAsync(cancellationToken);
 
-            if (dataHoldersPrivacies.Count == 0)
+            if (privacies.Count == 0)
                 return;
 
-            dataHoldersPrivacies.ForEach(item => 
+            privacies.ForEach(item => 
             {
                 item.IsAlways = true;
                 item.PrivacyLevel = PrivacyLevel.PublicUse;
@@ -49,39 +46,12 @@ namespace FamilyTree.WebUI.Services
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            dataHoldersPrivacies.ForEach(item =>
+            privacies.ForEach(item =>
             {
-                DataHolderDto dataHolder = new DataHolderDto() 
-                {
-                    Id = item.DataHolder.Id,
-                    Title = item.DataHolder.Title,
-                    Data = item.DataHolder.Data,
-                    DataHolderType = item.DataHolder.DataHolderType,
-                    IsDeletable = item.DataHolder.IsDeletable.Value,
-                    Privacy = new DataHolderPrivacyDto() 
-                    {
-                        Id = item.Id,
-                        BeginDate = item.BeginDate,
-                        EndDate = item.EndDate,
-                        IsAlways = item.IsAlways.Value,
-                        PrivacyLevel = item.PrivacyLevel
-                    }
-                };
-
                 _privacyHubContext.Clients
                     .User(item.CreatedBy)
-                    .SendAsync("ReceiveDataHolderPrivacyNotification", dataHolder);
+                    .SendAsync("ReceivePrivacyChangedNotification", item.Id);
             });
-        }
-
-        public Task NotifyUsersIfImagePrivacyTimeExpired(CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task NotifyUsersIfVideoPrivacyTimeExpired(CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

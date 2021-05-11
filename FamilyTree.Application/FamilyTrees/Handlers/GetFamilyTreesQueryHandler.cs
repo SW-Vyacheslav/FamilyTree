@@ -23,14 +23,11 @@ namespace FamilyTree.Application.FamilyTrees.Handlers
         {
             List<FamilyTreeEntityDto> result = await _context.FamilyTrees
                 .Where(dt => dt.CreatedBy.Equals(request.UserId))
-                .Join(_context.FamilyTreesMainPeople,
-                ft => ft.Id,
-                mp => mp.FamilyTreeId,
-                (ft, mp) => new FamilyTreeEntityDto()
+                .Select(ft => new FamilyTreeEntityDto()
                 {
                     Id = ft.Id,
                     Name = ft.Name,
-                    MainPersonId = mp.MainPersonId
+                    MainPersonId = ft.MainPersonId
                 })
                 .ToListAsync(cancellationToken);
 

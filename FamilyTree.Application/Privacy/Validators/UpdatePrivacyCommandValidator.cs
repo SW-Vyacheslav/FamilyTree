@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace FamilyTree.Application.Privacy.Validators
 {
-    public class UpdateDataHolderPrivacyCommandValidator : AbstractValidator<UpdateDataHolderPrivacyCommand>
+    public class UpdatePrivacyCommandValidator : AbstractValidator<UpdatePrivacyCommand>
     {
-        public UpdateDataHolderPrivacyCommandValidator()
+        public UpdatePrivacyCommandValidator()
         {
             RuleFor(c => c.PrivacyLevel)
                 .NotEmpty();

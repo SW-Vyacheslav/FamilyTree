@@ -1,4 +1,6 @@
-﻿namespace FamilyTree.Application.Media.Videos.ViewModels
+﻿using FamilyTree.Application.Privacy.ViewModels;
+
+namespace FamilyTree.Application.Media.Videos.ViewModels
 {
     public class VideoDto
     {
@@ -11,5 +13,7 @@
         public string PreviewImageData { get; set; }
 
         public string PreviewImageType { get; set; }
+
+        public PrivacyEntityDto Privacy { get; set; }
     }
 }

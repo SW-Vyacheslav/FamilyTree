@@ -2,10 +2,12 @@
 using FamilyTree.Domain.Enums.Privacy;
 using System;
 
-namespace FamilyTree.Domain.Entities.Privacy.Common
+namespace FamilyTree.Domain.Entities.Privacy
 {
-    public abstract class PrivacyEntity : AuditableEntity
+    public class PrivacyEntity : AuditableEntity
     {
+        public int Id { get; set; }
+
         public PrivacyLevel PrivacyLevel { get; set; }
 
         public DateTime BeginDate { get; set; }

@@ -36,8 +36,6 @@ namespace FamilyTree.Infrastructure.Persistence
 
         public DbSet<FamilyTreeEntity> FamilyTrees { get; set; }
 
-        public DbSet<FamilyTreeMainPerson> FamilyTreesMainPeople { get; set; }
-
         public DbSet<DataCategory> DataCategories { get; set; }
 
         public DbSet<DataBlock> DataBlocks { get; set; }
@@ -46,11 +44,7 @@ namespace FamilyTree.Infrastructure.Persistence
 
         public DbSet<CommonDataBlock> CommonDataBlocks { get; set; }
 
-        public DbSet<DataHolderPrivacy> DataHolderPrivacies { get; set; }
-
-        public DbSet<ImagePrivacy> ImagePrivacies { get; set; }
-
-        public DbSet<VideoPrivacy> VideoPrivacies { get; set; }
+        public DbSet<PrivacyEntity> Privacies { get; set; }
 
         public DbSet<Image> Images { get; set; }
 
@@ -59,6 +53,10 @@ namespace FamilyTree.Infrastructure.Persistence
         public DbSet<Video> Videos { get; set; }
 
         public DbSet<DataBlockVideo> DataBlockVideos { get; set; }
+
+        public DbSet<Audio> Audios { get; set; }
+
+        public DbSet<DataBlockAudio> DataBlockAudios { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
