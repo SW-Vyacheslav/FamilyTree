@@ -1057,7 +1057,7 @@ input:focus {
     display: flex;
 }
 
-.btn.flat-save-button {
+.btn.modal-primary-button {
     background: transparent;
     border-radius: 5px;
     border-color: #ababab;
@@ -1066,7 +1066,7 @@ input:focus {
     transition: all ease 0.5s;
 }
 
-.btn.flat-save-button:hover {
+.btn.modal-primary-button:hover {
     background-color: #0096FF;
     color: #fff;
     border-color:#fff;

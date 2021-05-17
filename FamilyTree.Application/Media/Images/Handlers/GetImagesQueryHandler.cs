@@ -42,8 +42,6 @@ namespace FamilyTree.Application.Media.Images.Handlers
                     Id = dbi.ImageId,
                     Title = dbi.Image.Title,
                     Description = dbi.Image.Description,
-                    ImageData = Convert.ToBase64String(dbi.Image.ImageData),
-                    ImageType = dbi.Image.ImageType,
                     Privacy = new PrivacyEntityDto()
                     {
                         Id = dbi.Image.Privacy.Id,

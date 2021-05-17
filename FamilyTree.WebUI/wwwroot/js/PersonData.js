@@ -59,7 +59,7 @@ const CopyObjectSessionStorageKey = "COPY_OBJECT";
 
 const WaitForMilliseconds = (ms) => new Promise(handler => setTimeout(handler, ms));
 
-let g_currentPersonId = null;
+let g_currentPerson = null;
 let g_dataCategories = [];
 let g_currentDataCategory = null;
 let g_currentDataBlock = null;
@@ -79,8 +79,13 @@ let g_isUploadingImage = false;
 let g_isUploadingVideo = false;
 let g_isUploadingAudio = false;
 
-function LoadPersonData(personId) {
-    g_currentPersonId = personId;
+async function LoadPersonData(personId) {
+    g_currentPerson = await GetPersonData(personId).catch((r) => {
+        g_currentPerson = null;
+    });
+
+    if (g_currentPerson == null)
+        return false;
 
     RefreshDataCategories();
 
@@ -98,6 +103,14 @@ function LoadPersonData(personId) {
 }
 
 //Requests
+async function GetPersonData(personId) {
+    return await $.ajax({
+        method: "GET",
+        dataType: "json",
+        url: "/People/Get/" + personId
+    });
+}
+
 function GetDataCategories(personId) {
     let result = [];
     $.ajax({
@@ -131,16 +144,6 @@ async function GetDataHolder(dataHolderId) {
         type: "GET",
         dataType: "json",
         url: "/PersonContent/DataHolder/Get?id=" + dataHolderId
-    });
-
-    return result;
-}
-
-async function GetImage(imageId) {
-    const result = await $.ajax({
-        type: "GET",
-        dataType: "json",
-        url: "/Media/Image/Get?id=" + imageId
     });
 
     return result;
@@ -460,23 +463,15 @@ async function UpdateAudioDetails(audio) {
     return result;
 }
 
-function UpdatePersonAvatarImage(personId, imageId) {
-    let result = false;
-
-    $.ajax({
-        async: false,
+async function UpdatePersonAvatarImage(personId, imageId) {
+    return await $.ajax({
         type: "PUT",
         data: {
             Id: personId,
             ImageId: imageId
         },
-        url: "/People/UpdatePersonAvatarImage/" + personId,
-        success: function (response) {
-            result = true;
-        }
+        url: "/People/UpdateAvatarImage/" + personId
     });
-
-    return result;
 }
 
 async function SaveDataHolders() {
@@ -961,7 +956,7 @@ function OnAddDataCategorySubmitButtonClick() {
     let dataCategory = {
         DataCategoryType: $("#add-data-category-type").val(),
         Name: $("#add-data-category-name").val(),
-        PersonId: g_currentPersonId
+        PersonId: g_currentPerson.Id
     };
 
     if (CreateDataCategory(dataCategory) === -1) {
@@ -1494,12 +1489,17 @@ function OnSaveImageSubmitButtonClick() {
 }
 
 function OnSetImageAsAvatarButtonClick() {
-    if (!UpdatePersonAvatarImage(g_currentPersonId, GetImageSliderCurrentImageId())) {
-        alert("Ошибка при задании изображения аватара персоны.");
-    }
-    else {
+    $("#image-carousel-modal").find("#set-image-as-avatar-button")
+        .prop("disabled", true);
+    UpdatePersonAvatarImage(g_currentPerson.Id, GetImageSliderCurrentImageId()).then((result) => {
         ReloadTree(_currentFamilyTree.MainPersonId);
-    }
+        GetPersonData(g_currentPerson.Id).then((result) => {
+            g_currentPerson = result;
+            UpdateSliderImageDetails(GetImageSliderCurrentImageId());
+        });
+    }, (r) => {
+        alert("Ошибка при задании изображения аватара персоны.");
+    });
 }
 
 function OnVideoModalVideoClick(event) {    
@@ -1721,6 +1721,17 @@ function UpdateSliderImageDetails(imageId) {
     sliderModal
         .find(".pages__count")
         .text(g_currentDataBlockImages.length);
+
+    if (g_currentPerson.AvatarImageId == imageId) {
+        sliderModal.find("#set-image-as-avatar-button")
+            .prop("disabled", true)[0]
+            .innerHTML = "Уже является изображением персоны";
+    }
+    else {
+        sliderModal.find("#set-image-as-avatar-button")
+            .prop("disabled", false)[0]
+            .innerHTML = "Сделать изображением персоны";
+    }
 }
 
 function UpdateVideos() {
@@ -1804,7 +1815,7 @@ function RefreshDataCategory() {
 }
 
 function RefreshDataCategories() {
-    g_dataCategories = GetDataCategories(g_currentPersonId);
+    g_dataCategories = GetDataCategories(g_currentPerson.Id);
 }
 
 function RefreshDataBlocks() {
@@ -2103,8 +2114,8 @@ function AddItemToImages(image) {
     selectorElement.appendChild(checkboxElement);
 
     let imgElement = document.createElement("img");
-    imgElement.src = "data:image/" + image.ImageType + ";base64," + image.ImageData;
-    imageElement.decoding = "async";
+    imgElement.src = "/Media/Image/GetFile/" + image.Id;
+    imgElement.decoding = "async";
 
     imageElement.appendChild(selectorElement);
     imageElement.appendChild(imgElement);
@@ -2189,7 +2200,8 @@ function AddImageToSlider(image) {
         .find(".slider")[0];
 
     let imgElement = document.createElement("img");
-    imgElement.src = "data:image/" + image.ImageType + ";base64," + image.ImageData;
+    imgElement.src = "/Media/Image/GetFile/" + image.Id;
+    imgElement.decoding = "async";
     imgElement.setAttribute("data-id", image.Id);
 
     slider.appendChild(imgElement);
@@ -2673,7 +2685,7 @@ function PasteDataCategories() {
         return;
     }
 
-    if (!CopyDataCategories(g_copyObject.Ids, g_currentPersonId)) {
+    if (!CopyDataCategories(g_copyObject.Ids, g_currentPerson.Id)) {
         alert("Ошибка при вставке из буфера");
         return;
     }

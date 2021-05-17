@@ -3,7 +3,7 @@ using MediatR;
 
 namespace FamilyTree.Application.Media.Images.Queries
 {
-    public class GetImageQuery : IRequest<ImageDto>
+    public class GetImageQuery : IRequest<ImageVm>
     {
         public int Id { get; set; }
 

@@ -6,10 +6,6 @@ namespace FamilyTree.Application.Media.Images.ViewModels
     {
         public int Id { get; set; }
 
-        public string ImageData { get; set; }
-
-        public string ImageType { get; set; }
-
         public string Title { get; set; }
 
         public string Description { get; set; }

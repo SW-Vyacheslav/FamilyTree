@@ -5,13 +5,12 @@ using FamilyTree.Application.Media.Images.ViewModels;
 using FamilyTree.Domain.Entities.Media;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace FamilyTree.Application.Media.Images.Handlers
 {
-    public class GetImageQueryHandler : IRequestHandler<GetImageQuery, ImageDto>
+    public class GetImageQueryHandler : IRequestHandler<GetImageQuery, ImageVm>
     {
         private readonly IApplicationDbContext _context;
 
@@ -20,7 +19,7 @@ namespace FamilyTree.Application.Media.Images.Handlers
             _context = context;
         }
 
-        public async Task<ImageDto> Handle(GetImageQuery request, CancellationToken cancellationToken)
+        public async Task<ImageVm> Handle(GetImageQuery request, CancellationToken cancellationToken)
         {
             Image image = await _context.Images
                 .SingleOrDefaultAsync(i => i.CreatedBy.Equals(request.UserId) &&
@@ -30,12 +29,9 @@ namespace FamilyTree.Application.Media.Images.Handlers
             if (image == null)
                 throw new NotFoundException(nameof(Image), request.Id);
 
-            ImageDto result = new ImageDto()
+            ImageVm result = new ImageVm()
             {
-                Id = image.Id,
-                Title = image.Title,
-                Description = image.Description,
-                ImageData = Convert.ToBase64String(image.ImageData),
+                ImageData = image.ImageData,
                 ImageType = image.ImageType
             };
 

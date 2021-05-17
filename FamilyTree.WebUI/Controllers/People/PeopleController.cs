@@ -2,6 +2,7 @@
 using FamilyTree.Application.Common.Interfaces;
 using FamilyTree.Application.People.Commands;
 using FamilyTree.Application.People.Queries;
+using FamilyTree.Application.People.ViewModels;
 using FamilyTree.WebUI.Controllers.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,16 @@ namespace FamilyTree.WebUI.Controllers.People
         }
 
         [HttpGet]
+        public async Task<ActionResult<PersonDto>> Get(int id)
+        {
+            return await Mediator.Send(new GetPersonQuery()
+            {
+                Id = id,
+                UserId = _currentUserService.UserId
+            });
+        }
+
+        [HttpGet]
         public async Task<ActionResult<string>> GetRelationsByPeopleIds(int treeId, int targetPersonId, int personId)
         {
             return await Mediator.Send(new GetRelationsByPeopleIdsQuery()
@@ -39,7 +50,7 @@ namespace FamilyTree.WebUI.Controllers.People
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdatePersonAvatarImage(int id, UpdatePersonAvatarImageCommand command)
+        public async Task<ActionResult> UpdateAvatarImage(int id, UpdatePersonAvatarImageCommand command)
         {
             if (command.Id != id)
                 return BadRequest();

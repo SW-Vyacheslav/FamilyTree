@@ -223,10 +223,12 @@ function InitFamilyTreeEvents() {
 
     $("#editPersonModal").click((e) => {
         let personId = $(e.currentTarget).attr("data-id");
-        if (LoadPersonData(personId)) {
-            ShowMainTree(false);
-            ShowPersonData();
-        }
+        LoadPersonData(personId).then((result) => {
+            if (result) {
+                ShowMainTree(false);
+                ShowPersonData();
+            }
+        });        
     });
 
     $("#start-tree-block").click(() => {
@@ -1057,11 +1059,11 @@ function FillPerson(person, data) {
 
     // Текстовое представление изображения
     if (data.AvatarImageId != null) {
-        GetImage(data.AvatarImageId).then((image) => {
-            person.firstElementChild.firstElementChild.src = "data:image/" + image.ImageType + ";base64," + image.ImageData;
-        });        
+        person.firstElementChild.firstElementChild.src = "/Media/Image/GetFile/" + data.AvatarImageId;
+        person.firstElementChild.firstElementChild.decoding = "async";
     } else {
         person.firstElementChild.firstElementChild.src = "/images/person.png";
+        person.firstElementChild.firstElementChild.decoding = "async";
     }
 }
 
