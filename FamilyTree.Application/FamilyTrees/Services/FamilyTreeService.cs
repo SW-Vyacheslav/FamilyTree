@@ -14,7 +14,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FamilyTree.Application.FamilyTrees.Interfaces;
-using FamilyTree.Application.Media.Images.ViewModels;
 
 namespace FamilyTree.Application.FamilyTrees.Services
 {
@@ -339,6 +338,58 @@ namespace FamilyTree.Application.FamilyTrees.Services
             }
 
             return result;
+        }
+
+        public async Task<List<int>> GetPeopleDeleteList(int familyTreeId, string userId, int startId, int endId, CancellationToken cancellationToken)
+        {
+            await LoadPeople(familyTreeId, userId, cancellationToken);
+
+            List<int> deleteList = new List<int>();
+            PersonNode pn = People.First(p => p.Id_person == endId);
+            deleteList.Add(endId);
+            // Получение лини связи между корнем и удаляемым узлом
+            List<int> numberLine = FindRelationLine(startId, endId);
+
+            List<int> possibleWays = GetPossibleWays(pn, deleteList);
+            List<int> closedWays = new List<int>();
+
+            // Если удаляется не корень
+            if (startId != endId)
+            {
+                // Поиск путей, к которым доступ запрещен для поиска удаления вершин
+                for (int i = 0; i < possibleWays.Count; i++)
+                {
+                    List<int> possLine = FindRelationLine(startId, possibleWays[i]);
+                    if (!possLine.Contains(endId))
+                    {
+                        closedWays.Add(possibleWays[i]);
+                    }
+                }
+
+                for (int i = 0; i < closedWays.Count; i++)
+                {
+                    if (pn.WifeChildren.Where(p => p.Wife == closedWays[i]).ToList() != null)
+                    {
+                        pn.WifeChildren.RemoveAll(p => p.Wife == closedWays[i]);
+                    }
+                }
+
+                deleteList.AddRange(closedWays);
+            }
+
+            errorRecursive = 0;
+
+            FindPartTree(pn, deleteList);
+
+            deleteList = deleteList.Distinct().ToList();
+
+            // Удаление путей с запрещенным доступом
+            for (int i = 0; i < closedWays.Count; i++)
+            {
+                deleteList.Remove(closedWays[i]);
+            }
+
+            return deleteList;
         }
 
         private async Task<PersonDto[]> GetParent(int treeId, int personId, string userId, CancellationToken cancellationToken)
@@ -1381,6 +1432,24 @@ namespace FamilyTree.Application.FamilyTrees.Services
             }
 
             return res;
+        }
+
+        // Рекурсивный поиск людей в дереве
+        private void FindPartTree(PersonNode pn, List<int> list)
+        {
+            if (errorRecursive > 50000)
+            {
+                throw new Exception();
+            }
+
+            List<int> ways = GetPossibleWays(pn, list);
+            list.AddRange(ways);
+            int idWay = 0;
+            for (int i = 0; i < ways.Count; i++)
+            {
+                idWay = ways[i];
+                FindPartTree(People.First(p => p.Id_person == idWay), list);
+            }
         }
     }
 }

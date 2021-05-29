@@ -3,11 +3,11 @@ using FluentValidation;
 
 namespace FamilyTree.Application.PersonContent.DataHolders.Validators
 {
-    public class CreateDataHolderCommandValidator : AbstractValidator<CreateDataHolderCommand>
+    public class UpdateDataHolderTitleCommandValidator : AbstractValidator<UpdateDataHolderTitleCommand>
     {
-        public CreateDataHolderCommandValidator()
+        public UpdateDataHolderTitleCommandValidator()
         {
-            RuleFor(c => c.Title)
+            RuleFor(dh => dh.Title)
                 .NotEmpty();
         }
     }

@@ -10,13 +10,7 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Identity
         {
             builder.HasKey(p => p.Id);
 
-            builder.Property(p => p.UserId)
-                .HasColumnType("nvarchar(450)")
-                .IsRequired();
-
-            builder.HasOne(p => p.User)
-                .WithOne(u => u.Profile)
-                .HasForeignKey<Profile>(p => p.UserId);
+            builder.ToTable("Profile");
         }
     }
 }

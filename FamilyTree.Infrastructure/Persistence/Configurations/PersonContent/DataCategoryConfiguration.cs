@@ -11,12 +11,15 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.PersonContent
             builder.HasKey(c => c.Id);
 
             builder.Property(c => c.Name)
-                .HasColumnType("nvarchar(50)")
+                .HasColumnType("nvarchar(max)")
                 .IsRequired();
 
             builder.Property(c => c.IsDeletable)
                 .HasColumnType("bit")
-                .HasDefaultValueSql("1");
+                .HasDefaultValueSql("1")
+                .IsRequired();
+
+            builder.ToTable("DataCategory");
         }
     }
 }

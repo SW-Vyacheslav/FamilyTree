@@ -19,11 +19,11 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Media
                 .IsRequired();
 
             builder.Property(v => v.Title)
-                .HasColumnType("nvarchar(50)")
+                .HasColumnType("nvarchar(max)")
                 .IsRequired();
 
             builder.Property(v => v.Description)
-                .HasColumnType("nvarchar(1000)");
+                .HasColumnType("nvarchar(max)");
 
             builder.Property(v => v.PreviewImageData)
                 .HasColumnType("image")
@@ -32,6 +32,8 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Media
             builder.Property(v => v.PreviewImageType)
                 .HasColumnType("nvarchar(10)")
                 .IsRequired();
+
+            builder.ToTable("Video");
         }
     }
 }

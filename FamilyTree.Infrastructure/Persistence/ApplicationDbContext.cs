@@ -42,8 +42,6 @@ namespace FamilyTree.Infrastructure.Persistence
 
         public DbSet<DataHolder> DataHolders { get; set; }
 
-        public DbSet<CommonDataBlock> CommonDataBlocks { get; set; }
-
         public DbSet<PrivacyEntity> Privacies { get; set; }
 
         public DbSet<Image> Images { get; set; }

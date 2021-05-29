@@ -61,5 +61,17 @@ namespace FamilyTree.WebUI.Controllers.People
 
             return NoContent();
         }
+
+        [HttpDelete]
+        public async Task<ActionResult> Delete(int id)
+        {
+            await Mediator.Send(new DeletePersonCommand() 
+            {
+                Id = id,
+                UserId = _currentUserService.UserId
+            });
+
+            return NoContent();
+        }
     }
 }

@@ -486,20 +486,42 @@
     padding: 10px;
     text-align: center;
     cursor: pointer;
-    border-radius: 0 0 8px 8px;
+    border-radius: 0 0 8px 0;
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     color: #007fd8;
+    width: 50%;
 }
 
-    #editPersonModal:hover {
-        background-color: #0096FF;
-        color: #FFF;
-        transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-    }
+#editPersonModal:hover {
+    background-color: #0096FF;
+    color: #FFF;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+#delete-person-button {
+    background-color: #ff0000;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 0 0 0 8px;
+    transition: color ease 0.3s, background-color ease 0.3s;
+    color: #FFF;
+    width: 50%;
+}
+
+#delete-person-button:hover {
+    color: #FFF;
+    background-color: #c20000;
+    transition: color ease 0.3s, background-color ease 0.3s;
+}
+
+.footerModal {
+    display: flex;
+}
 
 #unvisibleZone {
     height: 25px;
-    background-color: inherit;    
+    background-color: inherit;
 }
 
 #visibleZone {

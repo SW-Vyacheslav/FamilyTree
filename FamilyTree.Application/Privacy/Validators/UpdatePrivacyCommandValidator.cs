@@ -12,7 +12,7 @@ namespace FamilyTree.Application.Privacy.Validators
 
             RuleFor(c => c.BeginDate)
                 .NotEmpty()
-                .Must((a, b) => a.EndDate > b);
+                .Must((a, b) => a.EndDate >= b);
 
             RuleFor(c => c.EndDate)
                 .NotEmpty();

@@ -45,8 +45,8 @@ namespace FamilyTree.WebUI.Controllers.Media
         }
 
         [HttpPost]
-        [RequestFormLimits(MultipartBodyLengthLimit = 524288000)]
-        [RequestSizeLimit(524288000)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 1099511627776L)]
+        [RequestSizeLimit(1099511627776L)]
         public async Task<ActionResult<int>> Create(CreateVideoCommand command)
         {
             command.UserId = _currentUserService.UserId;

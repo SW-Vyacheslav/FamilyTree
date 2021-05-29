@@ -3,11 +3,11 @@ using FluentValidation;
 
 namespace FamilyTree.Application.PersonContent.DataBlocks.Validators
 {
-    public class CreateDataBlockCommandValidator : AbstractValidator<CreateDataBlockCommand>
+    public class UpdateDataBlockTitleCommandValidator : AbstractValidator<UpdateDataBlockTitleCommand>
     {
-        public CreateDataBlockCommandValidator()
+        public UpdateDataBlockTitleCommandValidator()
         {
-            RuleFor(c => c.Title)
+            RuleFor(db => db.Title)
                 .NotEmpty();
         }
     }

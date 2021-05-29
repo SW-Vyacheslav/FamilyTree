@@ -4,6 +4,7 @@
 });
 
 let g_privacyNotificationsConnection = null;
+let g_editPrivacyId = null;
 
 //Notifications
 function InitPrivacyNotifications() {
@@ -24,6 +25,21 @@ function InitPrivacyNotifications() {
                     UpdateDataHolders();
                 }, (r) => console.error(r));
             }
+        }
+        else if ($("#image-carousel-modal").hasClass("in")) {
+            RefreshImages().then((result) => {
+                UpdateImageSliderImagePrivacy();
+            });
+        }
+        else if ($("#video-modal").hasClass("in")) {
+            RefreshVideos().then((result) => {
+                UpdateVideoModalVideoPrivacy();
+            });
+        }
+        else if ($("#audio-modal").hasClass("in")) {
+            RefreshAudios().then((result) => {
+                UpdateAudioModalAudioPrivacy();
+            });
         }
     });
 
@@ -53,6 +69,7 @@ function InitPrivacyModalButonEvents() {
         .find("input[name=\"limit-type\"]")
         .parent()
         .click(OnLimitTypeButtonClick);
+
     $("#privacy-level-modal")
         .find("#edit-privacy-level-submit-button")
         .click(OnEditPrivacyLevelSubmitButtonClick);
@@ -94,26 +111,10 @@ function OnLimitTypeButtonClick(event) {
 
 function OnEditPrivacyLevelSubmitButtonClick(event) {
     let editPrivacyModal = $("#privacy-level-modal");
-    let beginDate = editPrivacyModal.find("#privacy-level-begin-date").val();
-    let endDate = editPrivacyModal.find("#privacy-level-end-date").val();
-    let isAlways = editPrivacyModal.find("input[name=\"limit-type\"]:checked").val() == "0";
-    let privacyLevel = editPrivacyModal.find("input[name=\"privacy-level\"]:checked").val();
-
-    let privacy = {
-        Id: 0,
-        PrivacyLevel: privacyLevel,
-        BeginDate: beginDate,
-        EndDate: endDate,
-        IsAlways: isAlways
-    };
+    let privacy = GetPrivacyData();
 
     switch (g_currentAddButtonActionType) {
         case AddButtonActionTypes.AddDataHolder: {
-            let dataHolder = g_currentDataBlock.DataHolders
-                .find((item) => item.Id == g_editPrivacyElementId);
-
-            privacy.Id = dataHolder.Privacy.Id;
-
             UpdatePrivacy(privacy).then((result) => {
                 RefreshDataHolders();
                 UpdateDataHolders();
@@ -126,14 +127,11 @@ function OnEditPrivacyLevelSubmitButtonClick(event) {
         }
 
         case AddButtonActionTypes.AddImage: {
-            let image = g_currentDataBlockImages
-                .find((item) => item.Id == g_editPrivacyElementId);
-
-            privacy.Id = image.Privacy.Id;
-
             UpdatePrivacy(privacy).then((result) => {
-                RefreshImages();
-                editPrivacyModal.modal("hide");
+                RefreshImages().then((result) => {
+                    UpdateImageSliderImagePrivacy();
+                    editPrivacyModal.modal("hide");
+                });
             }, (r) => {
                 alert("Ошибка при изменении приватности изображения.");
             });
@@ -142,18 +140,28 @@ function OnEditPrivacyLevelSubmitButtonClick(event) {
         }
 
         case AddButtonActionTypes.AddVideo: {
-            let video = g_currentDataBlockVideos
-                .find((item) => item.Id == g_editPrivacyElementId);
-
-            privacy.Id = video.Privacy.Id;
-
             UpdatePrivacy(privacy).then((result) => {
-                RefreshVideos();
-                editPrivacyModal.modal("hide");
+                RefreshVideos().then((result) => {
+                    UpdateVideoModalVideoPrivacy();
+                    editPrivacyModal.modal("hide");
+                });
             }, (r) => {
                 alert("Ошибка при изменении приватности видео.");
             });
             
+            break;
+        }
+
+        case AddButtonActionTypes.AddAudio: {
+            UpdatePrivacy(privacy).then((result) => {
+                RefreshAudios().then((result) => {
+                    UpdateAudioModalAudioPrivacy();
+                    editPrivacyModal.modal("hide");
+                });                
+            }, (r) => {
+                alert("Ошибка при изменении приватности аудио.");
+            });
+
             break;
         }
 
@@ -163,15 +171,10 @@ function OnEditPrivacyLevelSubmitButtonClick(event) {
 }
 
 //UI
-function LoadDataHolderPrivacyData(dataHolderId) {
-    let dataHolderPrivacy = g_currentDataBlock
-        .DataHolders
-        .find(dh => dh.Id == dataHolderId)
-        .Privacy;
-
+function LoadPrivacyData(privacy) {
     let privacyModal = $("#privacy-level-modal");
 
-    if (dataHolderPrivacy == null) {
+    if (privacy == null) {
         privacyModal
             .find(".privacy-confidential")
             .click();
@@ -183,15 +186,15 @@ function LoadDataHolderPrivacyData(dataHolderId) {
     }
     else {
         privacyModal
-            .find("input[name=\"privacy-level\"][value=\"" + dataHolderPrivacy.PrivacyLevel + "\"]")
+            .find("input[name=\"privacy-level\"][value=\"" + privacy.PrivacyLevel + "\"]")
             .parent()
             .click();
 
         privacyModal
-            .find("input[name=\"privacy-level\"][value=\"" + dataHolderPrivacy.PrivacyLevel + "\"]")
+            .find("input[name=\"privacy-level\"][value=\"" + privacy.PrivacyLevel + "\"]")
             .prop("checked", true);
 
-        if (dataHolderPrivacy.IsAlways) {
+        if (privacy.IsAlways) {
             privacyModal
                 .find("input[name=\"limit-type\"][value=\"0\"]")
                 .parent()
@@ -212,8 +215,8 @@ function LoadDataHolderPrivacyData(dataHolderId) {
                 .prop("checked", true);
         }
 
-        let beginDate = UTCDateToLocaleString(new Date(dataHolderPrivacy.BeginDate.replace("T", " ") + " UTC"));               
-        let endDate = UTCDateToLocaleString(new Date(dataHolderPrivacy.EndDate.replace("T", " ") + " UTC"));
+        let beginDate = UTCDateToLocaleString(new Date(privacy.BeginDate.replace("T", " ") + " UTC"));               
+        let endDate = UTCDateToLocaleString(new Date(privacy.EndDate.replace("T", " ") + " UTC"));
 
         privacyModal
             .find("#privacy-level-begin-date")
@@ -225,14 +228,22 @@ function LoadDataHolderPrivacyData(dataHolderId) {
     }
 }
 
-//TODO:
-function LoadImagePrivacyData(imageId) {
+function GetPrivacyData() {
+    let editPrivacyModal = $("#privacy-level-modal");
+    let beginDate = editPrivacyModal.find("#privacy-level-begin-date").val();
+    let endDate = editPrivacyModal.find("#privacy-level-end-date").val();
+    let isAlways = editPrivacyModal.find("input[name=\"limit-type\"]:checked").val() == "0";
+    let privacyLevel = editPrivacyModal.find("input[name=\"privacy-level\"]:checked").val();
 
-}
+    let privacy = {
+        Id: g_editPrivacyId,
+        PrivacyLevel: privacyLevel,
+        BeginDate: beginDate,
+        EndDate: endDate,
+        IsAlways: isAlways
+    };
 
-//TODO:
-function LoadVideoPrivacyData(videoId) {
-
+    return privacy;
 }
 
 function UTCDateToLocaleString(date) {

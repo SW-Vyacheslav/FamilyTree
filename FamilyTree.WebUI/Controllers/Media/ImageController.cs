@@ -45,8 +45,8 @@ namespace FamilyTree.WebUI.Controllers.Media
         }
 
         [HttpPost]
-        [RequestFormLimits(MultipartBodyLengthLimit = 20971520)]
-        [RequestSizeLimit(20971520)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 2147483647L)]
+        [RequestSizeLimit(2147483647L)]
         public async Task<ActionResult<int>> Create(CreateImageCommand command)
         {
             command.UserId = _currentUserService.UserId;

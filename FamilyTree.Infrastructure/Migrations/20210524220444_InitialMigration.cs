@@ -22,32 +22,7 @@ namespace FamilyTree.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    UserName = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
-                    Email = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(nullable: false),
-                    PasswordHash = table.Column<string>(nullable: true),
-                    SecurityStamp = table.Column<string>(nullable: true),
-                    ConcurrencyStamp = table.Column<string>(nullable: true),
-                    PhoneNumber = table.Column<string>(nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
-                    LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Privacies",
+                name: "Privacy",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -63,7 +38,19 @@ namespace FamilyTree.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Privacies", x => x.Id);
+                    table.PrimaryKey("PK_Privacy", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Profile",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Profile", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -83,6 +70,121 @@ namespace FamilyTree.Infrastructure.Migrations
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Audio",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Created = table.Column<DateTime>(nullable: false),
+                    CreatedBy = table.Column<string>(nullable: true),
+                    LastModified = table.Column<DateTime>(nullable: true),
+                    LastModifiedBy = table.Column<string>(nullable: true),
+                    FilePath = table.Column<string>(type: "nvarchar(260)", nullable: false),
+                    FileType = table.Column<string>(type: "nvarchar(10)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", nullable: true),
+                    PrivacyId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Audio", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Audio_Privacy_PrivacyId",
+                        column: x => x.PrivacyId,
+                        principalTable: "Privacy",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Image",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Created = table.Column<DateTime>(nullable: false),
+                    CreatedBy = table.Column<string>(nullable: true),
+                    LastModified = table.Column<DateTime>(nullable: true),
+                    LastModifiedBy = table.Column<string>(nullable: true),
+                    ImageData = table.Column<byte[]>(type: "image", nullable: false),
+                    ImageType = table.Column<string>(type: "nvarchar(10)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", nullable: true),
+                    PrivacyId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Image", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Image_Privacy_PrivacyId",
+                        column: x => x.PrivacyId,
+                        principalTable: "Privacy",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Video",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Created = table.Column<DateTime>(nullable: false),
+                    CreatedBy = table.Column<string>(nullable: true),
+                    LastModified = table.Column<DateTime>(nullable: true),
+                    LastModifiedBy = table.Column<string>(nullable: true),
+                    FilePath = table.Column<string>(type: "nvarchar(260)", nullable: false),
+                    FileType = table.Column<string>(type: "nvarchar(10)", nullable: false),
+                    PreviewImageData = table.Column<byte[]>(type: "image", nullable: false),
+                    PreviewImageType = table.Column<string>(type: "nvarchar(10)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", nullable: true),
+                    PrivacyId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Video", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Video_Privacy_PrivacyId",
+                        column: x => x.PrivacyId,
+                        principalTable: "Privacy",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    UserName = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
+                    Email = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(nullable: false),
+                    PasswordHash = table.Column<string>(nullable: true),
+                    SecurityStamp = table.Column<string>(nullable: true),
+                    ConcurrencyStamp = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
+                    LockoutEnabled = table.Column<bool>(nullable: false),
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    ProfileId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Profile_ProfileId",
+                        column: x => x.ProfileId,
+                        principalTable: "Profile",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -173,109 +275,7 @@ namespace FamilyTree.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Profiles",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Profiles", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Profiles_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Audios",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Created = table.Column<DateTime>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: true),
-                    LastModified = table.Column<DateTime>(nullable: true),
-                    LastModifiedBy = table.Column<string>(nullable: true),
-                    FilePath = table.Column<string>(type: "nvarchar(260)", nullable: false),
-                    FileType = table.Column<string>(type: "nvarchar(10)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(1000)", nullable: true),
-                    PrivacyId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Audios", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Audios_Privacies_PrivacyId",
-                        column: x => x.PrivacyId,
-                        principalTable: "Privacies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Images",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Created = table.Column<DateTime>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: true),
-                    LastModified = table.Column<DateTime>(nullable: true),
-                    LastModifiedBy = table.Column<string>(nullable: true),
-                    ImageData = table.Column<byte[]>(type: "image", nullable: false),
-                    ImageType = table.Column<string>(type: "nvarchar(10)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(1000)", nullable: true),
-                    PrivacyId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Images", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Images_Privacies_PrivacyId",
-                        column: x => x.PrivacyId,
-                        principalTable: "Privacies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Videos",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Created = table.Column<DateTime>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: true),
-                    LastModified = table.Column<DateTime>(nullable: true),
-                    LastModifiedBy = table.Column<string>(nullable: true),
-                    FilePath = table.Column<string>(type: "nvarchar(260)", nullable: false),
-                    FileType = table.Column<string>(type: "nvarchar(10)", nullable: false),
-                    PreviewImageData = table.Column<byte[]>(type: "image", nullable: false),
-                    PreviewImageType = table.Column<string>(type: "nvarchar(10)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(1000)", nullable: true),
-                    PrivacyId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Videos", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Videos_Privacies_PrivacyId",
-                        column: x => x.PrivacyId,
-                        principalTable: "Privacies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "FamilyTrees",
+                name: "FamilyTree",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -290,9 +290,9 @@ namespace FamilyTree.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FamilyTrees", x => x.Id);
+                    table.PrimaryKey("PK_FamilyTree", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FamilyTrees_AspNetUsers_UserId",
+                        name: "FK_FamilyTree_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -300,7 +300,7 @@ namespace FamilyTree.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "People",
+                name: "Person",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -314,23 +314,23 @@ namespace FamilyTree.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_People", x => x.Id);
+                    table.PrimaryKey("PK_Person", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_People_Images_AvatarImageId",
+                        name: "FK_Person_Image_AvatarImageId",
                         column: x => x.AvatarImageId,
-                        principalTable: "Images",
+                        principalTable: "Image",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_People_FamilyTrees_FamilyTreeId",
+                        name: "FK_Person_FamilyTree_FamilyTreeId",
                         column: x => x.FamilyTreeId,
-                        principalTable: "FamilyTrees",
+                        principalTable: "FamilyTree",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DataCategories",
+                name: "DataCategory",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -347,17 +347,17 @@ namespace FamilyTree.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DataCategories", x => x.Id);
+                    table.PrimaryKey("PK_DataCategory", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DataCategories_People_PersonId",
+                        name: "FK_DataCategory_Person_PersonId",
                         column: x => x.PersonId,
-                        principalTable: "People",
+                        principalTable: "Person",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "FamilyTies",
+                name: "FamilyTie",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -374,41 +374,41 @@ namespace FamilyTree.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FamilyTies", x => x.Id);
+                    table.PrimaryKey("PK_FamilyTie", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FamilyTies_People_ChildId",
+                        name: "FK_FamilyTie_Person_ChildId",
                         column: x => x.ChildId,
-                        principalTable: "People",
+                        principalTable: "Person",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_FamilyTies_People_MarriagePersonId",
+                        name: "FK_FamilyTie_Person_MarriagePersonId",
                         column: x => x.MarriagePersonId,
-                        principalTable: "People",
+                        principalTable: "Person",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_FamilyTies_People_Parent1Id",
+                        name: "FK_FamilyTie_Person_Parent1Id",
                         column: x => x.Parent1Id,
-                        principalTable: "People",
+                        principalTable: "Person",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_FamilyTies_People_Parent2Id",
+                        name: "FK_FamilyTie_Person_Parent2Id",
                         column: x => x.Parent2Id,
-                        principalTable: "People",
+                        principalTable: "Person",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_FamilyTies_People_PersonId",
+                        name: "FK_FamilyTie_Person_PersonId",
                         column: x => x.PersonId,
-                        principalTable: "People",
+                        principalTable: "Person",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DataBlocks",
+                name: "DataBlock",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -423,47 +423,17 @@ namespace FamilyTree.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DataBlocks", x => x.Id);
+                    table.PrimaryKey("PK_DataBlock", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DataBlocks_DataCategories_DataCategoryId",
+                        name: "FK_DataBlock_DataCategory_DataCategoryId",
                         column: x => x.DataCategoryId,
-                        principalTable: "DataCategories",
+                        principalTable: "DataCategory",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "CommonDataBlocks",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Created = table.Column<DateTime>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: true),
-                    LastModified = table.Column<DateTime>(nullable: true),
-                    LastModifiedBy = table.Column<string>(nullable: true),
-                    DataBlockId = table.Column<int>(nullable: false),
-                    DataCategoryId = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CommonDataBlocks", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CommonDataBlocks_DataBlocks_DataBlockId",
-                        column: x => x.DataBlockId,
-                        principalTable: "DataBlocks",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CommonDataBlocks_DataCategories_DataCategoryId",
-                        column: x => x.DataCategoryId,
-                        principalTable: "DataCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DataBlockAudios",
+                name: "DataBlockAudio",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -473,23 +443,23 @@ namespace FamilyTree.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DataBlockAudios", x => x.Id);
+                    table.PrimaryKey("PK_DataBlockAudio", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DataBlockAudios_Audios_AudioId",
+                        name: "FK_DataBlockAudio_Audio_AudioId",
                         column: x => x.AudioId,
-                        principalTable: "Audios",
+                        principalTable: "Audio",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DataBlockAudios_DataBlocks_DataBlockId",
+                        name: "FK_DataBlockAudio_DataBlock_DataBlockId",
                         column: x => x.DataBlockId,
-                        principalTable: "DataBlocks",
+                        principalTable: "DataBlock",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DataBlockImages",
+                name: "DataBlockImage",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -499,23 +469,23 @@ namespace FamilyTree.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DataBlockImages", x => x.Id);
+                    table.PrimaryKey("PK_DataBlockImage", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DataBlockImages_DataBlocks_DataBlockId",
+                        name: "FK_DataBlockImage_DataBlock_DataBlockId",
                         column: x => x.DataBlockId,
-                        principalTable: "DataBlocks",
+                        principalTable: "DataBlock",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DataBlockImages_Images_ImageId",
+                        name: "FK_DataBlockImage_Image_ImageId",
                         column: x => x.ImageId,
-                        principalTable: "Images",
+                        principalTable: "Image",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DataBlockVideos",
+                name: "DataBlockVideo",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -525,23 +495,23 @@ namespace FamilyTree.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DataBlockVideos", x => x.Id);
+                    table.PrimaryKey("PK_DataBlockVideo", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DataBlockVideos_DataBlocks_DataBlockId",
+                        name: "FK_DataBlockVideo_DataBlock_DataBlockId",
                         column: x => x.DataBlockId,
-                        principalTable: "DataBlocks",
+                        principalTable: "DataBlock",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DataBlockVideos_Videos_VideoId",
+                        name: "FK_DataBlockVideo_Video_VideoId",
                         column: x => x.VideoId,
-                        principalTable: "Videos",
+                        principalTable: "Video",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DataHolders",
+                name: "DataHolder",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -560,17 +530,17 @@ namespace FamilyTree.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DataHolders", x => x.Id);
+                    table.PrimaryKey("PK_DataHolder", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DataHolders_DataBlocks_DataBlockId",
+                        name: "FK_DataHolder_DataBlock_DataBlockId",
                         column: x => x.DataBlockId,
-                        principalTable: "DataBlocks",
+                        principalTable: "DataBlock",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DataHolders_Privacies_PrivacyId",
+                        name: "FK_DataHolder_Privacy_PrivacyId",
                         column: x => x.PrivacyId,
-                        principalTable: "Privacies",
+                        principalTable: "Privacy",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -615,136 +585,126 @@ namespace FamilyTree.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Audios_PrivacyId",
-                table: "Audios",
-                column: "PrivacyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CommonDataBlocks_DataBlockId",
-                table: "CommonDataBlocks",
-                column: "DataBlockId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CommonDataBlocks_DataCategoryId",
-                table: "CommonDataBlocks",
-                column: "DataCategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DataBlockAudios_AudioId",
-                table: "DataBlockAudios",
-                column: "AudioId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DataBlockAudios_DataBlockId",
-                table: "DataBlockAudios",
-                column: "DataBlockId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DataBlockImages_DataBlockId",
-                table: "DataBlockImages",
-                column: "DataBlockId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DataBlockImages_ImageId",
-                table: "DataBlockImages",
-                column: "ImageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DataBlocks_DataCategoryId",
-                table: "DataBlocks",
-                column: "DataCategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DataBlockVideos_DataBlockId",
-                table: "DataBlockVideos",
-                column: "DataBlockId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DataBlockVideos_VideoId",
-                table: "DataBlockVideos",
-                column: "VideoId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DataCategories_PersonId",
-                table: "DataCategories",
-                column: "PersonId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DataHolders_DataBlockId",
-                table: "DataHolders",
-                column: "DataBlockId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DataHolders_PrivacyId",
-                table: "DataHolders",
-                column: "PrivacyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FamilyTies_ChildId",
-                table: "FamilyTies",
-                column: "ChildId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FamilyTies_MarriagePersonId",
-                table: "FamilyTies",
-                column: "MarriagePersonId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FamilyTies_Parent1Id",
-                table: "FamilyTies",
-                column: "Parent1Id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FamilyTies_Parent2Id",
-                table: "FamilyTies",
-                column: "Parent2Id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FamilyTies_PersonId",
-                table: "FamilyTies",
-                column: "PersonId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FamilyTrees_MainPersonId",
-                table: "FamilyTrees",
-                column: "MainPersonId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FamilyTrees_UserId",
-                table: "FamilyTrees",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Images_PrivacyId",
-                table: "Images",
-                column: "PrivacyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_People_AvatarImageId",
-                table: "People",
-                column: "AvatarImageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_People_FamilyTreeId",
-                table: "People",
-                column: "FamilyTreeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Profiles_UserId",
-                table: "Profiles",
-                column: "UserId",
+                name: "IX_AspNetUsers_ProfileId",
+                table: "AspNetUsers",
+                column: "ProfileId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Videos_PrivacyId",
-                table: "Videos",
+                name: "IX_Audio_PrivacyId",
+                table: "Audio",
+                column: "PrivacyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DataBlock_DataCategoryId",
+                table: "DataBlock",
+                column: "DataCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DataBlockAudio_AudioId",
+                table: "DataBlockAudio",
+                column: "AudioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DataBlockAudio_DataBlockId",
+                table: "DataBlockAudio",
+                column: "DataBlockId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DataBlockImage_DataBlockId",
+                table: "DataBlockImage",
+                column: "DataBlockId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DataBlockImage_ImageId",
+                table: "DataBlockImage",
+                column: "ImageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DataBlockVideo_DataBlockId",
+                table: "DataBlockVideo",
+                column: "DataBlockId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DataBlockVideo_VideoId",
+                table: "DataBlockVideo",
+                column: "VideoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DataCategory_PersonId",
+                table: "DataCategory",
+                column: "PersonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DataHolder_DataBlockId",
+                table: "DataHolder",
+                column: "DataBlockId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DataHolder_PrivacyId",
+                table: "DataHolder",
+                column: "PrivacyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FamilyTie_ChildId",
+                table: "FamilyTie",
+                column: "ChildId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FamilyTie_MarriagePersonId",
+                table: "FamilyTie",
+                column: "MarriagePersonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FamilyTie_Parent1Id",
+                table: "FamilyTie",
+                column: "Parent1Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FamilyTie_Parent2Id",
+                table: "FamilyTie",
+                column: "Parent2Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FamilyTie_PersonId",
+                table: "FamilyTie",
+                column: "PersonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FamilyTree_MainPersonId",
+                table: "FamilyTree",
+                column: "MainPersonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FamilyTree_UserId",
+                table: "FamilyTree",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Image_PrivacyId",
+                table: "Image",
+                column: "PrivacyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Person_AvatarImageId",
+                table: "Person",
+                column: "AvatarImageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Person_FamilyTreeId",
+                table: "Person",
+                column: "FamilyTreeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Video_PrivacyId",
+                table: "Video",
                 column: "PrivacyId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_FamilyTrees_People_MainPersonId",
-                table: "FamilyTrees",
+                name: "FK_FamilyTree_Person_MainPersonId",
+                table: "FamilyTree",
                 column: "MainPersonId",
-                principalTable: "People",
+                principalTable: "Person",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }
@@ -752,20 +712,20 @@ namespace FamilyTree.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_FamilyTrees_AspNetUsers_UserId",
-                table: "FamilyTrees");
+                name: "FK_FamilyTree_AspNetUsers_UserId",
+                table: "FamilyTree");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Images_Privacies_PrivacyId",
-                table: "Images");
+                name: "FK_Image_Privacy_PrivacyId",
+                table: "Image");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_People_Images_AvatarImageId",
-                table: "People");
+                name: "FK_Person_Image_AvatarImageId",
+                table: "Person");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_FamilyTrees_People_MainPersonId",
-                table: "FamilyTrees");
+                name: "FK_FamilyTree_Person_MainPersonId",
+                table: "FamilyTree");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
@@ -783,55 +743,52 @@ namespace FamilyTree.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "CommonDataBlocks");
+                name: "DataBlockAudio");
 
             migrationBuilder.DropTable(
-                name: "DataBlockAudios");
+                name: "DataBlockImage");
 
             migrationBuilder.DropTable(
-                name: "DataBlockImages");
+                name: "DataBlockVideo");
 
             migrationBuilder.DropTable(
-                name: "DataBlockVideos");
+                name: "DataHolder");
 
             migrationBuilder.DropTable(
-                name: "DataHolders");
-
-            migrationBuilder.DropTable(
-                name: "FamilyTies");
-
-            migrationBuilder.DropTable(
-                name: "Profiles");
+                name: "FamilyTie");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Audios");
+                name: "Audio");
 
             migrationBuilder.DropTable(
-                name: "Videos");
+                name: "Video");
 
             migrationBuilder.DropTable(
-                name: "DataBlocks");
+                name: "DataBlock");
 
             migrationBuilder.DropTable(
-                name: "DataCategories");
+                name: "DataCategory");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Privacies");
+                name: "Profile");
 
             migrationBuilder.DropTable(
-                name: "Images");
+                name: "Privacy");
 
             migrationBuilder.DropTable(
-                name: "People");
+                name: "Image");
 
             migrationBuilder.DropTable(
-                name: "FamilyTrees");
+                name: "Person");
+
+            migrationBuilder.DropTable(
+                name: "FamilyTree");
         }
     }
 }

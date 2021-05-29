@@ -19,11 +19,13 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Media
                 .IsRequired();
 
             builder.Property(a => a.Title)
-                .HasColumnType("nvarchar(50)")
+                .HasColumnType("nvarchar(max)")
                 .IsRequired();
 
             builder.Property(a => a.Description)
-                .HasColumnType("nvarchar(1000)");
+                .HasColumnType("nvarchar(max)");
+
+            builder.ToTable("Audio");
         }
     }
 }

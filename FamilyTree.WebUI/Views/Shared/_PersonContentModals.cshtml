@@ -217,13 +217,13 @@
                         <div class="image-details__title image-title">
                             <div class="image-title__text">Заголовок</div>
                             <div class="image-title__value">
-                                <textarea id="slider-image-title" rows="3" maxlength="50"></textarea>
+                                <textarea id="slider-image-title" rows="3"></textarea>
                             </div>
                         </div>
                         <div class="image-details__desc image-desc">
                             <div class="image-desc__text">Описание</div>
                             <div class="image-desc__value">
-                                <textarea id="slider-image-desc" rows="10" maxlength="1000"></textarea>
+                                <textarea id="slider-image-desc" rows="10"></textarea>
                             </div>
                         </div>
                     </div>
@@ -234,8 +234,12 @@
                     <div class="pages__current-page"></div>
                     <div class="pages__separator">/</div>
                     <div class="pages__count"></div>
-                </div>
+                </div>                
                 <div class="buttons modal-footer__buttons">
+                    <div class="privacy">
+                        <div class="privacy__privacy-level"></div>
+                        <div id="edit-image-privacy-button" class="btn privacy__privacy-button"></div>
+                    </div>
                     <button id="set-image-as-avatar-button" type="button" class="btn modal-primary-button">Сделать изображением персоны</button>
                     <button id="save-image-submit-button" type="button" class="btn modal-primary-button">Сохранить</button>
                 </div>
@@ -299,18 +303,22 @@
                             <div class="video-details__title video-title">
                                 <div class="video-title__text">Заголовок</div>
                                 <div class="video-title__value">
-                                    <input id="current-video-title" type="text" maxlength="50"/>
+                                    <input id="current-video-title" type="text"/>
                                 </div>
                             </div>
                             <div class="video-details__desc video-desc">
                                 <div class="video-desc__text">Описание</div>
                                 <div class="video-desc__value">
-                                    <textarea id="current-video-desc" rows="6" maxlength="1000"></textarea>
+                                    <textarea id="current-video-desc" rows="6"></textarea>
                                 </div>
                             </div>
                         </div>
                         <div class="video-modal-buttons">
                             <button id="save-video-submit-button" type="button" class="btn modal-primary-button">Сохранить</button>
+                            <div class="privacy">
+                                <div class="privacy__privacy-level"></div>
+                                <div id="edit-video-privacy-button" class="btn privacy__privacy-button"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -411,18 +419,22 @@
                             <div class="video-details__title video-title">
                                 <div class="video-title__text">Заголовок</div>
                                 <div class="video-title__value">
-                                    <input id="current-audio-title" type="text" maxlength="50" />
+                                    <input id="current-audio-title" type="text"/>
                                 </div>
                             </div>
                             <div class="video-details__desc video-desc">
                                 <div class="video-desc__text">Описание</div>
                                 <div class="video-desc__value">
-                                    <textarea id="current-audio-desc" rows="6" maxlength="1000"></textarea>
+                                    <textarea id="current-audio-desc" rows="6"></textarea>
                                 </div>
                             </div>
                         </div>
                         <div class="video-modal-buttons">
                             <button id="save-audio-submit-button" type="button" class="btn modal-primary-button">Сохранить</button>
+                            <div class="privacy">
+                                <div class="privacy__privacy-level"></div>
+                                <div id="edit-audio-privacy-button" class="btn privacy__privacy-button"></div>
+                            </div>
                         </div>
                     </div>
                 </div>

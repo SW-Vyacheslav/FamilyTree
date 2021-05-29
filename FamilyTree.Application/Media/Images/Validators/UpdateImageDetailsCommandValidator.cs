@@ -3,14 +3,11 @@ using FluentValidation;
 
 namespace FamilyTree.Application.Media.Images.Validators
 {
-    public class CreateImageCommandValidator : AbstractValidator<CreateImageCommand>
+    public class UpdateImageDetailsCommandValidator : AbstractValidator<UpdateImageDetailsCommand>
     {
-        public CreateImageCommandValidator()
+        public UpdateImageDetailsCommandValidator()
         {
             RuleFor(i => i.Title)
-                .NotEmpty();
-
-            RuleFor(i => i.ImageFile)
                 .NotEmpty();
         }
     }

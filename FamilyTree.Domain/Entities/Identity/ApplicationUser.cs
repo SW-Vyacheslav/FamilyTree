@@ -6,6 +6,8 @@ namespace FamilyTree.Domain.Entities.Identity
 {
     public class ApplicationUser : IdentityUser
     {
+        public int ProfileId { get; set; }
+
         public Profile Profile { get; set; }
 
         public ICollection<FamilyTreeEntity> FamilyTrees { get; set; }

@@ -9,6 +9,8 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Tree
         public void Configure(EntityTypeBuilder<FamilyTie> builder)
         {
             builder.HasKey(ft => ft.Id);
+
+            builder.ToTable("FamilyTie");
         }
     }
 }

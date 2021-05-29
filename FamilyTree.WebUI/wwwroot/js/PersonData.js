@@ -69,7 +69,6 @@ let g_currentDataBlockAudios = null;
 let g_openedAudioId = null;
 let g_currentAddButtonActionType = null;
 let g_editElementId = null;
-let g_editPrivacyElementId = null;
 let g_isSaving = false;
 let g_copyObject = {
     Ids: [0],
@@ -760,6 +759,15 @@ function InitPersonDataBlockButtonEvents() {
     $("#audio-modal").on("hidden.bs.modal", (e) => {
         $("#audio-modal #current-audio")[0].pause();
     });
+
+    $("#edit-video-privacy-button")
+        .click(OnEditVideoPrivacyButtonClick);
+
+    $("#edit-image-privacy-button")
+        .click(OnEditImagePrivacyButtonClick);
+
+    $("#edit-audio-privacy-button")
+        .click(OnEditAudioPrivacyButtonClick);
 }
 
 function OnBackToDataBlocksButtonClick() {
@@ -1051,9 +1059,9 @@ function OnAddImageSubmitButtonClick() {
         return;
     }
 
-    //File must be smaller than 20MB
-    if (files[0].size > 20971520) {
-        alert("Размер файла превышает лимит в 20МБ");
+    //File must be smaller than 2 GB
+    if (files[0].size > 2147483647) {
+        alert("Размер файла превышает лимит в 2 ГБ");
         return;
     }
 
@@ -1064,17 +1072,17 @@ function OnAddImageSubmitButtonClick() {
     formData.append("ImageFile", files[0]);
 
     g_isUploadingImage = true;
-    imageModal.find("#image-file").attr("disabled", "");
+    imageModal.find("#image-file").prop("disabled", true);
 
     CreateImage(formData).then((result) => {
         imageModal.modal("hide");
         RefreshImages().then((val) => UpdateImages());
         g_isUploadingImage = false;
-        imageModal.find("#image-file").removeAttr("disabled");
+        imageModal.find("#image-file").prop("disabled", false);
     }, (r) => {
         alert("Ошибка при создании изображения.");
         g_isUploadingImage = false;
-        imageModal.find("#image-file").removeAttr("disabled");
+        imageModal.find("#image-file").prop("disabled", false);
     });
 }
 
@@ -1090,12 +1098,6 @@ function OnAddVideoSubmitButtonClick() {
         return;
     }
 
-    //File must be smaller than 500MB
-    if(files[0].size > 524288000) {
-        alert("Размер файла превышает лимит в 500МБ");
-        return;
-    }
-
     let formData = new FormData();
     formData.append("DataBlockId", g_currentDataBlock.Id);
     formData.append("Title", videoModal.find("#video-title").val());
@@ -1103,19 +1105,19 @@ function OnAddVideoSubmitButtonClick() {
     formData.append("VideoFile", files[0]);
 
     g_isUploadingVideo = true;
-    videoModal.find("#video-file").attr("disabled", "");
+    videoModal.find("#video-file").prop("disabled", true);
 
     CreateVideo(formData).then(
         (data) => {
             videoModal.modal("hide");
             RefreshVideos().then((val) => UpdateVideos());
             g_isUploadingVideo = false;
-            videoModal.find("#video-file").removeAttr("disabled");
+            videoModal.find("#video-file").prop("disabled", false);
         },
         (r) => {
             alert("Ошибка при создании видео.");
             g_isUploadingVideo = false;
-            videoModal.find("#video-file").removeAttr("disabled");
+            videoModal.find("#video-file").prop("disabled", false);
         });
 }
 
@@ -1131,12 +1133,6 @@ function OnAddAudioSubmitButtonClick() {
         return;
     }
 
-    //File must be smaller than 20MB
-    if (files[0].size > 20971520) {
-        alert("Размер файла превышает лимит в 20МБ");
-        return;
-    }
-
     let formData = new FormData();
     formData.append("DataBlockId", g_currentDataBlock.Id);
     formData.append("Title", audioModal.find("#audio-title").val());
@@ -1144,17 +1140,17 @@ function OnAddAudioSubmitButtonClick() {
     formData.append("AudioFile", files[0]);
 
     g_isUploadingAudio = true;
-    audioModal.find("#audio-file").attr("disabled", "");
+    audioModal.find("#audio-file").prop("disabled", true);
 
     CreateAudio(formData).then((result) => {
         audioModal.modal("hide");
         RefreshAudios().then((val) => UpdateAudios());
         g_isUploadingAudio = false;
-        audioModal.find("#audio-file").removeAttr("disabled");
+        audioModal.find("#audio-file").prop("disabled", false);
     }, (r) => {
         alert("Ошибка при создании аудио.");
         g_isUploadingAudio = false;
-        audioModal.find("#audio-file").removeAttr("disabled");
+        audioModal.find("#audio-file").prop("disabled", false);
     });
 }
 
@@ -1375,32 +1371,14 @@ function OnEditPrivacyButtonClick() {
                 selectedDataHolders.length > 1) return;
 
             let dataHolderId = selectedDataHolders.attr("data-id");
-            g_editPrivacyElementId = dataHolderId;
-            LoadDataHolderPrivacyData(dataHolderId);
-            break;
-        }
+            let dataHolderPrivacy = g_currentDataBlock
+                .DataHolders
+                .find(dh => dh.Id == dataHolderId)
+                .Privacy;
 
-        case AddButtonActionTypes.AddImage: {
-            let selectedImages = [];
+            g_editPrivacyId = dataHolderPrivacy.Id;
 
-            if (selectedImages.length == 0 ||
-                selectedImages.length > 1) return;
-
-            let imageId = selectedImages.attr("data-id");
-            g_editPrivacyElementId = imageId;
-            LoadImagePrivacyData(imageId);
-            break;
-        }
-
-        case AddButtonActionTypes.AddVideo: {
-            let selectedVideos = [];
-
-            if (selectedVideos.length == 0 ||
-                selectedVideos.length > 1) return;
-
-            let videoId = selectedVideos.attr("data-id");
-            g_editPrivacyElementId = videoId;
-            LoadVideoPrivacyData(videoId);
+            LoadPrivacyData(dataHolderPrivacy);
             break;
         }
             
@@ -1408,6 +1386,18 @@ function OnEditPrivacyButtonClick() {
             return;
     }
 
+    $("#privacy-level-modal").modal("show");
+}
+
+function OnEditVideoPrivacyButtonClick() {
+    $("#privacy-level-modal").modal("show");
+}
+
+function OnEditImagePrivacyButtonClick() {
+    $("#privacy-level-modal").modal("show");
+}
+
+function OnEditAudioPrivacyButtonClick() {
     $("#privacy-level-modal").modal("show");
 }
 
@@ -1732,6 +1722,23 @@ function UpdateSliderImageDetails(imageId) {
             .prop("disabled", false)[0]
             .innerHTML = "Сделать изображением персоны";
     }
+
+    let privacyElement = sliderModal.find(".privacy .privacy__privacy-level")[0];
+    SetPrivacyElementPrivacyLevel(privacyElement, image.Privacy.PrivacyLevel);
+    g_editPrivacyId = image.Privacy.Id;
+    LoadPrivacyData(image.Privacy);
+}
+
+function UpdateImageSliderImagePrivacy() {
+    let sliderModal = $("#image-carousel-modal");
+    let image = g_currentDataBlockImages
+        .find(item => item.Id == GetImageSliderCurrentImageId());
+
+    if (image == null)
+        return;
+
+    let privacyElement = sliderModal.find(".privacy .privacy__privacy-level")[0];
+    SetPrivacyElementPrivacyLevel(privacyElement, image.Privacy.PrivacyLevel);
 }
 
 function UpdateVideos() {
@@ -1779,6 +1786,23 @@ function UpdateVideoModal(videoId) {
     currentVideoElement.poster = "data:image/" + currentVideo.PreviewImageType + ";base64," + currentVideo.PreviewImageData;
     currentVideoElement.src = "Media/Video/GetFile/" + videoId;
     currentVideoElement.volume = 0.1;
+
+    let privacyElement = videoModal.find(".privacy .privacy__privacy-level")[0];
+    SetPrivacyElementPrivacyLevel(privacyElement, currentVideo.Privacy.PrivacyLevel);
+    g_editPrivacyId = currentVideo.Privacy.Id;
+    LoadPrivacyData(currentVideo.Privacy);
+}
+
+function UpdateVideoModalVideoPrivacy() {
+    let videoModal = $("#video-modal");
+    let currentVideo = g_currentDataBlockVideos
+        .find((item) => item.Id == GetVideoModalCurrentVideoId());
+
+    if (currentVideo == null)
+        return;
+
+    let privacyElement = videoModal.find(".privacy .privacy__privacy-level")[0];
+    SetPrivacyElementPrivacyLevel(privacyElement, currentVideo.Privacy.PrivacyLevel);
 }
 
 function UpdateVideoModalVideos() {
@@ -1808,6 +1832,23 @@ function UpdateAudioModal(audioId) {
 
     currentAudioElement.src = "Media/Audio/GetFile/" + audioId;
     currentAudioElement.volume = 0.1;
+
+    let privacyElement = audioModal.find(".privacy .privacy__privacy-level")[0];
+    SetPrivacyElementPrivacyLevel(privacyElement, currentAudio.Privacy.PrivacyLevel);
+    g_editPrivacyId = currentAudio.Privacy.Id;
+    LoadPrivacyData(currentAudio.Privacy);
+}
+
+function UpdateAudioModalAudioPrivacy() {
+    let audioModal = $("#audio-modal");
+    let currentAudio = g_currentDataBlockAudios
+        .find((item) => item.Id == g_openedAudioId);
+
+    if (currentAudio == null)
+        return;
+
+    let privacyElement = audioModal.find(".privacy .privacy__privacy-level")[0];
+    SetPrivacyElementPrivacyLevel(privacyElement, currentAudio.Privacy.PrivacyLevel);
 }
 
 function RefreshDataCategory() {
@@ -1913,6 +1954,48 @@ function ShowEditButton(isShow = true) {
 function ShowPrivacyButton(isShow = true) {
     $("#person-data-block #edit-privacy-button")
         .css("display", isShow ? "inline-block" : "none");
+}
+
+function SetPrivacyElementPrivacyLevel(element, privacyLevel) {
+    let title = "";
+
+    element.classList.remove("privacy-confidential");
+    element.classList.remove("privacy-internal-use");
+    element.classList.remove("privacy-public-use");
+    element.classList.remove("privacy-top-secret");
+
+    switch (privacyLevel) {
+        case PrivacyLevels.Confidential: {
+            title = "Личный";
+            element.classList.add("privacy-confidential");
+            break;
+        }
+
+        case PrivacyLevels.InternalUse: {
+            title = "Внутренний";
+            element.classList.add("privacy-internal-use");
+            break;
+        }
+
+        case PrivacyLevels.PublicUse: {
+            title = "Публичный";
+            element.classList.add("privacy-public-use");
+            break;
+        }
+
+        case PrivacyLevels.TopSecret: {
+            title = "Строго сикретно";
+            element.classList.add("privacy-top-secret");
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    element.setAttribute("title", title);
+    element.setAttribute("data-toggle", "tooltip");
+    element.setAttribute("data-placement", "top");
 }
 
 function ClearDataCategories() {

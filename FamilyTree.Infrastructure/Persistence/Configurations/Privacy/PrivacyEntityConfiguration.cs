@@ -22,9 +22,10 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Privacy
 
             builder.Property(p => p.IsAlways)
                 .HasColumnType("bit")
-                .HasDefaultValueSql("1");
+                .HasDefaultValueSql("1")
+                .IsRequired();
 
-            builder.ToTable("Privacies");
+            builder.ToTable("Privacy");
         }
     }
 }

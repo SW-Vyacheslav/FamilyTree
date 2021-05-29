@@ -11,8 +11,10 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.PersonContent
             builder.HasKey(db => db.Id);
 
             builder.Property(db => db.Title)
-                .HasColumnType("nvarchar(50)")
+                .HasColumnType("nvarchar(max)")
                 .IsRequired();
+
+            builder.ToTable("DataBlock");
         }
     }
 }

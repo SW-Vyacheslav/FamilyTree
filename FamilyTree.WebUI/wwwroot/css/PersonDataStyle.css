@@ -812,6 +812,8 @@ input:focus {
 
 #image-carousel-modal .modal-footer {
     border-top-color: #676767;
+    display: flex;
+    justify-content: space-between;
 }
 
 #image-carousel-modal .image-details {
@@ -819,19 +821,26 @@ input:focus {
 }
 
 #image-carousel-modal .modal-footer__pages {
-    float: left;
-    width: 30%;
+    width: 10%;
+    display: flex;
+    align-self: center;
+    justify-content: center;
 }
 
 #image-carousel-modal .modal-footer__buttons {
-    float: right;
-    width: 70%;
+    width: 90%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+#image-carousel-modal .privacy {
+    width: 100px;
+    margin-right: 5px;
 }
 
 #image-carousel-modal .pages__current-page,
 #image-carousel-modal .pages__separator,
 #image-carousel-modal .pages__count {
-    float: left;
     color: #b1b1b1;
 }
 
@@ -918,6 +927,11 @@ input:focus {
 #video-modal .modal-content {
     background-color: #454545;
     min-height: 597px;
+}
+
+#video-modal .privacy {
+    margin-left: 10px;
+    width: 100px;
 }
 
 #video-modal .modal-header .close {
@@ -1133,6 +1147,11 @@ input:focus {
 
 #audio-modal .modal-content {
     background-color: #454545;
+}
+
+#audio-modal .privacy {
+    margin-left: 10px;
+    width: 100px;
 }
 
 #audio-modal .modal-header .close {

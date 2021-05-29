@@ -45,8 +45,8 @@ namespace FamilyTree.WebUI.Controllers.Media
         }
 
         [HttpPost]
-        [RequestFormLimits(MultipartBodyLengthLimit = 20971520)]
-        [RequestSizeLimit(20971520)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 1099511627776L)]
+        [RequestSizeLimit(1099511627776L)]
         public async Task<ActionResult<int>> Create(CreateAudioCommand command)
         {
             command.UserId = _currentUserService.UserId;

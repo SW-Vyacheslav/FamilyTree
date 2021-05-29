@@ -11,7 +11,7 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.PersonContent
             builder.HasKey(dh => dh.Id);
 
             builder.Property(dh => dh.Title)
-                .HasColumnType("nvarchar(50)")
+                .HasColumnType("nvarchar(max)")
                 .IsRequired();
 
             builder.Property(dh => dh.Data)
@@ -19,7 +19,10 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.PersonContent
 
             builder.Property(dh => dh.IsDeletable)
                 .HasColumnType("bit")
-                .HasDefaultValueSql("1");
+                .HasDefaultValueSql("1")
+                .IsRequired();
+
+            builder.ToTable("DataHolder");
         }
     }
 }

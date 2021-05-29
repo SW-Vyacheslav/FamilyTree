@@ -9,6 +9,8 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.PersonContent
         public void Configure(EntityTypeBuilder<DataBlockVideo> builder)
         {
             builder.HasKey(dbv => dbv.Id);
+
+            builder.ToTable("DataBlockVideo");
         }
     }
 }

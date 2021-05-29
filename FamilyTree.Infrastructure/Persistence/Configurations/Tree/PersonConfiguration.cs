@@ -13,6 +13,8 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Tree
             builder.HasOne(p => p.FamilyTree)
                 .WithMany(ft => ft.People)
                 .HasForeignKey(p => p.FamilyTreeId);
+
+            builder.ToTable("Person");
         }
     }
 }

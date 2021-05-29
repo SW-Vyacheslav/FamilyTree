@@ -3,11 +3,11 @@ using FluentValidation;
 
 namespace FamilyTree.Application.PersonContent.DataCategories.Validators
 {
-    public class CreateDataCategoryCommandValidator : AbstractValidator<CreateDataCategoryCommand>
+    public class UpdateDataCategoryNameCommandValidator : AbstractValidator<UpdateDataCategoryNameCommand>
     {
-        public CreateDataCategoryCommandValidator()
+        public UpdateDataCategoryNameCommandValidator()
         {
-            RuleFor(c => c.Name)
+            RuleFor(dc => dc.Name)
                 .NotEmpty();
         }
     }

@@ -9,6 +9,8 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.PersonContent
         public void Configure(EntityTypeBuilder<DataBlockImage> builder)
         {
             builder.HasKey(dbi => dbi.Id);
+
+            builder.ToTable("DataBlockImage");
         }
     }
 }

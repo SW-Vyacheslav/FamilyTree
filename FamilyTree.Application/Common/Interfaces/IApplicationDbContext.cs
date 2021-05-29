@@ -25,8 +25,6 @@ namespace FamilyTree.Application.Common.Interfaces
 
         DbSet<DataHolder> DataHolders { get; set; }
 
-        DbSet<CommonDataBlock> CommonDataBlocks { get; set; }
-
         DbSet<PrivacyEntity> Privacies { get; set; }
 
         DbSet<Image> Images { get; set; }

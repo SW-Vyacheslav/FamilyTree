@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyTree.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210510225527_InitialMigration")]
+    [Migration("20210524220444_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -63,6 +63,9 @@ namespace FamilyTree.Infrastructure.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<int>("ProfileId")
+                        .HasColumnType("int");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -83,6 +86,9 @@ namespace FamilyTree.Infrastructure.Migrations
                         .HasName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("ProfileId")
+                        .IsUnique();
+
                     b.ToTable("AspNetUsers");
                 });
 
@@ -93,16 +99,9 @@ namespace FamilyTree.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Profiles");
+                    b.ToTable("Profile");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.Media.Audio", b =>
@@ -146,7 +145,7 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasIndex("PrivacyId");
 
-                    b.ToTable("Audios");
+                    b.ToTable("Audio");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.Media.Image", b =>
@@ -190,7 +189,7 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasIndex("PrivacyId");
 
-                    b.ToTable("Images");
+                    b.ToTable("Image");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.Media.Video", b =>
@@ -242,41 +241,7 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasIndex("PrivacyId");
 
-                    b.ToTable("Videos");
-                });
-
-            modelBuilder.Entity("FamilyTree.Domain.Entities.PersonContent.CommonDataBlock", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DataBlockId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DataCategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DataBlockId");
-
-                    b.HasIndex("DataCategoryId");
-
-                    b.ToTable("CommonDataBlocks");
+                    b.ToTable("Video");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.PersonContent.DataBlock", b =>
@@ -312,7 +277,7 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasIndex("DataCategoryId");
 
-                    b.ToTable("DataBlocks");
+                    b.ToTable("DataBlock");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.PersonContent.DataBlockAudio", b =>
@@ -334,7 +299,7 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasIndex("DataBlockId");
 
-                    b.ToTable("DataBlockAudios");
+                    b.ToTable("DataBlockAudio");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.PersonContent.DataBlockImage", b =>
@@ -356,7 +321,7 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasIndex("ImageId");
 
-                    b.ToTable("DataBlockImages");
+                    b.ToTable("DataBlockImage");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.PersonContent.DataBlockVideo", b =>
@@ -378,7 +343,7 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasIndex("VideoId");
 
-                    b.ToTable("DataBlockVideos");
+                    b.ToTable("DataBlockVideo");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.PersonContent.DataCategory", b =>
@@ -422,7 +387,7 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.ToTable("DataCategories");
+                    b.ToTable("DataCategory");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.PersonContent.DataHolder", b =>
@@ -474,7 +439,7 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasIndex("PrivacyId");
 
-                    b.ToTable("DataHolders");
+                    b.ToTable("DataHolder");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.Privacy.PrivacyEntity", b =>
@@ -514,7 +479,7 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Privacies");
+                    b.ToTable("Privacy");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.Tree.FamilyTie", b =>
@@ -563,7 +528,7 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.ToTable("FamilyTies");
+                    b.ToTable("FamilyTie");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.Tree.FamilyTreeEntity", b =>
@@ -602,7 +567,7 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("FamilyTrees");
+                    b.ToTable("FamilyTree");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.Tree.Person", b =>
@@ -636,7 +601,7 @@ namespace FamilyTree.Infrastructure.Migrations
 
                     b.HasIndex("FamilyTreeId");
 
-                    b.ToTable("People");
+                    b.ToTable("Person");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -774,11 +739,11 @@ namespace FamilyTree.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("FamilyTree.Domain.Entities.Identity.Profile", b =>
+            modelBuilder.Entity("FamilyTree.Domain.Entities.Identity.ApplicationUser", b =>
                 {
-                    b.HasOne("FamilyTree.Domain.Entities.Identity.ApplicationUser", "User")
-                        .WithOne("Profile")
-                        .HasForeignKey("FamilyTree.Domain.Entities.Identity.Profile", "UserId")
+                    b.HasOne("FamilyTree.Domain.Entities.Identity.Profile", "Profile")
+                        .WithOne("User")
+                        .HasForeignKey("FamilyTree.Domain.Entities.Identity.ApplicationUser", "ProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -808,19 +773,6 @@ namespace FamilyTree.Infrastructure.Migrations
                         .HasForeignKey("PrivacyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("FamilyTree.Domain.Entities.PersonContent.CommonDataBlock", b =>
-                {
-                    b.HasOne("FamilyTree.Domain.Entities.PersonContent.DataBlock", "DataBlock")
-                        .WithMany()
-                        .HasForeignKey("DataBlockId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FamilyTree.Domain.Entities.PersonContent.DataCategory", "DataCategory")
-                        .WithMany()
-                        .HasForeignKey("DataCategoryId");
                 });
 
             modelBuilder.Entity("FamilyTree.Domain.Entities.PersonContent.DataBlock", b =>

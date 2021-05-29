@@ -28,6 +28,7 @@ let _createPersonData = {
     WifeId: 0,
     MainPersonId: 0
 };
+let _deletePersonId = null;
 
 var mainTree; // главное дерево
 var bloodTree; // дерево кровности
@@ -296,6 +297,12 @@ function InitFamilyTreeEvents() {
 
     $("#show-main-person-button")
         .click(OnShowMainPersonButtonClick);
+
+    $("#delete-person-submit-button")
+        .click(OnDeletePersonSubmitButtonClick);
+
+    $("#delete-person-button")
+        .click(OnDeletePersonButtonClick);
 }
 
 function OnShowMainPersonButtonClick() {
@@ -310,6 +317,26 @@ function OnUpdateMainPersonButtonClick(target) {
         _familyTrees = GetFamilyTrees();
         ShowStarButtons();
     }, (r) => console.error(r));
+}
+
+function OnDeletePersonButtonClick() {
+    $("#delete-person-modal").modal("show");
+}
+
+function OnDeletePersonSubmitButtonClick() {
+    DeletePerson(_deletePersonId).then((result) => {
+        if (_currentFamilyTree.MainPersonId == _deletePersonId)
+            sessionStorage.removeItem("StartFamilyTree");
+        _deletePersonId = null;
+        document.location.reload();
+    });
+}
+
+async function DeletePerson(personId) {
+    return await $.ajax({
+        method: "DELETE",
+        url: "/People/Delete/" + personId
+    });
 }
 
 async function UpdateMainPerson(personId) {
@@ -1836,6 +1863,8 @@ function ShowModalPerson(event) {
     }
 
     $("#editPersonModal").attr("data-id", currentId);
+
+    _deletePersonId = currentId;
 
     $.ajax({
         type: 'GET',

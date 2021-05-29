@@ -19,11 +19,13 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Media
                 .IsRequired();
 
             builder.Property(i => i.Title)
-                .HasColumnType("nvarchar(50)")
+                .HasColumnType("nvarchar(max)")
                 .IsRequired();
 
             builder.Property(i => i.Description)
-                .HasColumnType("nvarchar(1000)");
+                .HasColumnType("nvarchar(max)");
+
+            builder.ToTable("Image");
         }
     }
 }

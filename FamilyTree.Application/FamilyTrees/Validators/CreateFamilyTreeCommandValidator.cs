@@ -8,8 +8,7 @@ namespace FamilyTree.Application.FamilyTrees.Validators
         public CreateFamilyTreeCommandValidator()
         {
             RuleFor(c => c.Name)
-                .NotEmpty()
-                .Length(1, 50);
+                .NotEmpty();
         }
     }
 }

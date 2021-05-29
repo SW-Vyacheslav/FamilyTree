@@ -11,7 +11,7 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Tree
             builder.HasKey(t => t.Id);
 
             builder.Property(t => t.Name)
-                .HasColumnType("nvarchar(50)")
+                .HasColumnType("nvarchar(max)")
                 .IsRequired();
 
             builder.Property(t => t.UserId)
@@ -22,7 +22,7 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Tree
                 .WithMany(u => u.FamilyTrees)
                 .HasForeignKey(ft => ft.UserId);
 
-            builder.ToTable("FamilyTrees");
+            builder.ToTable("FamilyTree");
         }
     }
 }
