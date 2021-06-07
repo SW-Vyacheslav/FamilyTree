@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyTree.Infrastructure",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyTree.WebUI", "FamilyTree.WebUI\FamilyTree.WebUI.csproj", "{18CAE39D-C3FD-404D-954B-AD3E510E016E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyTree.Test", "FamilyTree.Test\FamilyTree.Test.csproj", "{80D2BAA0-9076-4F7F-BBA1-BA3140B024A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{18CAE39D-C3FD-404D-954B-AD3E510E016E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18CAE39D-C3FD-404D-954B-AD3E510E016E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18CAE39D-C3FD-404D-954B-AD3E510E016E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80D2BAA0-9076-4F7F-BBA1-BA3140B024A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80D2BAA0-9076-4F7F-BBA1-BA3140B024A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80D2BAA0-9076-4F7F-BBA1-BA3140B024A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80D2BAA0-9076-4F7F-BBA1-BA3140B024A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

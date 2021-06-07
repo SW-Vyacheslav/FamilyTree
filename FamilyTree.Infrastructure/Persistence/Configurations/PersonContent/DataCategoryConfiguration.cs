@@ -10,6 +10,10 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.PersonContent
         {
             builder.HasKey(c => c.Id);
 
+            builder.Property(c => c.DataCategoryType)
+                .HasConversion<string>()
+                .IsRequired();
+
             builder.Property(c => c.Name)
                 .HasColumnType("nvarchar(max)")
                 .IsRequired();

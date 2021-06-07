@@ -54,6 +54,9 @@ function LoadFamilyTree() {
 
             let tree = _familyTrees.find((item) => item.Id == _currentFamilyTree.Id);
 
+            if (tree == null)
+                _currentFamilyTree = startTree;
+
             if (_currentFamilyTree.MainPersonId == null && tree.MainPersonId != null) {
                 _currentFamilyTree.MainPersonId = tree.MainPersonId;
             }

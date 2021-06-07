@@ -357,8 +357,9 @@ namespace FamilyTree.Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DataCategoryType")
-                        .HasColumnType("int");
+                    b.Property<string>("DataCategoryType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("IsDeletable")
                         .IsRequired()
@@ -408,8 +409,9 @@ namespace FamilyTree.Infrastructure.Migrations
                     b.Property<int>("DataBlockId")
                         .HasColumnType("int");
 
-                    b.Property<int>("DataHolderType")
-                        .HasColumnType("int");
+                    b.Property<string>("DataHolderType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("IsDeletable")
                         .IsRequired()
@@ -473,10 +475,11 @@ namespace FamilyTree.Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PrivacyLevel")
+                    b.Property<string>("PrivacyLevel")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("Confidential");
 
                     b.HasKey("Id");
 

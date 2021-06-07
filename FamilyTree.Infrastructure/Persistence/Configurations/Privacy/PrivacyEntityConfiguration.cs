@@ -12,7 +12,9 @@ namespace FamilyTree.Infrastructure.Persistence.Configurations.Privacy
             builder.HasKey(p => p.Id);
 
             builder.Property(p => p.PrivacyLevel)
-                .HasDefaultValue(PrivacyLevel.Confidential);
+                .HasDefaultValue(PrivacyLevel.Confidential)
+                .HasConversion<string>()
+                .IsRequired();
 
             builder.Property(p => p.BeginDate)
                 .HasColumnType("datetime2");

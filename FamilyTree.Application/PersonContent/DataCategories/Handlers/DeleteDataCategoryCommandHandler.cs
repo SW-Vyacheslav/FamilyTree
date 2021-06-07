@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace FamilyTree.Application.PersonContent.DataCategories.Handlers
 {
-    class DeleteDataCategoryCommandHandler : IRequestHandler<DeleteDataCategoryCommand>
+    public class DeleteDataCategoryCommandHandler : IRequestHandler<DeleteDataCategoryCommand>
     {
         private readonly IApplicationDbContext _context;
 

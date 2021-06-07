@@ -41,7 +41,7 @@ namespace FamilyTree.Application.PersonContent.DataHolders.Handlers
 
             DataHolder entity = new DataHolder() 
             {
-                Data = request.Data,
+                Data = string.Empty,
                 Title = request.Title,
                 DataHolderType = request.DataHolderType,
                 DataBlockId = dataBlock.Id,

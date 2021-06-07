@@ -2,6 +2,7 @@
 using FamilyTree.Application.Common.Interfaces;
 using FamilyTree.Application.Media.Images.Commands;
 using FamilyTree.Domain.Entities.Media;
+using FamilyTree.Domain.Entities.Tree;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
@@ -27,6 +28,13 @@ namespace FamilyTree.Application.Media.Images.Handlers
 
             if (image == null)
                 throw new NotFoundException(nameof(Image), request.Id);
+
+            Person person = await _context.People
+                .SingleOrDefaultAsync(p => p.AvatarImageId == image.Id,
+                                      cancellationToken);
+
+            if (person != null)
+                person.AvatarImageId = null;
 
             _context.Images.Remove(image);
 

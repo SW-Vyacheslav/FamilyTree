@@ -31,10 +31,10 @@ namespace FamilyTree.Infrastructure.Migrations
                     CreatedBy = table.Column<string>(nullable: true),
                     LastModified = table.Column<DateTime>(nullable: true),
                     LastModifiedBy = table.Column<string>(nullable: true),
-                    PrivacyLevel = table.Column<int>(nullable: false, defaultValue: 1),
+                    PrivacyLevel = table.Column<string>(nullable: false, defaultValue: "Confidential"),
                     BeginDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsAlways = table.Column<bool>(type: "bit", nullable: true, defaultValueSql: "1")
+                    IsAlways = table.Column<bool>(type: "bit", nullable: false, defaultValueSql: "1")
                 },
                 constraints: table =>
                 {
@@ -86,8 +86,8 @@ namespace FamilyTree.Infrastructure.Migrations
                     LastModifiedBy = table.Column<string>(nullable: true),
                     FilePath = table.Column<string>(type: "nvarchar(260)", nullable: false),
                     FileType = table.Column<string>(type: "nvarchar(10)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(1000)", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PrivacyId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -113,8 +113,8 @@ namespace FamilyTree.Infrastructure.Migrations
                     LastModifiedBy = table.Column<string>(nullable: true),
                     ImageData = table.Column<byte[]>(type: "image", nullable: false),
                     ImageType = table.Column<string>(type: "nvarchar(10)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(1000)", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PrivacyId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -142,8 +142,8 @@ namespace FamilyTree.Infrastructure.Migrations
                     FileType = table.Column<string>(type: "nvarchar(10)", nullable: false),
                     PreviewImageData = table.Column<byte[]>(type: "image", nullable: false),
                     PreviewImageType = table.Column<string>(type: "nvarchar(10)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(1000)", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PrivacyId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -284,7 +284,7 @@ namespace FamilyTree.Infrastructure.Migrations
                     CreatedBy = table.Column<string>(nullable: true),
                     LastModified = table.Column<DateTime>(nullable: true),
                     LastModifiedBy = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MainPersonId = table.Column<int>(nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -339,9 +339,9 @@ namespace FamilyTree.Infrastructure.Migrations
                     CreatedBy = table.Column<string>(nullable: true),
                     LastModified = table.Column<DateTime>(nullable: true),
                     LastModifiedBy = table.Column<string>(nullable: true),
-                    DataCategoryType = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    IsDeletable = table.Column<bool>(type: "bit", nullable: true, defaultValueSql: "1"),
+                    DataCategoryType = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDeletable = table.Column<bool>(type: "bit", nullable: false, defaultValueSql: "1"),
                     OrderNumber = table.Column<int>(nullable: false),
                     PersonId = table.Column<int>(nullable: false)
                 },
@@ -417,7 +417,7 @@ namespace FamilyTree.Infrastructure.Migrations
                     CreatedBy = table.Column<string>(nullable: true),
                     LastModified = table.Column<DateTime>(nullable: true),
                     LastModifiedBy = table.Column<string>(nullable: true),
-                    Title = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     OrderNumber = table.Column<int>(nullable: false),
                     DataCategoryId = table.Column<int>(nullable: false)
                 },
@@ -520,10 +520,10 @@ namespace FamilyTree.Infrastructure.Migrations
                     CreatedBy = table.Column<string>(nullable: true),
                     LastModified = table.Column<DateTime>(nullable: true),
                     LastModifiedBy = table.Column<string>(nullable: true),
-                    DataHolderType = table.Column<int>(nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    DataHolderType = table.Column<string>(nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Data = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsDeletable = table.Column<bool>(type: "bit", nullable: true, defaultValueSql: "1"),
+                    IsDeletable = table.Column<bool>(type: "bit", nullable: false, defaultValueSql: "1"),
                     OrderNumber = table.Column<int>(nullable: false),
                     DataBlockId = table.Column<int>(nullable: false),
                     PrivacyId = table.Column<int>(nullable: false)

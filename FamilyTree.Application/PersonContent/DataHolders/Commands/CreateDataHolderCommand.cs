@@ -9,8 +9,6 @@ namespace FamilyTree.Application.PersonContent.DataHolders.Commands
 
         public string Title { get; set; }
 
-        public string Data { get; set; }
-
         public int DataBlockId { get; set; }
 
         public string UserId { get; set; }

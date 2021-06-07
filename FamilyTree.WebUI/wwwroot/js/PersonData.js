@@ -2592,6 +2592,7 @@ function CreateGenderDataHolderElement(dataHolder) {
     return dataHolderElement;
 }
 
+//Other
 function GetSelectedDataCategoriesIds() {
     let result = [];
 
